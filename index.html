@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sasha Mindrin</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="light">
+
+  <header>
+    <span class="site-name">Sasha Mindrin</span>
+    <nav>
+      <a href="#work" data-en="work" data-ru="работы">work</a>
+      <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+      <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+      <button class="lang-btn" id="langToggle">RU</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 data-en="Identity &amp; Motion<br>Designer" data-ru="Дизайнер айдентики<br>и моушна">
+        Identity &amp; Motion<br>Designer
+      </h1>
+      <p class="sub" data-en="logos · branding · motion · illustration" data-ru="логотипы · айдентика · моушн · иллюстрация">
+        logos · branding · motion · illustration
+      </p>
+    </section>
+
+    <section class="grid" id="work">
+      <!-- проекты добавляются здесь, пример структуры: -->
+      <a class="card" href="project.html?id=project-1">
+        <div class="card-inner">
+          <img src="assets/projects/project-1/thumb.png" alt="Project 1" />
+        </div>
+        <span class="card-label" data-en="Project 1" data-ru="Проект 1">Project 1</span>
+      </a>
+
+      <a class="card" href="project.html?id=project-2">
+        <div class="card-inner">
+          <img src="assets/projects/project-2/thumb.png" alt="Project 2" />
+        </div>
+        <span class="card-label" data-en="Project 2" data-ru="Проект 2">Project 2</span>
+      </a>
+
+      <a class="card" href="project.html?id=project-3">
+        <div class="card-inner">
+          <img src="assets/projects/project-3/thumb.png" alt="Project 3" />
+        </div>
+        <span class="card-label" data-en="Project 3" data-ru="Проект 3">Project 3</span>
+      </a>
+
+      <a class="card" href="project.html?id=project-4">
+        <div class="card-inner">
+          <img src="assets/projects/project-4/thumb.png" alt="Project 4" />
+        </div>
+        <span class="card-label" data-en="Project 4" data-ru="Проект 4">Project 4</span>
+      </a>
+
+      <a class="card" href="project.html?id=project-5">
+        <div class="card-inner">
+          <img src="assets/projects/project-5/thumb.png" alt="Project 5" />
+        </div>
+        <span class="card-label" data-en="Project 5" data-ru="Проект 5">Project 5</span>
+      </a>
+
+      <a class="card" href="project.html?id=project-6">
+        <div class="card-inner">
+          <img src="assets/projects/project-6/thumb.png" alt="Project 6" />
+        </div>
+        <span class="card-label" data-en="Project 6" data-ru="Проект 6">Project 6</span>
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    <span class="footer-mode" id="modeLabel"></span>
+    <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
+      <span id="modeIcon">☾</span>
+    </button>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

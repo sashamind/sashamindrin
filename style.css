@@ -1,0 +1,242 @@
+/* ─── Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Tokens ─── */
+:root {
+  --font-main: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Courier New', 'Courier', monospace;
+
+  --transition: 0.4s ease;
+
+  /* Light */
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --fg2: #999;
+  --border: rgba(0, 0, 0, 0.08);
+  --card-hover: #f5f5f5;
+}
+
+body.dark {
+  --bg: #0a0a0a;
+  --fg: #f0f0ec;
+  --fg2: #555;
+  --border: rgba(255, 255, 255, 0.07);
+  --card-hover: #151515;
+}
+
+/* ─── Base ─── */
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg);
+  color: var(--fg);
+  transition: background-color var(--transition), color var(--transition);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ─── Header ─── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 28px 40px;
+  position: sticky;
+  top: 0;
+  background-color: var(--bg);
+  z-index: 10;
+  border-bottom: 0.5px solid var(--border);
+  transition: background-color var(--transition);
+}
+
+.site-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+nav {
+  display: flex;
+  align-items: baseline;
+  gap: 28px;
+}
+
+nav a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: var(--fg2);
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: var(--fg);
+}
+
+/* ─── Lang & Mode buttons ─── */
+.lang-btn,
+.mode-btn {
+  background: none;
+  border: 0.5px solid var(--border);
+  color: var(--fg2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  padding: 3px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.lang-btn:hover,
+.mode-btn:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+/* ─── Main ─── */
+main {
+  flex: 1;
+  padding: 64px 40px 80px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ─── Hero ─── */
+.hero {
+  margin-bottom: 72px;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.hero .sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg2);
+  letter-spacing: 0.06em;
+}
+
+/* ─── Grid ─── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  border: 0.5px solid var(--border);
+}
+
+/* ─── Card ─── */
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  overflow: hidden;
+}
+
+.card:hover {
+  background-color: var(--card-hover);
+}
+
+.card:hover .card-inner {
+  opacity: 0.9;
+}
+
+.card-inner {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--card-hover);
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* placeholder when no image */
+.card-inner:empty::after {
+  content: '';
+  display: block;
+}
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--fg2);
+  padding: 10px 14px;
+  border-top: 0.5px solid var(--border);
+  transition: color 0.2s;
+  text-transform: lowercase;
+}
+
+.card:hover .card-label {
+  color: var(--fg);
+}
+
+/* ─── Footer ─── */
+footer {
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 0.5px solid var(--border);
+}
+
+.footer-mode {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg2);
+  letter-spacing: 0.05em;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  header {
+    padding: 20px 20px;
+  }
+
+  main {
+    padding: 40px 20px 60px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  nav {
+    gap: 16px;
+  }
+
+  footer {
+    padding: 16px 20px;
+  }
+}
