@@ -62,7 +62,17 @@ header {
   background-color: var(--bg);
   z-index: 10;
   border-bottom: 0.5px solid var(--border);
-  transition: background-color var(--transition);
+  transition: background-color var(--transition), backdrop-filter var(--transition);
+}
+
+header.scrolled {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+body.dark header.scrolled {
+  background-color: rgba(10, 10, 10, 0.7);
 }
 
 .site-name {
@@ -176,10 +186,15 @@ main {
   justify-content: center;
 }
 
-/* placeholder when no image */
-.card-inner:empty::after {
-  content: '';
-  display: block;
+.card-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--fg2);
+  transition: color 0.2s;
+}
+
+.card:hover .card-icon {
+  color: var(--fg);
 }
 
 .card-label {
@@ -203,11 +218,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
   border-top: 0.5px solid var(--border);
 }
 
-.footer-mode {
+.footer-copy {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--fg2);

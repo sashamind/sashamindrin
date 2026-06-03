@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Sasha Mindrin</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .contact-wrap {
+      max-width: 480px;
+    }
+
+    .contact-wrap h2 {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+    }
+
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .contact-list li:first-child {
+      border-top: 0.5px solid var(--border);
+    }
+
+    .contact-key {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--fg2);
+      text-transform: uppercase;
+    }
+
+    .contact-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--fg);
+      transition: color 0.2s;
+    }
+
+    .contact-val:hover {
+      color: var(--fg2);
+    }
+  </style>
+</head>
+<body class="light">
+
+  <header>
+    <a class="site-name" href="index.html">Sasha Mindrin</a>
+    <nav>
+      <a href="index.html#work" data-en="work" data-ru="работы">work</a>
+      <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+      <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+      <button class="lang-btn" id="langToggle">RU</button>
+      <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
+        <span id="modeIcon">☾</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="contact-wrap">
+      <h2 data-en="Contact" data-ru="Контакт">Contact</h2>
+
+      <ul class="contact-list">
+        <li>
+          <span class="contact-key" data-en="email" data-ru="почта">email</span>
+          <a class="contact-val" href="mailto:hello@sashamindrin.com">hello@sashamindrin.com</a>
+        </li>
+        <li>
+          <span class="contact-key">telegram</span>
+          <a class="contact-val" href="https://t.me/sashamindrin" target="_blank" rel="noopener">@sashamindrin</a>
+        </li>
+        <li>
+          <span class="contact-key">behance</span>
+          <a class="contact-val" href="https://behance.net/sashamindrin" target="_blank" rel="noopener">behance.net/sashamindrin</a>
+        </li>
+        <li>
+          <span class="contact-key">instagram</span>
+          <a class="contact-val" href="https://instagram.com/sashamindrin" target="_blank" rel="noopener">@sashamindrin</a>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-copy">Sasha Mindrin</span>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

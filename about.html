@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Sasha Mindrin</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .about-wrap {
+      max-width: 640px;
+    }
+
+    .about-wrap h2 {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+
+    .about-wrap p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+
+    .about-divider {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin: 40px 0;
+    }
+
+    .skills-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skills-list li {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--fg2);
+      border: 0.5px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--fg2);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body class="light">
+
+  <header>
+    <a class="site-name" href="index.html">Sasha Mindrin</a>
+    <nav>
+      <a href="index.html#work" data-en="work" data-ru="работы">work</a>
+      <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+      <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+      <button class="lang-btn" id="langToggle">RU</button>
+      <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
+        <span id="modeIcon">☾</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="about-wrap">
+      <h2 data-en="About" data-ru="Обо мне">About</h2>
+
+      <p data-en="I'm a Moscow-based identity and motion designer focused on brand systems, logotypes, and animation. I work at the intersection of form and movement — building identities that feel alive." data-ru="Я дизайнер айдентики и моушна из Москвы. Работаю с брендинговыми системами, логотипами и анимацией — на пересечении формы и движения.">
+        I'm a Moscow-based identity and motion designer focused on brand systems, logotypes, and animation. I work at the intersection of form and movement — building identities that feel alive.
+      </p>
+
+      <p data-en="Available for freelance projects and collaborations." data-ru="Открыт к фриланс-проектам и коллаборациям.">
+        Available for freelance projects and collaborations.
+      </p>
+
+      <hr class="about-divider" />
+
+      <p class="section-label" data-en="skills" data-ru="навыки">skills</p>
+      <ul class="skills-list">
+        <li>brand identity</li>
+        <li>logotype design</li>
+        <li>motion graphics</li>
+        <li>illustration</li>
+        <li>typography</li>
+        <li>art direction</li>
+      </ul>
+
+      <hr class="about-divider" />
+
+      <p class="section-label" data-en="tools" data-ru="инструменты">tools</p>
+      <ul class="skills-list">
+        <li>Figma</li>
+        <li>Adobe Illustrator</li>
+        <li>After Effects</li>
+        <li>Cinema 4D</li>
+        <li>Photoshop</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-copy">Sasha Mindrin</span>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

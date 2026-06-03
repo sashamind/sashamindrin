@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sasha Mindrin</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="light">
 
@@ -15,6 +15,9 @@
       <a href="about.html" data-en="about" data-ru="обо мне">about</a>
       <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
       <button class="lang-btn" id="langToggle">RU</button>
+      <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
+        <span id="modeIcon">☾</span>
+      </button>
     </nav>
   </header>
 
@@ -32,42 +35,73 @@
       <!-- проекты добавляются здесь, пример структуры: -->
       <a class="card" href="project.html?id=project-1">
         <div class="card-inner">
-          <img src="assets/projects/project-1/thumb.png" alt="Project 1" />
+          <!-- two intersecting circles -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <circle cx="32" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+            <circle cx="48" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 1" data-ru="Проект 1">Project 1</span>
       </a>
 
       <a class="card" href="project.html?id=project-2">
         <div class="card-inner">
-          <img src="assets/projects/project-2/thumb.png" alt="Project 2" />
+          <!-- rotated square -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <rect x="40" y="14" width="37" height="37" rx="0.5" transform="rotate(45 40 14)" stroke="currentColor" stroke-width="0.75"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 2" data-ru="Проект 2">Project 2</span>
       </a>
 
       <a class="card" href="project.html?id=project-3">
         <div class="card-inner">
-          <img src="assets/projects/project-3/thumb.png" alt="Project 3" />
+          <!-- nested squares -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <rect x="16" y="16" width="48" height="48" stroke="currentColor" stroke-width="0.75"/>
+            <rect x="24" y="24" width="32" height="32" stroke="currentColor" stroke-width="0.75"/>
+            <rect x="32" y="32" width="16" height="16" stroke="currentColor" stroke-width="0.75"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 3" data-ru="Проект 3">Project 3</span>
       </a>
 
       <a class="card" href="project.html?id=project-4">
         <div class="card-inner">
-          <img src="assets/projects/project-4/thumb.png" alt="Project 4" />
+          <!-- triangle -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <polygon points="40,14 66,62 14,62" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 4" data-ru="Проект 4">Project 4</span>
       </a>
 
       <a class="card" href="project.html?id=project-5">
         <div class="card-inner">
-          <img src="assets/projects/project-5/thumb.png" alt="Project 5" />
+          <!-- cross -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
+            <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
+            <circle cx="40" cy="40" r="20" stroke="currentColor" stroke-width="0.75"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 5" data-ru="Проект 5">Project 5</span>
       </a>
 
       <a class="card" href="project.html?id=project-6">
         <div class="card-inner">
-          <img src="assets/projects/project-6/thumb.png" alt="Project 6" />
+          <!-- dot grid -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+            <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="40" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="56" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="24" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="40" cy="40" r="3" fill="currentColor"/>
+            <circle cx="56" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="24" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="40" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="56" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+          </svg>
         </div>
         <span class="card-label" data-en="Project 6" data-ru="Проект 6">Project 6</span>
       </a>
@@ -75,12 +109,9 @@
   </main>
 
   <footer>
-    <span class="footer-mode" id="modeLabel"></span>
-    <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
-      <span id="modeIcon">☾</span>
-    </button>
+    <span class="footer-copy">Sasha Mindrin</span>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
