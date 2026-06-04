@@ -101,7 +101,8 @@ nav a:hover {
 }
 
 /* ─── Lang & Mode buttons ─── */
-.lang-btn {
+.lang-btn,
+.burger-btn {
   background: none;
   border: 0.5px solid var(--border);
   color: var(--fg2);
@@ -114,9 +115,62 @@ nav a:hover {
   transition: color 0.2s, border-color 0.2s;
 }
 
-.lang-btn:hover {
+.lang-btn:hover,
+.burger-btn:hover {
   color: var(--fg);
   border-color: var(--fg);
+}
+
+/* ─── Nav menu ─── */
+.nav-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 220px;
+  background-color: var(--bg);
+  border-left: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 80px 32px 40px;
+  gap: 4px;
+  z-index: 20;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.nav-menu.open {
+  transform: translateX(0);
+}
+
+.nav-menu a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: var(--fg2);
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--border);
+  transition: color 0.2s;
+}
+
+.nav-menu a:hover {
+  color: var(--fg);
+}
+
+.nav-menu .lang-btn {
+  margin-top: 16px;
+  align-self: flex-start;
+}
+
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  display: none;
+}
+
+.nav-overlay.open {
+  display: block;
 }
 
 /* ─── Main ─── */
@@ -535,6 +589,22 @@ button.card {
   .card-icon {
     width: 72px;
     height: 72px;
+  }
+
+  .card-thumb {
+    transform: translateZ(0) scale(1.3);
+  }
+
+  .card.hovered .card-thumb {
+    transform: translateZ(0) scale(1.105);
+  }
+
+  .card.active .card-thumb {
+    transform: translateZ(0) scale(1.3);
+  }
+
+  .card.active.hovered .card-thumb {
+    transform: translateZ(0) scale(1.105);
   }
 }
 

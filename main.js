@@ -26,6 +26,21 @@ langToggle.addEventListener('click', () => {
 });
 
 
+// ─── Burger menu ───
+const burgerBtn = document.getElementById('burgerBtn');
+const navMenu = document.getElementById('navMenu');
+const navOverlay = document.getElementById('navOverlay');
+
+function toggleMenu(open) {
+  navMenu.classList.toggle('open', open);
+  navOverlay.classList.toggle('open', open);
+  burgerBtn.textContent = open ? 'close' : 'menu';
+}
+
+burgerBtn.addEventListener('click', () => toggleMenu(!navMenu.classList.contains('open')));
+navOverlay.addEventListener('click', () => toggleMenu(false));
+
+
 // ─── Scroll: transparent header ───
 const header = document.querySelector('header');
 window.addEventListener('scroll', () => {

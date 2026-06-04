@@ -61,13 +61,16 @@
 
   <header>
     <a class="site-name" href="index.html">Sasha Mindrin</a>
-    <nav>
-      <a href="index.html#work" data-en="work" data-ru="работы">work</a>
-      <a href="about.html" data-en="about" data-ru="обо мне">about</a>
-      <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
-      <button class="lang-btn" id="langToggle">RU</button>
-    </nav>
+    <button class="burger-btn" id="burgerBtn">menu</button>
   </header>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-menu" id="navMenu">
+    <a href="index.html" data-en="work" data-ru="работы">work</a>
+    <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+    <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+    <button class="lang-btn" id="langToggle">RU</button>
+  </nav>
 
   <main>
     <div class="about-wrap">
