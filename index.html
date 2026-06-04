@@ -6,111 +6,230 @@
   <title>Sasha Mindrin</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="light">
+<body class="dark page-split">
 
   <header>
     <span class="site-name">Sasha Mindrin</span>
     <nav>
-      <a href="#work" data-en="work" data-ru="работы">work</a>
       <a href="about.html" data-en="about" data-ru="обо мне">about</a>
       <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
       <button class="lang-btn" id="langToggle">RU</button>
-      <button class="mode-btn" id="modeToggle" aria-label="Toggle dark mode">
-        <span id="modeIcon">☾</span>
-      </button>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <h1 data-en="Identity &amp; Motion<br>Designer" data-ru="Дизайнер айдентики<br>и моушна">
-        Identity &amp; Motion<br>Designer
-      </h1>
-      <p class="sub" data-en="logos · branding · motion · illustration" data-ru="логотипы · айдентика · моушн · иллюстрация">
-        logos · branding · motion · illustration
-      </p>
-    </section>
+  <section class="hero">
+    <p class="sub" data-en="logos · branding · motion · illustration" data-ru="логотипы · айдентика · моушн · иллюстрация">
+      logos · branding · motion · illustration
+    </p>
+  </section>
 
-    <section class="grid" id="work">
-      <!-- проекты добавляются здесь, пример структуры: -->
-      <a class="card" href="project.html?id=project-1">
-        <div class="card-inner">
-          <!-- two intersecting circles -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <circle cx="32" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
-            <circle cx="48" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 1" data-ru="Проект 1">Project 1</span>
-      </a>
+  <div class="layout">
 
-      <a class="card" href="project.html?id=project-2">
-        <div class="card-inner">
-          <!-- rotated square -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <rect x="40" y="14" width="37" height="37" rx="0.5" transform="rotate(45 40 14)" stroke="currentColor" stroke-width="0.75"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 2" data-ru="Проект 2">Project 2</span>
-      </a>
+    <aside class="panel-list">
+      <div class="cards-grid">
 
-      <a class="card" href="project.html?id=project-3">
-        <div class="card-inner">
-          <!-- nested squares -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <rect x="16" y="16" width="48" height="48" stroke="currentColor" stroke-width="0.75"/>
-            <rect x="24" y="24" width="32" height="32" stroke="currentColor" stroke-width="0.75"/>
-            <rect x="32" y="32" width="16" height="16" stroke="currentColor" stroke-width="0.75"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 3" data-ru="Проект 3">Project 3</span>
-      </a>
+        <button class="card" data-id="project-1">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="32" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="48" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Ba" data-ru="Ба">Ba</span>
+        </button>
 
-      <a class="card" href="project.html?id=project-4">
-        <div class="card-inner">
-          <!-- triangle -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <polygon points="40,14 66,62 14,62" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 4" data-ru="Проект 4">Project 4</span>
-      </a>
+        <button class="card" data-id="project-2">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="40" y="14" width="37" height="37" rx="0.5" transform="rotate(45 40 14)" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Marathon" data-ru="Тульский марафон">Tula Marathon</span>
+        </button>
 
-      <a class="card" href="project.html?id=project-5">
-        <div class="card-inner">
-          <!-- cross -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
-            <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
-            <circle cx="40" cy="40" r="20" stroke="currentColor" stroke-width="0.75"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 5" data-ru="Проект 5">Project 5</span>
-      </a>
+        <button class="card" data-id="project-3">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="16" y="16" width="48" height="48" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="24" y="24" width="32" height="32" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="32" y="32" width="16" height="16" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Running Club" data-ru="Тульский беговой клуб">Tula Running Club</span>
+        </button>
 
-      <a class="card" href="project.html?id=project-6">
-        <div class="card-inner">
-          <!-- dot grid -->
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
-            <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="40" cy="24" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="56" cy="24" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="24" cy="40" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="40" cy="40" r="3" fill="currentColor"/>
-            <circle cx="56" cy="40" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="24" cy="56" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="40" cy="56" r="2" fill="currentColor" opacity="0.5"/>
-            <circle cx="56" cy="56" r="2" fill="currentColor" opacity="0.5"/>
-          </svg>
-        </div>
-        <span class="card-label" data-en="Project 6" data-ru="Проект 6">Project 6</span>
-      </a>
-    </section>
-  </main>
+        <button class="card" data-id="project-4">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polygon points="40,14 66,62 14,62" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Punk Delicious" data-ru="Панк делишс">Punk Delicious</span>
+        </button>
 
-  <footer>
-    <span class="footer-copy">Sasha Mindrin</span>
-  </footer>
+        <button class="card" data-id="project-5">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="20" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Coffee Cult" data-ru="Кофе культ">Coffee Cult</span>
+        </button>
+
+        <button class="card" data-id="project-6">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="56" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="24" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="40" r="3" fill="currentColor"/>
+              <circle cx="56" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="24" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="56" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Nitka" data-ru="Нитка">Nitka</span>
+        </button>
+
+        <button class="card" data-id="project-7">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M20 40 A20 20 0 0 1 60 40" stroke="currentColor" stroke-width="0.75"/>
+              <path d="M14 40 A26 26 0 0 1 66 40" stroke="currentColor" stroke-width="0.75"/>
+              <path d="M8 40 A32 32 0 0 1 72 40" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Volna" data-ru="Волна">Volna</span>
+        </button>
+
+        <button class="card" data-id="project-8">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="22" y1="22" x2="58" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="58" y1="22" x2="22" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="22" y="22" width="36" height="36" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Region" data-ru="Тульский регион">Tula Region</span>
+        </button>
+
+        <button class="card" data-id="project-9">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="18" y="28" width="28" height="28" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="34" y="22" width="28" height="28" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Rassvet" data-ru="Рассвет">Rassvet</span>
+        </button>
+
+        <button class="card" data-id="project-10">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="40" cy="40" r="6" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="14" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="22" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Azaza" data-ru="Азаза">Azaza</span>
+        </button>
+
+        <button class="card" data-id="project-11">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polygon points="40,16 57,26 57,54 40,64 23,54 23,26" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Zernovaya" data-ru="Зерновая">Zernovaya</span>
+        </button>
+
+        <button class="card" data-id="project-12">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="20" y1="20" x2="60" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="30" y1="20" x2="70" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="10" y1="20" x2="50" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="20" x2="80" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="0" y1="20" x2="40" y2="60" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Soyuz" data-ru="Союз">Soyuz</span>
+        </button>
+
+        <button class="card" data-id="project-13">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="40" cy="40" r="22" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="24" y1="56" x2="56" y2="24" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 13" data-ru="Проект 13">Project 13</span>
+        </button>
+
+        <button class="card" data-id="project-14">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polyline points="28,24 52,40 28,56" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+              <polyline points="16,24 40,40 16,56" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 14" data-ru="Проект 14">Project 14</span>
+        </button>
+
+        <button class="card" data-id="project-15">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="22" y1="22" x2="58" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="58" y1="22" x2="22" y2="58" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 15" data-ru="Проект 15">Project 15</span>
+        </button>
+
+        <button class="card" data-id="project-16">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M14 34 Q22 26 30 34 Q38 42 46 34 Q54 26 62 34 Q70 42 78 34" stroke="currentColor" stroke-width="0.75" fill="none"/>
+              <path d="M14 46 Q22 38 30 46 Q38 54 46 46 Q54 38 62 46 Q70 54 78 46" stroke="currentColor" stroke-width="0.75" fill="none"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 16" data-ru="Проект 16">Project 16</span>
+        </button>
+
+        <button class="card" data-id="project-17">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M58 24 A26 26 0 1 1 22 24" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="14" x2="40" y2="40" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 17" data-ru="Проект 17">Project 17</span>
+        </button>
+
+        <button class="card" data-id="project-18">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="28" y1="16" x2="28" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="52" y1="16" x2="52" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="28" x2="64" y2="28" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="52" x2="64" y2="52" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Project 18" data-ru="Проект 18">Project 18</span>
+        </button>
+
+      </div>
+    </aside>
+
+    <div class="panel-detail" id="panelDetail"></div>
+
+  </div>
 
   <script src="main.js"></script>
 </body>
