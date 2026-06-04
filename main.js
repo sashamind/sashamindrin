@@ -47,12 +47,13 @@ const projectsData = [
   { id: 'project-10', folder: 'azaza',             color: '#9b59b6', titleEn: 'Azaza',            titleRu: 'Азаза',                 year: '2021', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
   { id: 'project-11', folder: 'zernovaya',         color: '#8fbc45', titleEn: 'Zernovaya',        titleRu: 'Зерновая',              year: '2021', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
   { id: 'project-12', folder: 'soyuz',             color: '#c0392b', titleEn: 'Soyuz',            titleRu: 'Союз',                  year: '2020', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-13', folder: 'project-13',        color: '#16a085', titleEn: 'Project 13',       titleRu: 'Проект 13',             year: '2020', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-14', folder: 'project-14',        color: '#d35400', titleEn: 'Project 14',       titleRu: 'Проект 14',             year: '2020', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-15', folder: 'project-15',        color: '#27ae60', titleEn: 'Project 15',       titleRu: 'Проект 15',             year: '2020', type: 'illustration', descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-16', folder: 'project-16',        color: '#8e44ad', titleEn: 'Project 16',       titleRu: 'Проект 16',             year: '2019', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-17', folder: 'project-17',        color: '#2980b9', titleEn: 'Project 17',       titleRu: 'Проект 17',             year: '2019', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-18', folder: 'project-18',        color: '#e74c3c', titleEn: 'Project 18',       titleRu: 'Проект 18',             year: '2019', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-14', folder: 'russian-tea-house',  color: '#d35400', titleEn: 'Russian Tea House', titleRu: 'Дом русского чаепития', year: '2020', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-15', folder: 'mumble-podcast',     color: '#27ae60', titleEn: 'Mumble Podcast',    titleRu: 'Мамбл подкаст',         year: '2020', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-16', folder: 'volunteer-71',       color: '#8e44ad', titleEn: 'Volunteer 71',      titleRu: 'Волонтер 71',           year: '2019', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-17', folder: '212f',               color: '#2980b9', titleEn: '212F',              titleRu: '212F',                  year: '2019', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-18', folder: 'terpsichore',        color: '#e74c3c', titleEn: 'Terpsichore',       titleRu: 'Терпсихора',            year: '2019', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-20', folder: 'soroka',             color: '#c0a060', titleEn: 'Soroka',            titleRu: 'Сорока',                year: '2019', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-19', folder: 'justtalk',          color: '#5b8cff', titleEn: 'Justtalk',         titleRu: 'Джасттолк',             year: '2024', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
 ];
 
 let activeProjectId = null;
@@ -113,8 +114,22 @@ const tryLoad = src => new Promise((res, rej) => {
   img.src = src;
 });
 
+const allCards = Array.from(document.querySelectorAll('.card[data-id]'));
+
+function scrollToCard(index) {
+  if (window.innerWidth > 768) return;
+  const grid = document.querySelector('.cards-grid');
+  if (!grid) return;
+  const scrollTo = index <= 1 ? 0 : allCards[index - 1].offsetLeft;
+  grid.scrollTo({ left: scrollTo, behavior: 'smooth' });
+}
+
 document.querySelectorAll('.card[data-id]').forEach(card => {
-  card.addEventListener('click', () => renderProject(card.dataset.id));
+  card.addEventListener('click', () => {
+    const index = allCards.indexOf(card);
+    renderProject(card.dataset.id);
+    scrollToCard(index);
+  });
   card.addEventListener('mouseenter', () => card.classList.add('hovered'));
   card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
 
