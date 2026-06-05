@@ -50,26 +50,26 @@ window.addEventListener('scroll', () => {
 
 // ─── Projects ───
 const projectsData = [
-  { id: 'project-1',  folder: 'ba',                color: '#c0392b', titleEn: 'Ba',               titleRu: 'Ба',                     year: '2024', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-2',  folder: 'tula-marathon',     color: '#e67e22', titleEn: 'Tula Marathon',    titleRu: 'Тульский марафон',       year: '2024', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-3',  folder: 'tula-running-club', color: '#f1c40f', titleEn: 'Tula Running Club',titleRu: 'Тульский беговой клуб', year: '2023', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-21', folder: 'puppai',             color: '#7c5cbf', titleEn: 'PuppAI',           titleRu: 'PuppAI',                year: '2024', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-4',  folder: 'punk-delicious',    color: '#e91e8c', titleEn: 'Punk Delicious',   titleRu: 'Панк делишс',           year: '2023', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-5',  folder: 'coffee-cult',       color: '#a0522d', titleEn: 'Coffee Cult',      titleRu: 'Кофе культ',            year: '2023', type: 'illustration', descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-6',  folder: 'nitka',             color: '#1abc9c', titleEn: 'Nitka',            titleRu: 'Нитка',                 year: '2022', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-7',  folder: 'volna',             color: '#3498db', titleEn: 'Volna',            titleRu: 'Волна',                 year: '2022', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-8',  folder: 'tula-region',       color: '#2c3e8c', titleEn: 'Tula Region',      titleRu: 'Тульский регион',       year: '2021', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-9',  folder: 'rassvet',           color: '#e8a87c', titleEn: 'Rassvet',          titleRu: 'Рассвет',               year: '2021', type: 'illustration', descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-10', folder: 'azaza',             color: '#9b59b6', titleEn: 'Azaza',            titleRu: 'Азаза',                 year: '2021', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-11', folder: 'zernovaya',         color: '#8fbc45', titleEn: 'Zernovaya',        titleRu: 'Зерновая',              year: '2021', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-12', folder: 'soyuz',             color: '#c0392b', titleEn: 'Soyuz',            titleRu: 'Союз',                  year: '2020', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-14', folder: 'russian-tea-house',  color: '#d35400', titleEn: 'Russian Tea House', titleRu: 'Дом русского чаепития', year: '2020', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-15', folder: 'mumble-podcast',     color: '#27ae60', titleEn: 'Mumble Podcast',    titleRu: 'Мамбл подкаст',         year: '2020', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-16', folder: 'volunteer-71',       color: '#8e44ad', titleEn: 'Volunteer 71',      titleRu: 'Волонтер 71',           year: '2019', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-17', folder: '212f',               color: '#2980b9', titleEn: '212F',              titleRu: '212F',                  year: '2019', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-18', folder: 'terpsichore',        color: '#e74c3c', titleEn: 'Terpsichore',       titleRu: 'Терпсихора',            year: '2019', type: 'motion',       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-20', folder: 'soroka',             color: '#c0a060', titleEn: 'Soroka',            titleRu: 'Сорока',                year: '2019', type: 'branding',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
-  { id: 'project-19', folder: 'justtalk',          color: '#5b8cff', titleEn: 'Justtalk',         titleRu: 'Джасттолк',             year: '2024', type: 'identity',     descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2024', tags: ['logos', 'branding'],              descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-2',  folder: 'tula-marathon',    color: '#e67e22', titleEn: 'Tula Marathon',     titleRu: 'Тульский марафон',      year: '2024', tags: ['logos', 'motion'],                descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-3',  folder: 'tula-running-club',color: '#f1c40f', titleEn: 'Tula Running Club', titleRu: 'Тульский беговой клуб', year: '2023', tags: ['logos', 'branding', 'illustration'],descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-21', folder: 'puppai',            color: '#7c5cbf', titleEn: 'PuppAI',            titleRu: 'PuppAI',                year: '2024', tags: ['logos', 'web', 'interactive'],    descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-4',  folder: 'punk-delicious',   color: '#e91e8c', titleEn: 'Punk Delicious',    titleRu: 'Панк делишс',           year: '2023', tags: ['logos', 'branding'],              descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-5',  folder: 'coffee-cult',      color: '#a0522d', titleEn: 'Coffee Cult',       titleRu: 'Кофе культ',            year: '2023', tags: ['logos', 'illustration'],          descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-6',  folder: 'nitka',            color: '#1abc9c', titleEn: 'Nitka',             titleRu: 'Нитка',                 year: '2022', tags: ['logos', 'branding'],              descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-7',  folder: 'volna',            color: '#3498db', titleEn: 'Volna',             titleRu: 'Волна',                 year: '2022', tags: ['logos', 'illustration', 'art'],   descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-8',  folder: 'tula-region',      color: '#2c3e8c', titleEn: 'Tula Region',       titleRu: 'Тульский регион',       year: '2021', tags: ['branding', 'motion'],             descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-9',  folder: 'rassvet',          color: '#e8a87c', titleEn: 'Rassvet',           titleRu: 'Рассвет',               year: '2021', tags: ['logos', 'art'],                   descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-10', folder: 'azaza',            color: '#9b59b6', titleEn: 'Azaza',             titleRu: 'Азаза',                 year: '2021', tags: ['logos', 'branding', 'motion'],    descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-11', folder: 'zernovaya',        color: '#8fbc45', titleEn: 'Zernovaya',         titleRu: 'Зерновая',              year: '2021', tags: ['logos', 'branding'],              descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-12', folder: 'soyuz',            color: '#c0392b', titleEn: 'Soyuz',             titleRu: 'Союз',                  year: '2020', tags: ['logos', 'motion', 'art'],         descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-19', folder: 'justtalk',         color: '#5b8cff', titleEn: 'Justtalk',          titleRu: 'Джасттолк',             year: '2024', tags: ['logos', 'web', 'interactive'],    descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-14', folder: 'russian-tea-house', color: '#d35400', titleEn: 'Russian Tea House', titleRu: 'Дом русского чаепития', year: '2020', tags: ['logos', 'branding', 'illustration'],descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-15', folder: 'mumble-podcast',   color: '#27ae60', titleEn: 'Mumble Podcast',    titleRu: 'Мамбл подкаст',         year: '2020', tags: ['logos', 'motion', 'interactive'], descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-16', folder: 'volunteer-71',     color: '#8e44ad', titleEn: 'Volunteer 71',      titleRu: 'Волонтер 71',           year: '2019', tags: ['logos', 'branding', 'web'],       descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-17', folder: '212f',             color: '#2980b9', titleEn: '212F',              titleRu: '212F',                  year: '2019', tags: ['logos', 'art', 'illustration'],   descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-18', folder: 'terpsichore',      color: '#e74c3c', titleEn: 'Terpsichore',       titleRu: 'Терпсихора',            year: '2019', tags: ['logos', 'motion', 'art'],         descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-20', folder: 'soroka',           color: '#c0a060', titleEn: 'Soroka',            titleRu: 'Сорока',                year: '2019', tags: ['logos', 'branding'],              descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
 ];
 
 let activeProjectId = null;
@@ -100,7 +100,7 @@ function renderProject(id) {
           </div>
           <div class="pd-meta-item">
             <span class="pd-meta-key" data-en="type" data-ru="тип">${t === 'en' ? 'type' : 'тип'}</span>
-            <span class="pd-meta-val">${project.type}</span>
+            <span class="pd-meta-val">${project.tags.join(' · ')}</span>
           </div>
         </div>
       </div>
@@ -167,6 +167,37 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
       if (icon) icon.style.display = 'none';
     })
     .catch(() => {});
+});
+
+
+// ─── Tag filter ───
+let activeTag = null;
+
+function filterByTag(tag) {
+  activeTag = activeTag === tag ? null : tag;
+
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === activeTag);
+  });
+
+  let firstVisible = null;
+  allCards.forEach(card => {
+    const project = projectsData.find(p => p.id === card.dataset.id);
+    const visible = !activeTag || (project && project.tags.includes(activeTag));
+    card.style.display = visible ? '' : 'none';
+    if (visible && !firstVisible) firstVisible = card;
+  });
+
+  if (activeTag) {
+    const activeCard = document.querySelector('.card.active');
+    if (activeCard && activeCard.style.display === 'none' && firstVisible) {
+      renderProject(firstVisible.dataset.id);
+    }
+  }
+}
+
+document.querySelectorAll('.tag-btn').forEach(btn => {
+  btn.addEventListener('click', () => filterByTag(btn.dataset.tag));
 });
 
 

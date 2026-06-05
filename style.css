@@ -204,6 +204,42 @@ main {
   letter-spacing: 0.06em;
 }
 
+.tags-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--fg2);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.tag-btn:hover {
+  color: var(--fg);
+}
+
+.tag-btn.active {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tag-sep {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg2);
+  pointer-events: none;
+}
+
 /* ─── Grid ─── */
 .grid {
   display: grid;
@@ -561,6 +597,11 @@ button.card {
   }
 
   body.page-split .hero .sub {
+    white-space: nowrap;
+  }
+
+  body.page-split .hero .tags-row {
+    flex-wrap: nowrap;
     white-space: nowrap;
   }
 
