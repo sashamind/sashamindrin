@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap');
+
 /* ─── Reset ─── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -239,7 +241,7 @@ main {
 .card-icon {
   width: 48px;
   height: 48px;
-  color: #3a3a3a;
+  color: rgba(255, 255, 255, 0.2);
   transition: color 0.3s, transform 0.3s;
   user-select: none;
   pointer-events: none;
@@ -262,7 +264,7 @@ main {
 }
 
 .card.active.hovered .card-thumb {
-  filter: grayscale(0) brightness(1);
+  filter: grayscale(0) brightness(1) opacity(1);
   transform: translateZ(0) scale(0.85);
 }
 
@@ -273,23 +275,19 @@ main {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(1) brightness(0.35);
+  filter: grayscale(1) brightness(10) opacity(0.2);
   transition: filter 0.3s, transform 0.3s;
   will-change: filter;
   transform: translateZ(0) scale(1);
 }
 
 .card.hovered .card-thumb {
-  transform: translateZ(0) scale(0.85);
-}
-
-.card.hovered .card-thumb {
-  filter: grayscale(0) brightness(1);
+  filter: grayscale(0) brightness(1) opacity(1);
   transform: translateZ(0) scale(0.85);
 }
 
 .card.active .card-thumb {
-  filter: grayscale(1) brightness(2);
+  filter: grayscale(1) brightness(10) opacity(0.85);
 }
 
 .card-label {
@@ -450,10 +448,10 @@ button.card {
 }
 
 .pd-title {
-  font-size: clamp(22px, 3vw, 40px);
-  font-weight: 400;
-  font-family: var(--font-main);
-  letter-spacing: -0.02em;
+  font-size: clamp(22px, 2.5vw, 36px);
+  font-weight: 300;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .pd-meta {
@@ -539,6 +537,17 @@ button.card {
 
   body.page-split .hero {
     padding: 16px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  body.page-split .hero::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.page-split .hero .sub {
+    white-space: nowrap;
   }
 
   body.page-split .layout {
@@ -575,11 +584,16 @@ button.card {
 
   .panel-detail {
     overflow: visible;
-    padding: 32px 20px 60px;
+    padding: 16px 20px 60px;
   }
 
   .pd-header {
-    align-items: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .pd-title {
+    line-height: 1;
   }
 
   .panel-list .card-label {
@@ -592,25 +606,29 @@ button.card {
   }
 
   .card-thumb {
+    filter: grayscale(1) brightness(10) opacity(0.2);
     transform: translateZ(0) scale(1.3);
   }
 
   .card.hovered .card-thumb {
+    filter: grayscale(0) brightness(1) opacity(1);
     transform: translateZ(0) scale(1.105);
   }
 
   .card.active .card-thumb {
+    filter: grayscale(1) brightness(10) opacity(0.85);
     transform: translateZ(0) scale(1.3);
   }
 
   .card.active.hovered .card-thumb {
+    filter: grayscale(0) brightness(1) opacity(1);
     transform: translateZ(0) scale(1.105);
   }
 }
 
 @media (max-width: 600px) {
   header {
-    padding: 20px;
+    padding: 12px 20px;
   }
 
   main {
@@ -619,5 +637,10 @@ button.card {
 
   nav {
     gap: 16px;
+  }
+
+  .pd-header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
   }
 }
