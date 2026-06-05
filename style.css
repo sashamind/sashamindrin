@@ -483,6 +483,23 @@ button.card {
 }
 
 /* ─── Project detail panel ─── */
+@keyframes pdFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pd-title {
+  animation: pdFadeIn 0.5s ease both;
+}
+
+.pd-desc {
+  animation: pdFadeIn 0.5s ease 0.2s both;
+}
+
+.pd-meta {
+  animation: pdFadeIn 0.5s ease 0.4s both;
+}
+
 .panel-detail {
   overflow-y: auto;
   padding: 48px 56px;
