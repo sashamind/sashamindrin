@@ -132,19 +132,20 @@ const tryLoad = src => new Promise((res, rej) => {
 
 const allCards = Array.from(document.querySelectorAll('.card[data-id]'));
 
-function scrollToCard(index) {
+function scrollToCard(card) {
   if (window.innerWidth > 768) return;
   const grid = document.querySelector('.cards-grid');
   if (!grid) return;
-  const scrollTo = index <= 1 ? 0 : allCards[index - 1].offsetLeft;
+  const visibleCards = allCards.filter(c => c.style.display !== 'none');
+  const visibleIndex = visibleCards.indexOf(card);
+  const scrollTo = visibleIndex <= 1 ? 0 : visibleCards[visibleIndex - 1].offsetLeft;
   grid.scrollTo({ left: scrollTo, behavior: 'smooth' });
 }
 
 document.querySelectorAll('.card[data-id]').forEach(card => {
   card.addEventListener('click', () => {
-    const index = allCards.indexOf(card);
     renderProject(card.dataset.id);
-    scrollToCard(index);
+    scrollToCard(card);
   });
   card.addEventListener('mouseenter', () => card.classList.add('hovered'));
   card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
