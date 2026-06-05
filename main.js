@@ -98,10 +98,6 @@ function renderProject(id) {
             <span class="pd-meta-key" data-en="year" data-ru="год">${t === 'en' ? 'year' : 'год'}</span>
             <span class="pd-meta-val">${project.year}</span>
           </div>
-          <div class="pd-meta-item">
-            <span class="pd-meta-key" data-en="type" data-ru="тип">${t === 'en' ? 'type' : 'тип'}</span>
-            <span class="pd-meta-val">${project.tags.join(' · ')}</span>
-          </div>
         </div>
       </div>
       <div class="pd-desc">
