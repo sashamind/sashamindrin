@@ -264,7 +264,7 @@ main {
 }
 
 .card.active.hovered .card-thumb {
-  filter: grayscale(0) brightness(1) opacity(1);
+  filter: grayscale(0);
   transform: translateZ(0) scale(0.85);
 }
 
@@ -275,19 +275,33 @@ main {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(1) brightness(10) opacity(0.2);
+  filter: grayscale(1);
   transition: filter 0.3s, transform 0.3s;
-  will-change: filter;
   transform: translateZ(0) scale(1);
 }
 
 .card.hovered .card-thumb {
-  filter: grayscale(0) brightness(1) opacity(1);
+  filter: grayscale(0);
   transform: translateZ(0) scale(0.85);
 }
 
 .card.active .card-thumb {
-  filter: grayscale(1) brightness(10) opacity(0.85);
+  filter: grayscale(1) brightness(3);
+}
+
+.panel-list .card-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0a0a0a;
+  opacity: 0.82;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.panel-list .card.hovered .card-inner::after,
+.panel-list .card.active .card-inner::after {
+  opacity: 0;
 }
 
 .card-label {
@@ -606,22 +620,18 @@ button.card {
   }
 
   .card-thumb {
-    filter: grayscale(1) brightness(10) opacity(0.2);
     transform: translateZ(0) scale(1.3);
   }
 
   .card.hovered .card-thumb {
-    filter: grayscale(0) brightness(1) opacity(1);
     transform: translateZ(0) scale(1.105);
   }
 
   .card.active .card-thumb {
-    filter: grayscale(1) brightness(10) opacity(0.85);
     transform: translateZ(0) scale(1.3);
   }
 
   .card.active.hovered .card-thumb {
-    filter: grayscale(0) brightness(1) opacity(1);
     transform: translateZ(0) scale(1.105);
   }
 }
