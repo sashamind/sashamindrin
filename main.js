@@ -174,10 +174,14 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
 let activeTag = null;
 
 function filterByTag(tag) {
-  activeTag = activeTag === tag ? null : tag;
+  activeTag = (tag === 'all' || activeTag === tag) ? null : tag;
 
   document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tag === activeTag);
+    if (btn.dataset.tag === 'all') {
+      btn.classList.toggle('active', activeTag === null);
+    } else {
+      btn.classList.toggle('active', btn.dataset.tag === activeTag);
+    }
   });
 
   let firstVisible = null;
@@ -197,7 +201,17 @@ function filterByTag(tag) {
 }
 
 document.querySelectorAll('.tag-btn').forEach(btn => {
-  btn.addEventListener('click', () => filterByTag(btn.dataset.tag));
+  btn.addEventListener('click', () => {
+    filterByTag(btn.dataset.tag);
+    btn.blur();
+    if (window.innerWidth <= 768) {
+      const hero = document.querySelector('.hero');
+      if (hero) {
+        const scrollTo = btn.offsetLeft - (hero.offsetWidth / 2) + (btn.offsetWidth / 2);
+        hero.scrollTo({ left: Math.max(0, scrollTo), behavior: 'smooth' });
+      }
+    }
+  });
 });
 
 

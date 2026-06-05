@@ -223,8 +223,10 @@ main {
   transition: color 0.2s;
 }
 
-.tag-btn:hover {
-  color: var(--fg);
+@media (hover: hover) {
+  .tag-btn:hover {
+    color: var(--fg);
+  }
 }
 
 .tag-btn.active {
