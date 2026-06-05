@@ -466,12 +466,14 @@ button.card {
   right: 0;
   border-top: 0.5px solid var(--border);
   background-color: var(--bg);
-  transition: color 0.2s, background-color 0.2s;
+  transition: color 0.2s, background-color 0.2s, transform 0.25s ease;
+  transform: translateY(100%);
 }
 
 .panel-list .card.hovered .card-label,
 .panel-list .card.active .card-label {
   background-color: var(--card-hover);
+  transform: translateY(0);
 }
 
 .card.active {
