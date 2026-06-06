@@ -27,6 +27,9 @@ function applyLang(lang) {
     }
   });
 
+  const si = document.getElementById('searchInput');
+  if (si) si.placeholder = lang === 'en' ? 'search...' : 'поиск...';
+
   if (activePostId) renderPost(activePostId);
 }
 
@@ -168,9 +171,37 @@ function renderPost(id) {
 }
 
 
-// ─── Tag filter ───
+// ─── Tag filter + Search ───
 let activeTag = null;
+let currentSearch = '';
 const allItems = Array.from(document.querySelectorAll('.post-item[data-id]'));
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    currentSearch = searchInput.value.toLowerCase().trim();
+    applyFilter();
+  });
+}
+
+function applyFilter() {
+  let firstVisible = null;
+  allItems.forEach(item => {
+    const post = postsData.find(p => p.id === item.dataset.id);
+    if (!post) { item.style.display = 'none'; return; }
+    const title = (currentLang === 'en' ? post.titleEn : post.titleRu).toLowerCase();
+    const matchesTag = !activeTag || post.tags.includes(activeTag);
+    const matchesSearch = !currentSearch || title.includes(currentSearch);
+    const visible = matchesTag && matchesSearch;
+    item.style.display = visible ? '' : 'none';
+    if (visible && !firstVisible) firstVisible = item;
+  });
+
+  const activeItem = document.querySelector('.post-item.active');
+  if (firstVisible && (!activeItem || activeItem.style.display === 'none')) {
+    renderPost(firstVisible.dataset.id);
+  }
+}
 
 function filterByTag(tag) {
   activeTag = (tag === 'all' || activeTag === tag) ? null : tag;
@@ -183,20 +214,7 @@ function filterByTag(tag) {
     }
   });
 
-  let firstVisible = null;
-  allItems.forEach(item => {
-    const post = postsData.find(p => p.id === item.dataset.id);
-    const visible = !activeTag || (post && post.tags.includes(activeTag));
-    item.style.display = visible ? '' : 'none';
-    if (visible && !firstVisible) firstVisible = item;
-  });
-
-  if (activeTag) {
-    const activeItem = document.querySelector('.post-item.active');
-    if (activeItem && activeItem.style.display === 'none' && firstVisible) {
-      renderPost(firstVisible.dataset.id);
-    }
-  }
+  applyFilter();
 }
 
 document.querySelectorAll('.tag-btn').forEach(btn => {

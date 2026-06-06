@@ -443,28 +443,56 @@ body.page-split .layout {
 }
 
 .panel-list {
-  overflow-y: auto;
+  overflow: hidden;
   border-right: 0.5px solid var(--border);
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  display: flex;
+  flex-direction: column;
 }
 
-.panel-list::-webkit-scrollbar {
-  width: 2px;
+.panel-search {
+  flex-shrink: 0;
+  padding: 11px 16px;
+  border-bottom: 0.5px solid var(--border);
 }
 
-.panel-list::-webkit-scrollbar-track {
-  background: transparent;
+.panel-search input {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.panel-list::-webkit-scrollbar-thumb {
-  background-color: var(--border);
+.panel-search input::placeholder {
+  color: var(--fg2);
+  opacity: 0.4;
 }
 
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.cards-grid::-webkit-scrollbar {
+  width: 2px;
+}
+
+.cards-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cards-grid::-webkit-scrollbar-thumb {
+  background-color: var(--border);
 }
 
 button.card {
@@ -640,13 +668,22 @@ body.page-texts .panel-list {
 }
 
 .posts-list {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .posts-list::-webkit-scrollbar {
-  display: none;
+  width: 2px;
+}
+
+.posts-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.posts-list::-webkit-scrollbar-thumb {
+  background-color: var(--border);
 }
 
 .post-item {
@@ -784,12 +821,12 @@ body.page-texts .panel-list {
   }
 
   body.page-texts .panel-list {
-    overflow-y: auto;
-    max-height: 38vh;
+    max-height: 42vh;
+    overflow: hidden;
   }
 
   .posts-list {
-    height: auto;
+    max-height: none;
   }
 
   .panel-detail {

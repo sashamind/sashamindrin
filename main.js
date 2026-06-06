@@ -25,6 +25,9 @@ function applyLang(lang) {
       el.textContent = text;
     }
   });
+
+  const si = document.getElementById('searchInput');
+  if (si) si.placeholder = lang === 'en' ? 'search...' : 'поиск...';
 }
 
 langToggle.addEventListener('click', () => {
@@ -176,8 +179,36 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
 });
 
 
-// ─── Tag filter ───
+// ─── Tag filter + Search ───
 let activeTag = null;
+let currentSearch = '';
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    currentSearch = searchInput.value.toLowerCase().trim();
+    applyFilter();
+  });
+}
+
+function applyFilter() {
+  let firstVisible = null;
+  allCards.forEach(card => {
+    const project = projectsData.find(p => p.id === card.dataset.id);
+    if (!project) { card.style.display = 'none'; return; }
+    const title = (currentLang === 'en' ? project.titleEn : project.titleRu).toLowerCase();
+    const matchesTag = !activeTag || project.tags.includes(activeTag);
+    const matchesSearch = !currentSearch || title.includes(currentSearch);
+    const visible = matchesTag && matchesSearch;
+    card.style.display = visible ? '' : 'none';
+    if (visible && !firstVisible) firstVisible = card;
+  });
+
+  const activeCard = document.querySelector('.card.active');
+  if (firstVisible && (!activeCard || activeCard.style.display === 'none')) {
+    renderProject(firstVisible.dataset.id);
+  }
+}
 
 function filterByTag(tag) {
   activeTag = (tag === 'all' || activeTag === tag) ? null : tag;
@@ -190,20 +221,7 @@ function filterByTag(tag) {
     }
   });
 
-  let firstVisible = null;
-  allCards.forEach(card => {
-    const project = projectsData.find(p => p.id === card.dataset.id);
-    const visible = !activeTag || (project && project.tags.includes(activeTag));
-    card.style.display = visible ? '' : 'none';
-    if (visible && !firstVisible) firstVisible = card;
-  });
-
-  if (activeTag) {
-    const activeCard = document.querySelector('.card.active');
-    if (activeCard && activeCard.style.display === 'none' && firstVisible) {
-      renderProject(firstVisible.dataset.id);
-    }
-  }
+  applyFilter();
 }
 
 document.querySelectorAll('.tag-btn').forEach(btn => {
