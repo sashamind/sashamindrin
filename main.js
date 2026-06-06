@@ -1,7 +1,13 @@
 /* main.js — Sasha Mindrin portfolio */
 
 // ─── Language ───
-let currentLang = localStorage.getItem('lang') || 'en';
+function detectLang() {
+  const saved = localStorage.getItem('lang');
+  if (saved) return saved;
+  const browser = (navigator.language || navigator.userLanguage || '').toLowerCase();
+  return browser.startsWith('ru') ? 'ru' : 'en';
+}
+let currentLang = detectLang();
 const langToggle = document.getElementById('langToggle');
 
 function applyLang(lang) {
