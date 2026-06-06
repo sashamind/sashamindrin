@@ -26,6 +26,8 @@ function applyLang(lang) {
     }
   });
 
+  const projectBody = document.getElementById('projectBody');
+  if (projectBody) applyLangSections(projectBody, lang);
 }
 
 langToggle.addEventListener('click', () => {
@@ -81,7 +83,12 @@ const projectsData = [
 
 let activeProjectId = null;
 
-function renderProject(id) {
+function applyLangSections(container, lang) {
+  container.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  container.querySelectorAll('.lang-ru').forEach(el => el.style.display = lang === 'ru' ? '' : 'none');
+}
+
+async function renderProject(id) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
@@ -112,18 +119,27 @@ function renderProject(id) {
           ${t === 'en' ? project.descEn : project.descRu}
         </p>
       </div>
-      <div class="pd-gallery">
-        <div class="pd-img"></div>
-        <div class="pd-row">
-          <div class="pd-img"></div>
-          <div class="pd-img"></div>
-        </div>
-        <div class="pd-img pd-img--tall"></div>
+      <div class="pd-body" id="projectBody">
+        <div class="post-loading">···</div>
       </div>
     </div>
   `;
 
   panel.scrollTop = 0;
+
+  try {
+    const res = await fetch(`projects/${project.folder}.html`);
+    if (!res.ok) throw new Error();
+    const html = await res.text();
+    const body = document.getElementById('projectBody');
+    if (body) {
+      body.innerHTML = html;
+      applyLangSections(body, currentLang);
+    }
+  } catch {
+    const body = document.getElementById('projectBody');
+    if (body) body.innerHTML = '';
+  }
 }
 
 const tryLoad = src => new Promise((res, rej) => {

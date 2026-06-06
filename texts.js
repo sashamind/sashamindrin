@@ -30,20 +30,17 @@ function applyLang(lang) {
   const si = document.getElementById('searchInput');
   if (si) si.placeholder = lang === 'en' ? 'search...' : 'поиск...';
 
-  applyPostLang(lang);
+  const postBody = document.getElementById('postBody');
+  if (postBody) applyLangSections(postBody, lang);
 }
 
 langToggle.addEventListener('click', () => {
   applyLang(currentLang === 'en' ? 'ru' : 'en');
 });
 
-function applyPostLang(lang) {
-  document.querySelectorAll('#postBody .post-en').forEach(el => {
-    el.style.display = lang === 'en' ? '' : 'none';
-  });
-  document.querySelectorAll('#postBody .post-ru').forEach(el => {
-    el.style.display = lang === 'ru' ? '' : 'none';
-  });
+function applyLangSections(container, lang) {
+  container.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  container.querySelectorAll('.lang-ru').forEach(el => el.style.display = lang === 'ru' ? '' : 'none');
 }
 
 
@@ -179,7 +176,7 @@ async function renderPost(id) {
     const body = document.getElementById('postBody');
     if (body) {
       body.innerHTML = html;
-      applyPostLang(currentLang);
+      applyLangSections(body, currentLang);
     }
   } catch {
     const body = document.getElementById('postBody');
