@@ -161,6 +161,8 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
   const inner = card.querySelector('.card-inner');
   const base = `assets/projects/${project.folder}/thumb`;
 
+  card.classList.add('loading');
+
   tryLoad(`${base}.png`)
     .catch(() => tryLoad(`${base}.svg`))
     .then(img => {
@@ -169,7 +171,8 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
       const icon = inner.querySelector('.card-icon');
       if (icon) icon.style.display = 'none';
     })
-    .catch(() => {});
+    .catch(() => {})
+    .finally(() => card.classList.remove('loading'));
 });
 
 
