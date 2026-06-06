@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texts — Sasha Mindrin</title>
+  <meta name="description" lang="en" content="Writing by Sasha Mindrin on identity design, typography, motion, and visual communication." />
+  <meta name="description" lang="ru" content="Тексты Саши Миндрина об айдентике, типографике, моушне и визуальных коммуникациях." />
+  <meta name="author" content="Sasha Mindrin" />
+  <link rel="canonical" href="https://sashamind.github.io/sashamindrin/texts.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sashamind.github.io/sashamindrin/texts.html" />
+  <meta property="og:title" content="Texts — Sasha Mindrin" />
+  <meta property="og:description" content="Writing by Sasha Mindrin on identity design, typography, motion, and visual communication." />
+  <meta property="og:image" content="https://sashamind.github.io/sashamindrin/og-image.png" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ru_RU" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark page-split page-texts">
+
+  <header>
+    <a class="site-name" href="index.html">Sasha Mindrin</a>
+    <button class="burger-btn" id="burgerBtn">menu</button>
+  </header>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-menu" id="navMenu">
+    <a href="index.html" data-en="work" data-ru="работы">work</a>
+    <a href="texts.html" data-en="texts" data-ru="тексты">texts</a>
+    <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+    <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+    <button class="lang-btn" id="langToggle">RU</button>
+  </nav>
+
+  <section class="hero">
+    <div class="sub tags-row">
+      <button class="tag-btn tag-all active" data-tag="all" data-en="all" data-ru="все">all</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="branding"   data-en="branding"    data-ru="айдентика">branding</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="typography" data-en="typography"  data-ru="типографика">typography</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="motion"     data-en="motion"      data-ru="моушн">motion</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="colour"     data-en="colour"      data-ru="цвет">colour</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="theory"     data-en="theory"      data-ru="теория">theory</button>
+    </div>
+  </section>
+
+  <div class="layout">
+
+    <aside class="panel-list">
+      <div class="posts-list">
+
+        <button class="post-item" data-id="post-1">
+          <span class="post-item-title" data-en="Identity is not a logo" data-ru="Айдентика — это не логотип">Identity is not a logo</span>
+          <span class="post-item-year">2026</span>
+        </button>
+
+        <button class="post-item" data-id="post-2">
+          <span class="post-item-title" data-en="Typography is voice" data-ru="Типографика — это голос">Typography is voice</span>
+          <span class="post-item-year">2026</span>
+        </button>
+
+        <button class="post-item" data-id="post-3">
+          <span class="post-item-title" data-en="Why colour is a decision" data-ru="Почему цвет — это решение">Why colour is a decision</span>
+          <span class="post-item-year">2025</span>
+        </button>
+
+        <button class="post-item" data-id="post-4">
+          <span class="post-item-title" data-en="The grid" data-ru="Сетка">The grid</span>
+          <span class="post-item-year">2025</span>
+        </button>
+
+        <button class="post-item" data-id="post-5">
+          <span class="post-item-title" data-en="Motion as part of the system" data-ru="Моушн как часть системы">Motion as part of the system</span>
+          <span class="post-item-year">2024</span>
+        </button>
+
+        <button class="post-item" data-id="post-6">
+          <span class="post-item-title" data-en="How recognition works" data-ru="Как работает узнаваемость">How recognition works</span>
+          <span class="post-item-year">2024</span>
+        </button>
+
+      </div>
+    </aside>
+
+    <div class="panel-detail" id="panelDetail"></div>
+
+  </div>
+
+  <footer>
+    <a class="footer-email" href="mailto:mindrin.sasha@gmail.com">mindrin.sasha@gmail.com</a>
+    <span class="footer-copy">© 2026 Sasha Mindrin</span>
+  </footer>
+
+  <script src="texts.js"></script>
+</body>
+</html>
