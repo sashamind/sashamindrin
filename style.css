@@ -10,7 +10,7 @@
 /* ─── Tokens ─── */
 :root {
   --font-main: 'Georgia', 'Times New Roman', serif;
-  --font-mono: 'Courier New', 'Courier', monospace;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Segoe UI Mono', 'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Courier New', monospace;
 
   --transition: 0.4s ease;
 
