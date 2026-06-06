@@ -443,8 +443,26 @@ body.page-split .layout {
 }
 
 .panel-list {
-  overflow: hidden;
+  overflow-y: auto;
   border-right: 0.5px solid var(--border);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.panel-list::-webkit-scrollbar {
+  width: 2px;
+}
+
+.panel-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-list::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+}
+
+body.page-texts .panel-list {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -477,22 +495,6 @@ body.page-split .layout {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-}
-
-.cards-grid::-webkit-scrollbar {
-  width: 2px;
-}
-
-.cards-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.cards-grid::-webkit-scrollbar-thumb {
-  background-color: var(--border);
 }
 
 button.card {
