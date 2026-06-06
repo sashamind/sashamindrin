@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sashamind.github.io/sashamindrin/sitemap.xml
