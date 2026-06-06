@@ -763,6 +763,33 @@ body.page-texts .panel-list {
   border-radius: 1px;
 }
 
+.post-loading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg2);
+  letter-spacing: 0.1em;
+  padding: 8px 0;
+  animation: iconPulse 1.4s ease-in-out infinite;
+}
+
+.post-empty {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg2);
+}
+
+.pd-body img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 32px 0;
+}
+
+.pd-body lottie-player {
+  width: 100%;
+  margin: 32px 0;
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
   body.page-split {
