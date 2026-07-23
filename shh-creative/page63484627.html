@@ -24,4 +24,88 @@ svg+=`</svg>`;return svg;}
 downloadBtn.addEventListener('click',function() {const dataURL=canvas.toDataURL('image/png');const link=document.createElement('a');link.href=dataURL;link.download='radial-symbols.png';document.body.appendChild(link);link.click();document.body.removeChild(link);});downloadSvgBtn.addEventListener('click',function() {const source=isVideo?video:img;const svgString=generateRadialSVG(source);if(!svgString) return;const blob=new Blob([svgString],{type:"image/svg+xml"});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='radial-symbols.svg';document.body.appendChild(link);link.click();document.body.removeChild(link);});pulseBtn.addEventListener('click',function() {pulseActive=!pulseActive;if(pulseActive) {pulseBtn.textContent='Стоп Пульс';startPulse();} else {pulseBtn.textContent='Пульс';stopPulse();}});function startPulse() {cellSizeSlider.value=8;pulseDirection=1;pulseInterval=setInterval(function(){let currentValue=parseInt(cellSizeSlider.value,10);let nextValue=currentValue + pulseDirection;if(nextValue>=50) {nextValue=50;pulseDirection=-1;} else if(nextValue<=8) {nextValue=8;pulseDirection=1;}
 cellSizeSlider.value=nextValue;if(isVideo) {applyRadialSymbolEffect(video);} else if(img.complete) {applyRadialSymbolEffect(img);}},30);}
 function stopPulse() {clearInterval(pulseInterval);cellSizeSlider.value=10;if(isVideo) {applyRadialSymbolEffect(video);} else if(img.complete) {applyRadialSymbolEffect(img);}}</script> </div> </div> <div class='t396__elem tn-elem tn-elem__8681571171739571036695' data-elem-id='1739571036695' data-elem-type='text' data-field-top-value="60" data-field-left-value="320" data-field-height-value="56" data-field-width-value="560" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-textfit-value="autoheight" data-field-fontsize-value="36" data-field-top-res-320-value="80" data-field-left-res-320-value="-127" data-field-fontsize-res-320-value="28" data-field-left-res-480-value="-40" data-field-left-res-640-value="40" data-field-left-res-960-value="200"> <div class='tn-atom'field='tn_text_1739571036695'>Символы из картинок!</div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('868157117');});});</script> <!-- /T396 --> </div> </div> <!--/allrecords--> <!-- Stat --> <!-- Yandex.Metrika counter 96028299 --> <script type="text/javascript" data-tilda-cookie-type="analytics">setTimeout(function(){(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");window.mainMetrikaId='96028299';ym(window.mainMetrikaId,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true,params:{__ym:{"ymCms":{"cms":"tilda","cmsVersion":"1.0"}}},ecommerce:"dataLayer"});},2000);</script> <noscript><div><img src="https://mc.yandex.ru/watch/96028299" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
-window.tildastatscroll='yes';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'856d6502775612011cf50617403d7e9e','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
+window.tildastatscroll='yes';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'856d6502775612011cf50617403d7e9e','script','js/tilda-stat-1.0.min.js');},2000);</script> <script id="pf-video-autoplay">
+(function () {
+  var seen = 'undefined' !== typeof WeakSet ? new WeakSet() : null;
+  var pending = false;
+
+  function prime(v) {
+    if (seen) { if (seen.has(v)) return; seen.add(v); }
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute('muted', '');
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    if (!v.preload || v.preload === 'none') v.preload = 'auto';
+    attempt(v);
+  }
+
+  function attempt(v) {
+    var p;
+    try { p = v.play(); } catch (e) { return; }
+    if (p && p.then) {
+      p.then(function () { clearButton(v); })
+       .catch(function () { /* нужен жест пользователя — ждём */ });
+    } else {
+      clearButton(v);
+    }
+  }
+
+  // Кнопку Tilda снимаем только когда воспроизведение реально пошло,
+  // иначе отнимем у пользователя единственный способ запустить видео.
+  function clearButton(v) {
+    var host = v.parentElement;
+    if (!host) return;
+    var b = host.querySelector('.tn-manual-play-button');
+    if (b) b.remove();
+  }
+
+  function scan() {
+    pending = false;
+    var vids = document.getElementsByTagName('video');
+    for (var i = 0; i < vids.length; i++) prime(vids[i]);
+  }
+
+  function schedule() {
+    if (pending) return;
+    pending = true;
+    (window.requestAnimationFrame || window.setTimeout)(scan, 0);
+  }
+
+  function onGesture() {
+    var vids = document.getElementsByTagName('video');
+    for (var i = 0; i < vids.length; i++) {
+      vids[i].muted = true;
+      attempt(vids[i]);
+    }
+  }
+
+  var events = ['pointerdown', 'touchstart', 'keydown', 'click'];
+  events.forEach(function (ev) {
+    document.addEventListener(ev, onGesture, { passive: true });
+    // Страница открыта в iframe того же домена: ловим жест и в родителе.
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.document.addEventListener(ev, onGesture, { passive: true });
+      }
+    } catch (e) {}
+  });
+
+  if ('MutationObserver' in window) {
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].addedNodes && muts[i].addedNodes.length) { schedule(); return; }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', schedule);
+  } else {
+    schedule();
+  }
+  window.addEventListener('load', schedule);
+})();
+</script>
+</body> </html>
