@@ -572,14 +572,16 @@ button.card {
 }
 
 /* Страница проекта несёт собственную шапку (pf-header), поэтому панель
-   отдаётся ей целиком. Высоту подгоняет fitIframe(). */
+   отдаётся ей целиком. Прокрутка — внутри iframe: так Tilda подгружает
+   картинки по мере скролла, а не все разом. */
 .panel-detail.panel-iframe {
+  overflow: hidden;
   padding: 0;
 }
 
-.project-iframe {
+.panel-detail.panel-iframe > iframe.project-iframe {
   width: 100%;
-  min-height: 600px;
+  height: 100%;
   border: none;
   display: block;
 }
@@ -907,8 +909,14 @@ body.page-texts .pd-header .pd-desc {
     padding: 16px 20px 60px;
   }
 
-  .project-iframe {
-    min-height: 100svh;
+  .panel-detail.panel-iframe {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .panel-detail.panel-iframe > iframe.project-iframe {
+    height: 100svh;
+    min-height: 600px;
   }
 
 
