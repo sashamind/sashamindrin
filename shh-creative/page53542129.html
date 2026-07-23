@@ -8,17 +8,17 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><style
 </style>
 </head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="53542129" data-tilda-page-alias="tula_region" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">
 <style id="pf-video-blend">
-  /* Tilda инлайном ставит .tn-atom{background-color:#000} при инициализации
-     видео (tilda-zero-video), поэтому фон снимаем через !important,
-     а screen убирает чёрный внутри самого ролика. */
-  [data-elem-type="video"] .tn-atom {
-    background-color: transparent !important;
-  }
-  [data-elem-type="video"] .tn-atom__videoiframe,
-  [data-elem-type="video"] video,
-  [data-elem-type="video"] iframe {
+  /* Видео-элемент абсолютно спозиционирован с z-index — он создаёт свой
+     контекст наложения, поэтому mix-blend-mode должен стоять на нём самом:
+     на вложенных узлах смешивание не доходит до фона артборда.
+     Плюс tilda-zero-video инлайном красит .tn-atom в #000. */
+  .tn-elem[data-elem-type="video"] {
     mix-blend-mode: screen;
-    background: transparent !important;
+  }
+  .tn-elem[data-elem-type="video"] .tn-atom,
+  .tn-elem[data-elem-type="video"] .tn-atom__videoiframe,
+  .tn-elem[data-elem-type="video"] video {
+    background-color: transparent !important;
   }
 </style>
 <div class="pf-header">
