@@ -16,7 +16,7 @@ function applyLang(lang) {
   langToggle.textContent = lang === 'en' ? 'RU' : 'EN';
   document.documentElement.lang = lang;
 
-  const iframeEl = document.querySelector('.panel-iframe > iframe');
+  const iframeEl = document.querySelector('.panel-detail iframe');
   if (iframeEl) {
     try { iframeEl.contentWindow.postMessage({ lang }, '*'); } catch (_) {}
   }
@@ -104,7 +104,6 @@ async function renderProject(id) {
 
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
-  panel.classList.remove('panel-iframe');
 
   const t = currentLang;
   panel.innerHTML = `
@@ -138,22 +137,49 @@ async function renderProject(id) {
     if (!res.ok) throw new Error();
     const html = (await res.text()).trim();
 
+    const body = document.getElementById('projectBody');
+    if (!body) return;
+
     if (html.startsWith('<iframe')) {
-      panel.classList.add('panel-iframe');
-      panel.innerHTML = html;
+      body.innerHTML = html;
+      fitIframe(body.querySelector('iframe'));
     } else {
-      panel.classList.remove('panel-iframe');
-      const body = document.getElementById('projectBody');
-      if (body) {
-        body.innerHTML = html;
-        applyLangSections(body, currentLang);
-      }
+      body.innerHTML = html;
+      applyLangSections(body, currentLang);
     }
   } catch {
-    panel.classList.remove('panel-iframe');
     const body = document.getElementById('projectBody');
     if (body) body.innerHTML = '';
   }
+}
+
+// Проектные страницы лежат на том же домене, поэтому высоту iframe
+// можно подогнать под контент — страница скроллится единым потоком.
+function fitIframe(iframe) {
+  if (!iframe) return;
+
+  const fit = () => {
+    try {
+      const doc = iframe.contentDocument;
+      if (!doc || !doc.body) return;
+      const h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+      if (h > 0) iframe.style.height = h + 'px';
+    } catch (_) {}
+  };
+
+  iframe.addEventListener('load', () => {
+    fit();
+    try {
+      const doc = iframe.contentDocument;
+      if (doc && doc.body && 'ResizeObserver' in window) {
+        new ResizeObserver(fit).observe(doc.body);
+      }
+    } catch (_) {}
+    // Tilda дорисовывает блоки после загрузки — пересчитываем ещё несколько раз
+    [300, 1000, 2500].forEach(ms => setTimeout(fit, ms));
+  });
+
+  window.addEventListener('resize', fit);
 }
 
 const tryLoad = src => new Promise((res, rej) => {
