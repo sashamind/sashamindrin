@@ -1,1 +1,11 @@
 .DS_Store
+
+# Локальное состояние Supabase CLI
+supabase/.temp/
+
+# Растровые ассеты дампа лежат в Supabase Storage (бакет portfolio),
+# ссылки в HTML переписаны на публичные URL. SVG остаётся в репозитории:
+# Supabase отдаёт SVG и HTML как text/plain, поэтому их нельзя хостить там.
+shh-creative/images/*.png
+shh-creative/images/*.jpg
+shh-creative/images/*.gif

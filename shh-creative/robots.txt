@@ -1,0 +1,19 @@
+User-Agent: *
+Disallow: /page61555771.html
+Disallow: /header
+Disallow: /page62628157.html
+Disallow: /footer
+Disallow: /tilda/form*
+Disallow: /tilda/rec*
+Disallow: /tilda/click*
+Disallow: /tilda/scroll*
+Disallow: /tilda/popup*
+Disallow: /tilda/cart*
+Disallow: /tilda/product*
+Disallow: /tilda/event*
+Disallow: /members/login*
+Disallow: /members/signup*
+Disallow:
+
+
+Sitemap: http://shh-creative.ru/sitemap.xml

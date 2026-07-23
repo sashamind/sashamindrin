@@ -1,0 +1,235 @@
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+
+DirectoryIndex page41745142.html
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} /robots.txt
+RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
+RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]
+RewriteRule ^portfolio$ page12101215.html [NC]
+RewriteRule ^portfolio/$ page12101215.html [NC]
+
+RewriteRule ^company$ page24611355.html [NC]
+RewriteRule ^company/$ page24611355.html [NC]
+
+RewriteRule ^sasha_mind$ page39709302.html [NC]
+RewriteRule ^sasha_mind/$ page39709302.html [NC]
+
+RewriteRule ^cv$ page42523198.html [NC]
+RewriteRule ^cv/$ page42523198.html [NC]
+
+RewriteRule ^main$ page41745142.html [NC]
+RewriteRule ^main/$ page41745142.html [NC]
+
+RewriteRule ^ru$ page42515026.html [NC]
+RewriteRule ^ru/$ page42515026.html [NC]
+
+RewriteRule ^personal_illustrations$ page42193564.html [NC]
+RewriteRule ^personal_illustrations/$ page42193564.html [NC]
+
+RewriteRule ^rassvet_project$ page42194762.html [NC]
+RewriteRule ^rassvet_project/$ page42194762.html [NC]
+
+RewriteRule ^zernovaya_project$ page42223365.html [NC]
+RewriteRule ^zernovaya_project/$ page42223365.html [NC]
+
+RewriteRule ^nitka_project$ page42232461.html [NC]
+RewriteRule ^nitka_project/$ page42232461.html [NC]
+
+RewriteRule ^azaza_project$ page42314990.html [NC]
+RewriteRule ^azaza_project/$ page42314990.html [NC]
+
+RewriteRule ^showreel_project$ page42383123.html [NC]
+RewriteRule ^showreel_project/$ page42383123.html [NC]
+
+RewriteRule ^dancechamp_project$ page42397947.html [NC]
+RewriteRule ^dancechamp_project/$ page42397947.html [NC]
+
+RewriteRule ^soyuz_project$ page42398363.html [NC]
+RewriteRule ^soyuz_project/$ page42398363.html [NC]
+
+RewriteRule ^volna_project$ page42464685.html [NC]
+RewriteRule ^volna_project/$ page42464685.html [NC]
+
+RewriteRule ^terpsichore_project$ page42487657.html [NC]
+RewriteRule ^terpsichore_project/$ page42487657.html [NC]
+
+RewriteRule ^coffeecult_project$ page42496289.html [NC]
+RewriteRule ^coffeecult_project/$ page42496289.html [NC]
+
+RewriteRule ^mumble_project$ page42543895.html [NC]
+RewriteRule ^mumble_project/$ page42543895.html [NC]
+
+RewriteRule ^nikola_project$ page42558771.html [NC]
+RewriteRule ^nikola_project/$ page42558771.html [NC]
+
+RewriteRule ^teahouse_project$ page42568417.html [NC]
+RewriteRule ^teahouse_project/$ page42568417.html [NC]
+
+RewriteRule ^taplink$ page50609853.html [NC]
+RewriteRule ^taplink/$ page50609853.html [NC]
+
+RewriteRule ^tula_region$ page53542129.html [NC]
+RewriteRule ^tula_region/$ page53542129.html [NC]
+
+RewriteRule ^presentationgim$ page54975673.html [NC]
+RewriteRule ^presentationgim/$ page54975673.html [NC]
+
+RewriteRule ^generative$ page55155415.html [NC]
+RewriteRule ^generative/$ page55155415.html [NC]
+
+RewriteRule ^chasingtworabbits$ page55335945.html [NC]
+RewriteRule ^chasingtworabbits/$ page55335945.html [NC]
+
+RewriteRule ^generative_followtoalone$ page55821985.html [NC]
+RewriteRule ^generative_followtoalone/$ page55821985.html [NC]
+
+RewriteRule ^generative_spiningbox$ page55822627.html [NC]
+RewriteRule ^generative_spiningbox/$ page55822627.html [NC]
+
+RewriteRule ^generative_privet$ page55867225.html [NC]
+RewriteRule ^generative_privet/$ page55867225.html [NC]
+
+RewriteRule ^generative_nooise$ page56714691.html [NC]
+RewriteRule ^generative_nooise/$ page56714691.html [NC]
+
+RewriteRule ^art$ page56731877.html [NC]
+RewriteRule ^art/$ page56731877.html [NC]
+
+RewriteRule ^zaryadie$ page56775655.html [NC]
+RewriteRule ^zaryadie/$ page56775655.html [NC]
+
+RewriteRule ^3rdplace$ page56776079.html [NC]
+RewriteRule ^3rdplace/$ page56776079.html [NC]
+
+RewriteRule ^gen48$ page56790031.html [NC]
+RewriteRule ^gen48/$ page56790031.html [NC]
+
+RewriteRule ^stranasveta$ page56791137.html [NC]
+RewriteRule ^stranasveta/$ page56791137.html [NC]
+
+RewriteRule ^randomgenerative$ page56808805.html [NC]
+RewriteRule ^randomgenerative/$ page56808805.html [NC]
+
+RewriteRule ^apotheosis$ page56854721.html [NC]
+RewriteRule ^apotheosis/$ page56854721.html [NC]
+
+RewriteRule ^font$ page56903949.html [NC]
+RewriteRule ^font/$ page56903949.html [NC]
+
+RewriteRule ^punk_delicious$ page57186811.html [NC]
+RewriteRule ^punk_delicious/$ page57186811.html [NC]
+
+RewriteRule ^venus_and_cupid$ page57441991.html [NC]
+RewriteRule ^venus_and_cupid/$ page57441991.html [NC]
+
+RewriteRule ^71_runnersclub$ page58625115.html [NC]
+RewriteRule ^71_runnersclub/$ page58625115.html [NC]
+
+RewriteRule ^variablehello$ page60936235.html [NC]
+RewriteRule ^variablehello/$ page60936235.html [NC]
+
+RewriteRule ^taplink_eng$ page61212019.html [NC]
+RewriteRule ^taplink_eng/$ page61212019.html [NC]
+
+RewriteRule ^justtalk$ page61314195.html [NC]
+RewriteRule ^justtalk/$ page61314195.html [NC]
+
+RewriteRule ^header$ page61555771.html [NC]
+RewriteRule ^header/$ page61555771.html [NC]
+
+RewriteRule ^adaptive_font_2$ page62112689.html [NC]
+RewriteRule ^adaptive_font_2/$ page62112689.html [NC]
+
+RewriteRule ^footer$ page62628157.html [NC]
+RewriteRule ^footer/$ page62628157.html [NC]
+
+RewriteRule ^doted$ page63073741.html [NC]
+RewriteRule ^doted/$ page63073741.html [NC]
+
+RewriteRule ^doted_tula$ page63110075.html [NC]
+RewriteRule ^doted_tula/$ page63110075.html [NC]
+
+RewriteRule ^doted_upd2$ page63367905.html [NC]
+RewriteRule ^doted_upd2/$ page63367905.html [NC]
+
+RewriteRule ^choosethecircle$ page63474459.html [NC]
+RewriteRule ^choosethecircle/$ page63474459.html [NC]
+
+RewriteRule ^theworldiswords$ page63484627.html [NC]
+RewriteRule ^theworldiswords/$ page63484627.html [NC]
+
+RewriteRule ^gridpage$ page63519971.html [NC]
+RewriteRule ^gridpage/$ page63519971.html [NC]
+
+RewriteRule ^announcement$ page64973111.html [NC]
+RewriteRule ^announcement/$ page64973111.html [NC]
+
+RewriteRule ^interactive_circles$ page65067315.html [NC]
+RewriteRule ^interactive_circles/$ page65067315.html [NC]
+
+RewriteRule ^interactive_images$ page65220831.html [NC]
+RewriteRule ^interactive_images/$ page65220831.html [NC]
+
+RewriteRule ^interactive_images_nudes$ page65251381.html [NC]
+RewriteRule ^interactive_images_nudes/$ page65251381.html [NC]
+
+RewriteRule ^interactive_flowersoverpower$ page65275619.html [NC]
+RewriteRule ^interactive_flowersoverpower/$ page65275619.html [NC]
+
+RewriteRule ^interactive_infinity$ page65374643.html [NC]
+RewriteRule ^interactive_infinity/$ page65374643.html [NC]
+
+RewriteRule ^infinity_nature$ page65454359.html [NC]
+RewriteRule ^infinity_nature/$ page65454359.html [NC]
+
+RewriteRule ^blossom_flower$ page65469065.html [NC]
+RewriteRule ^blossom_flower/$ page65469065.html [NC]
+
+RewriteRule ^interactive_images_2$ page65554609.html [NC]
+RewriteRule ^interactive_images_2/$ page65554609.html [NC]
+
+RewriteRule ^interactive_code_all$ page65730045.html [NC]
+RewriteRule ^interactive_code_all/$ page65730045.html [NC]
+
+RewriteRule ^interactive_images_rotation$ page65957983.html [NC]
+RewriteRule ^interactive_images_rotation/$ page65957983.html [NC]
+
+RewriteRule ^interactive_cover$ page66301091.html [NC]
+RewriteRule ^interactive_cover/$ page66301091.html [NC]
+
+RewriteRule ^tula_interactive_grid$ page69078407.html [NC]
+RewriteRule ^tula_interactive_grid/$ page69078407.html [NC]
+
+RewriteRule ^headphones$ page71933395.html [NC]
+RewriteRule ^headphones/$ page71933395.html [NC]
+
+RewriteRule ^ba$ page72483871.html [NC]
+RewriteRule ^ba/$ page72483871.html [NC]
+
+RewriteRule ^interactive_football$ page80726196.html [NC]
+RewriteRule ^interactive_football/$ page80726196.html [NC]
+
+RewriteRule ^course$ page87523086.html [NC]
+RewriteRule ^course/$ page87523086.html [NC]
+
+RewriteRule ^interactive_web$ page101491156.html [NC]
+RewriteRule ^interactive_web/$ page101491156.html [NC]
+
+RewriteRule ^prosvet_2025$ page109106146.html [NC]
+RewriteRule ^prosvet_2025/$ page109106146.html [NC]
+
+RewriteRule ^oktatva_zvuk_interactive$ page110740006.html [NC]
+RewriteRule ^oktatva_zvuk_interactive/$ page110740006.html [NC]
+
+RewriteRule ^calendar$ page110887876.html [NC]
+RewriteRule ^calendar/$ page110887876.html [NC]
+
+RewriteRule ^postcreatorm$ page122392696.html [NC]
+RewriteRule ^postcreatorm/$ page122392696.html [NC]
+
+RewriteRule ^members/ ma_start.html [NC,L]
+
+
