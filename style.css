@@ -571,8 +571,12 @@ button.card {
   padding: 48px 56px;
 }
 
-/* Страница проекта внутри тела панели: шапка с описанием остаётся сверху.
-   Высоту подгоняет fitIframe(), min-height — запас до загрузки. */
+/* Страница проекта несёт собственную шапку (pf-header), поэтому панель
+   отдаётся ей целиком. Высоту подгоняет fitIframe(). */
+.panel-detail.panel-iframe {
+  padding: 0;
+}
+
 .project-iframe {
   width: 100%;
   min-height: 600px;

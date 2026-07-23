@@ -104,6 +104,7 @@ async function renderProject(id) {
 
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
+  panel.classList.remove('panel-iframe');
 
   const t = currentLang;
   panel.innerHTML = `
@@ -137,15 +138,18 @@ async function renderProject(id) {
     if (!res.ok) throw new Error();
     const html = (await res.text()).trim();
 
-    const body = document.getElementById('projectBody');
-    if (!body) return;
-
     if (html.startsWith('<iframe')) {
-      body.innerHTML = html;
-      fitIframe(body.querySelector('iframe'));
+      // Страница проекта несёт собственную шапку (pf-header) с названием,
+      // годом и описанием — панель её не дублирует.
+      panel.classList.add('panel-iframe');
+      panel.innerHTML = html;
+      fitIframe(panel.querySelector('iframe'));
     } else {
-      body.innerHTML = html;
-      applyLangSections(body, currentLang);
+      const body = document.getElementById('projectBody');
+      if (body) {
+        body.innerHTML = html;
+        applyLangSections(body, currentLang);
+      }
     }
   } catch {
     const body = document.getElementById('projectBody');
