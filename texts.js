@@ -69,6 +69,16 @@ window.addEventListener('scroll', () => {
 // ─── Posts data ───
 const postsData = [
   {
+    id: 'post-0',
+    slug: 'two-sides-of-form-1',
+    titleEn: 'On the two sides of form.',
+    titleRu: 'О двух сторонах формы.',
+    year: '2026',
+    tags: ['theory'],
+    descEn: 'A stone, talking heads, starships, and the problems that follow.',
+    descRu: 'Камень, говорящие головы, звездолеты и возникающие проблемы.',
+  },
+  {
     id: 'post-1',
     slug: 'identity-not-logo',
     titleEn: 'Identity is not a logo',
@@ -148,18 +158,20 @@ async function renderPost(id) {
   panel.innerHTML = `
     <div class="project-detail">
       <div class="pd-header">
-        <h2 class="pd-title">
-          ${t === 'en' ? post.titleEn : post.titleRu}
-        </h2>
-        <div class="pd-meta">
-          <div class="pd-meta-item">
-            <span class="pd-meta-key">${t === 'en' ? 'year' : 'год'}</span>
-            <span class="pd-meta-val">${post.year}</span>
+        <div class="pd-header-top">
+          <h2 class="pd-title" data-en="${post.titleEn}" data-ru="${post.titleRu}">
+            ${t === 'en' ? post.titleEn : post.titleRu}
+          </h2>
+          <div class="pd-meta">
+            <div class="pd-meta-item">
+              <span class="pd-meta-key" data-en="year" data-ru="год">${t === 'en' ? 'year' : 'год'}</span>
+              <span class="pd-meta-val">${post.year}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="pd-desc">
-        <p>${t === 'en' ? post.descEn : post.descRu}</p>
+        <div class="pd-desc">
+          <p data-en="${post.descEn}" data-ru="${post.descRu}">${t === 'en' ? post.descEn : post.descRu}</p>
+        </div>
       </div>
       <div class="pd-body" id="postBody">
         <div class="post-loading">···</div>

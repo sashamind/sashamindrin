@@ -165,9 +165,10 @@ nav a:hover {
   color: var(--fg);
 }
 
-.nav-menu .lang-btn {
-  margin-top: 16px;
-  align-self: flex-start;
+.header-right {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .nav-overlay {
@@ -570,6 +571,19 @@ button.card {
   padding: 48px 56px;
 }
 
+.panel-detail.panel-iframe {
+  overflow: hidden;
+  padding: 0;
+}
+
+.panel-detail.panel-iframe > iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+
 .pd-header {
   display: flex;
   align-items: baseline;
@@ -654,7 +668,7 @@ button.card {
   margin-bottom: 32px;
 }
 
-.pd-desc p {
+.pd-desc p, .pd-desc div {
   font-size: 12px;
   line-height: 1.8;
   color: var(--fg);
@@ -739,6 +753,25 @@ body.page-texts .panel-list {
   }
 }
 
+/* Description sits inside the header, below the title, above its divider (texts page) */
+body.page-texts .pd-header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+body.page-texts .pd-header-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+body.page-texts .pd-header .pd-desc {
+  margin-bottom: 0;
+}
+
 /* ─── Post body text ─── */
 .pd-body {
   margin-top: 8px;
@@ -753,6 +786,16 @@ body.page-texts .panel-list {
   color: var(--fg);
   margin-bottom: 24px;
   max-width: 560px;
+}
+
+.pd-body p.pd-subhead {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+  color: var(--fg);
+  font-weight: 400;
+  margin-top: 16px;
 }
 
 .post-img-placeholder {
@@ -862,6 +905,17 @@ body.page-texts .panel-list {
     overflow: visible;
     padding: 16px 20px 60px;
   }
+
+  .panel-detail.panel-iframe {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .panel-detail.panel-iframe > iframe {
+    height: 100svh;
+    min-height: 600px;
+  }
+
 
   .pd-header {
     align-items: flex-start;
