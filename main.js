@@ -93,6 +93,27 @@ function applyLangSections(container, lang) {
   container.querySelectorAll('.lang-ru').forEach(el => el.style.display = lang === 'ru' ? '' : 'none');
 }
 
+// Пустое состояние: пока не выбран проект — стрелка (влево на вебе, вверх
+// на мобильном) и подпись «выберите проект».
+function renderEmpty() {
+  activeProjectId = null;
+  document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
+  const panel = document.getElementById('panelDetail');
+  if (!panel) return;
+  panel.classList.remove('panel-iframe');
+  panel.innerHTML = `
+    <div class="pd-empty">
+      <svg class="pd-empty-arrow" width="52" height="24" viewBox="0 0 52 24" fill="none"
+           stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="51" y1="12" x2="2" y2="12" />
+        <polyline points="13,3 2,12 13,21" />
+      </svg>
+      <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+    </div>
+  `;
+  panel.scrollTop = 0;
+}
+
 async function renderProject(id) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
@@ -251,5 +272,5 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
 
 
 // ─── Init ───
+renderEmpty();
 applyLang(currentLang);
-renderProject(projectsData[0].id);

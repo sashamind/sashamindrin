@@ -801,6 +801,29 @@ body.page-texts .pd-header .pd-desc {
   margin-top: 16px;
 }
 
+/* Пустое состояние панели (проект не выбран) */
+.pd-empty {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  color: var(--fg2);
+}
+
+.pd-empty-arrow {
+  color: var(--fg2);
+  opacity: 0.55;
+}
+
+.pd-empty-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--fg2);
+}
+
 .post-img-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -841,6 +864,15 @@ body.page-texts .pd-header .pd-desc {
   body.page-split {
     height: auto;
     overflow: auto;
+  }
+
+  /* На мобильном список проектов сверху — стрелка указывает вверх */
+  .pd-empty {
+    min-height: 40vh;
+  }
+
+  .pd-empty-arrow {
+    transform: rotate(90deg);
   }
 
   body.page-split .hero {
