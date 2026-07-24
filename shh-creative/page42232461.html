@@ -273,4 +273,37 @@ window.tildastatscroll='yes';setTimeout(function(){(function(d,w,k,o,g) {var n=d
   window.addEventListener('load', schedule);
 })();
 </script>
+<style id="pf-reveal-style">
+  /* Кейс раскрывается по скроллу: всё ниже верхней иллюстрации стартует
+     скрытым и плавно проявляется при входе в вид. Прозрачность вешаем на
+     внешний .tn-elem, чтобы не конфликтовать с анимацией Tilda (она
+     управляет opacity внутренней .tn-atom__sbs-anim-wrapper). */
+  #rec682672897 .tn-elem.pf-reveal { opacity: 0; transition: opacity 0.8s ease; }
+  #rec682672897 .tn-elem.pf-reveal.pf-shown { opacity: 1; }
+</style>
+<script id="pf-reveal-js">
+(function () {
+  var THRESHOLD = 400; // artboard top >= этого проявляется по скроллу; верхняя иллюстрация (203) остаётся
+  function init() {
+    var els = document.querySelectorAll('#rec682672897 .tn-elem[data-elem-id]');
+    var targets = [];
+    els.forEach(function (el) {
+      var top = parseInt(el.getAttribute('data-field-top-value') || '0', 10);
+      if (top >= THRESHOLD) { el.classList.add('pf-reveal'); targets.push(el); }
+    });
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(function (el) { el.classList.add('pf-shown'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('pf-shown'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.01 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
 </body> </html>
