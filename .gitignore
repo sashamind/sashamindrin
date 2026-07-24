@@ -9,3 +9,10 @@ supabase/.temp/
 shh-creative/images/*.png
 shh-creative/images/*.jpg
 shh-creative/images/*.gif
+
+# _inbox — личная папка-приёмник; в git только README и шаблон,
+# сами дропнутые файлы (проекты, медиа) не коммитятся.
+_inbox/*
+!_inbox/README.md
+!_inbox/_template
+!_inbox/_template/**
