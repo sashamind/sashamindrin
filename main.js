@@ -93,8 +93,42 @@ function applyLangSections(container, lang) {
   container.querySelectorAll('.lang-ru').forEach(el => el.style.display = lang === 'ru' ? '' : 'none');
 }
 
-// Пустое состояние: пока не выбран проект — стрелка (влево на вебе, вверх
-// на мобильном) и подпись «выберите проект».
+// Пустое состояние: пока не выбран проект — минималистичная ASCII-анимация
+// и подпись «выберите проект».
+let asciiRAF = null;
+
+function stopAscii() {
+  if (asciiRAF) { cancelAnimationFrame(asciiRAF); asciiRAF = null; }
+}
+
+function startAscii(pre) {
+  stopAscii();
+  const COLS = 44, ROWS = 13;
+  const ramp = ' .·:-=+*#'; // от разреженного к плотному, в духе ascii-генератора
+  const cx = (COLS - 1) / 2, cy = (ROWS - 1) / 2;
+  let t = 0, last = 0;
+  function frame(now) {
+    asciiRAF = requestAnimationFrame(frame);
+    if (now - last < 60) return;        // ~16 fps — спокойно и легко
+    last = now;
+    t += 0.055;
+    let out = '';
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const d = Math.hypot((x - cx) * 0.55, (y - cy));
+        const v = Math.sin(x * 0.30 + t)
+                + Math.sin(y * 0.55 + t * 0.7)
+                + Math.sin(d * 0.5 - t * 1.1);
+        const n = (v + 3) / 6;          // 0..1
+        out += ramp[Math.max(0, Math.min(ramp.length - 1, Math.floor(n * ramp.length)))];
+      }
+      out += '\n';
+    }
+    pre.textContent = out;
+  }
+  asciiRAF = requestAnimationFrame(frame);
+}
+
 function renderEmpty() {
   activeProjectId = null;
   document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
@@ -103,21 +137,20 @@ function renderEmpty() {
   panel.classList.remove('panel-iframe');
   panel.innerHTML = `
     <div class="pd-empty">
-      <svg class="pd-empty-arrow" width="52" height="24" viewBox="0 0 52 24" fill="none"
-           stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="51" y1="12" x2="2" y2="12" />
-        <polyline points="13,3 2,12 13,21" />
-      </svg>
+      <pre class="pd-ascii" aria-hidden="true"></pre>
       <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
     </div>
   `;
   panel.scrollTop = 0;
+  const pre = panel.querySelector('.pd-ascii');
+  if (pre) startAscii(pre);
 }
 
 async function renderProject(id) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
+  stopAscii();
 
   document.querySelectorAll('.card[data-id]').forEach(c => {
     c.classList.toggle('active', c.dataset.id === id);

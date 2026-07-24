@@ -812,9 +812,16 @@ body.page-texts .pd-header .pd-desc {
   color: var(--fg2);
 }
 
-.pd-empty-arrow {
+.pd-ascii {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
   color: var(--fg2);
-  opacity: 0.55;
+  opacity: 0.5;
+  white-space: pre;
+  user-select: none;
 }
 
 .pd-empty-text {
@@ -866,13 +873,12 @@ body.page-texts .pd-header .pd-desc {
     overflow: auto;
   }
 
-  /* На мобильном список проектов сверху — стрелка указывает вверх */
   .pd-empty {
     min-height: 40vh;
   }
 
-  .pd-empty-arrow {
-    transform: rotate(90deg);
+  .pd-ascii {
+    font-size: 10px;
   }
 
   body.page-split .hero {
