@@ -10,9 +10,22 @@ shh-creative/images/*.png
 shh-creative/images/*.jpg
 shh-creative/images/*.gif
 
-# _inbox — личная папка-приёмник; в git только README и шаблон,
-# сами дропнутые файлы (проекты, медиа) не коммитятся.
-_inbox/*
-!_inbox/README.md
-!_inbox/_template
-!_inbox/_template/**
+# _inbox — папка-приёмник. Структура папок и метаданные (project.md,
+# README, .gitkeep) хранятся в git; сами дропнутые файлы — медиа,
+# экспорты страниц, архивы — не коммитятся (их я обрабатываю и удаляю).
+_inbox/**/*.png
+_inbox/**/*.jpg
+_inbox/**/*.jpeg
+_inbox/**/*.gif
+_inbox/**/*.svg
+_inbox/**/*.webp
+_inbox/**/*.mp4
+_inbox/**/*.mov
+_inbox/**/*.webm
+_inbox/**/*.json
+_inbox/**/*.zip
+_inbox/**/*.pdf
+_inbox/**/*.ai
+_inbox/**/*.psd
+_inbox/**/*.fig
+_inbox/**/page.html
