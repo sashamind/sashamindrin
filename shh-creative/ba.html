@@ -89,20 +89,20 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
 <div class="pf-header">
   <style>
     @font-face { font-family: 'Inter'; src: url('../assets/fonts/Inter-Regular.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
-    .pf-header { padding: 48px 56px 16px; background: #0a0a0a; font-family: 'Inter', sans-serif; }
-    .pf-header-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
-    .pf-title { font-size: clamp(22px, 2.5vw, 36px); font-weight: 300; letter-spacing: -0.01em; color: #f0f0ec; }
+    .pf-header { padding: 48px 56px 16px; background: #e3e3e3; font-family: 'Inter', sans-serif; }
+    .pf-header-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(0,0,0,0.12); }
+    .pf-title { font-size: clamp(22px, 2.5vw, 36px); font-weight: 300; letter-spacing: -0.01em; color: #0a0a0a; }
     .pf-meta { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
-    .pf-meta-key { font-family: ui-monospace, 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: #555; text-transform: uppercase; }
-    .pf-meta-val { font-family: ui-monospace, 'SF Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #f0f0ec; }
-    .pf-label { font-family: ui-monospace, 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #f0f0ec; font-weight: 600; }
+    .pf-meta-key { font-family: ui-monospace, 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: #6a6a6a; text-transform: uppercase; }
+    .pf-meta-val { font-family: ui-monospace, 'SF Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #0a0a0a; }
+    .pf-label { font-family: ui-monospace, 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #0a0a0a; font-weight: 600; }
     @keyframes pfFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .pf-title { animation: pfFadeIn 0.5s ease both; }
     .pf-meta  { animation: pfFadeIn 0.5s ease 0.15s both; }
     .pf-desc  { animation: pfFadeIn 0.5s ease 0.3s both; }
     .pf-task  { animation: pfFadeIn 0.5s ease 0.5s both; }
-    .pf-desc { color: #555; font-size: 14px; font-weight: 300; line-height: 1.6; max-width: 360px; margin-bottom: 16px; }
-    .pf-task { color: #555; font-size: 14px; font-weight: 300; line-height: 1.6; max-width: 360px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .pf-desc { color: #6a6a6a; font-size: 14px; font-weight: 300; line-height: 1.6; max-width: 360px; margin-bottom: 16px; }
+    .pf-task { color: #6a6a6a; font-size: 14px; font-weight: 300; line-height: 1.6; max-width: 360px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(0,0,0,0.12); }
   @media (max-width: 768px) {
       .pf-header { padding: 32px 20px 24px; }
       .pf-header-top { margin-bottom: 20px; padding-bottom: 16px; }
