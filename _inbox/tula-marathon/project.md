@@ -1,4 +1,4 @@
-# Тульский марафон — метаданные (статус: нужен исходник (в shh-creative выгрузки нет))
+# Тульский марафон — метаданные (статус: опубликован ✓ (Lottie))
 
 slug:           tula-marathon
 title_ru:       Тульский марафон
@@ -6,8 +6,8 @@ title_en:       Tula Marathon
 year:           2026
 tags:           logos, motion
 
-description_ru: 
-description_en: 
+description_ru: Айдентика и моушн Тульского марафона.
+description_en: Identity and motion for the Tula Marathon.
 
 task_ru:        
 task_en:        
