@@ -9,6 +9,7 @@ supabase/.temp/
 shh-creative/images/*.png
 shh-creative/images/*.jpg
 shh-creative/images/*.gif
+shh-creative/images/*.webp
 
 # _inbox — папка-приёмник. Структура папок и метаданные (project.md,
 # README, .gitkeep) хранятся в git; сами дропнутые файлы — медиа,
