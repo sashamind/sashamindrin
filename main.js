@@ -103,24 +103,51 @@ function stopAscii() {
 
 function startAscii(pre) {
   stopAscii();
-  const COLS = 44, ROWS = 13;
+  const COLS = 46, ROWS = 15;
   const ramp = ' .·:-=+*#'; // от разреженного к плотному, в духе ascii-генератора
-  const cx = (COLS - 1) / 2, cy = (ROWS - 1) / 2;
+  const ASPECT = 0.5;        // символ выше, чем шире — сжимаем ось X
+
+  // расстояние от точки до отрезка (с поправкой на пропорции символа)
+  function distSeg(px, py, ax, ay, bx, by) {
+    const vx = bx - ax, vy = by - ay;
+    const wx = px - ax, wy = py - ay;
+    const c2 = vx * vx * ASPECT * ASPECT + vy * vy;
+    let tt = c2 ? (wx * vx * ASPECT * ASPECT + wy * vy) / c2 : 0;
+    tt = Math.max(0, Math.min(1, tt));
+    const dx = (px - (ax + tt * vx)) * ASPECT, dy = py - (ay + tt * vy);
+    return Math.hypot(dx, dy);
+  }
+
+  // отрезки стрелки: влево (десктоп) или вверх (мобильный)
+  function segments(dir) {
+    const cx = (COLS - 1) / 2, cy = (ROWS - 1) / 2;
+    if (dir === 'up') {
+      const tipY = ROWS * 0.24, tailY = ROWS * 0.80, W = COLS * 0.16;
+      return [[cx, tipY, cx, tailY], [cx, tipY, cx - W, tipY + W * 0.8], [cx, tipY, cx + W, tipY + W * 0.8]];
+    }
+    const tipX = COLS * 0.16, tailX = COLS * 0.84, H = ROWS * 0.30;
+    return [[tipX, cy, tailX, cy], [tipX, cy, tipX + H / ASPECT, cy - H], [tipX, cy, tipX + H / ASPECT, cy + H]];
+  }
+
   let t = 0, last = 0;
   function frame(now) {
     asciiRAF = requestAnimationFrame(frame);
     if (now - last < 60) return;        // ~16 fps — спокойно и легко
     last = now;
-    t += 0.055;
+    t += 0.05;
+    const dir = window.innerWidth <= 768 ? 'up' : 'left';
+    const segs = segments(dir);
     let out = '';
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
-        const d = Math.hypot((x - cx) * 0.55, (y - cy));
-        const v = Math.sin(x * 0.30 + t)
-                + Math.sin(y * 0.55 + t * 0.7)
-                + Math.sin(d * 0.5 - t * 1.1);
-        const n = (v + 3) / 6;          // 0..1
-        out += ramp[Math.max(0, Math.min(ramp.length - 1, Math.floor(n * ramp.length)))];
+        let d = Infinity;
+        for (const s of segs) d = Math.min(d, distSeg(x, y, s[0], s[1], s[2], s[3]));
+        const base = Math.max(0, 1 - d / 1.15);          // толщина линии
+        // бегущая по стрелке волна плотности — «течёт» к острию
+        const along = dir === 'up' ? y : x;
+        const wave = 0.55 + 0.45 * Math.sin(along * 0.6 + t * 2.4);
+        const inten = base * wave;
+        out += inten <= 0.06 ? ' ' : ramp[Math.max(1, Math.min(ramp.length - 1, Math.floor(inten * ramp.length)))];
       }
       out += '\n';
     }
