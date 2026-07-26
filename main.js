@@ -178,6 +178,7 @@ async function renderProject(id) {
   if (!project) return;
   activeProjectId = id;
   stopAscii();
+  showNav(); // при выборе проекта навигация остаётся показанной
 
   document.querySelectorAll('.card[data-id]').forEach(c => {
     c.classList.toggle('active', c.dataset.id === id);
@@ -224,6 +225,8 @@ async function renderProject(id) {
       // годом и описанием — панель её не дублирует.
       panel.classList.add('panel-iframe');
       panel.innerHTML = html;
+      const iframe = panel.querySelector('iframe');
+      if (iframe) iframe.addEventListener('load', () => hookIframeNav(iframe));
     } else {
       const body = document.getElementById('projectBody');
       if (body) {
@@ -329,6 +332,46 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
     }
   });
 });
+
+
+// ─── Мобильная навигация: авто-скрытие тегов+полосы по направлению скролла ───
+function showNav() { document.body.classList.remove('nav-hidden'); }
+
+function setNavVars() {
+  const h = document.querySelector('header');
+  const hero = document.querySelector('.hero');
+  if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px');
+  if (hero) document.documentElement.style.setProperty('--hero-h', hero.offsetHeight + 'px');
+}
+setNavVars();
+window.addEventListener('resize', () => { setNavVars(); if (window.innerWidth > 768) showNav(); });
+
+// общая логика реакции на прокрутку конкретного скролл-контекста
+function makeNavScroll() {
+  let lastY = 0;
+  return function (y) {
+    if (window.innerWidth > 768) { showNav(); lastY = y; return; }
+    if (y < 12) { showNav(); lastY = y; return; }        // у верха всегда показываем
+    const dy = y - lastY;
+    if (dy > 6) document.body.classList.add('nav-hidden');       // вниз — прячем
+    else if (dy < -6) document.body.classList.remove('nav-hidden'); // вверх — показываем
+    lastY = y;
+  };
+}
+
+const winNavScroll = makeNavScroll();
+window.addEventListener('scroll',
+  () => winNavScroll(window.scrollY || document.documentElement.scrollTop), { passive: true });
+
+// кейсы-iframe скроллятся внутри себя — вешаем ту же логику на их окно
+function hookIframeNav(iframe) {
+  try {
+    const w = iframe.contentWindow;
+    const fn = makeNavScroll();
+    w.addEventListener('scroll',
+      () => fn(w.scrollY || w.document.documentElement.scrollTop), { passive: true });
+  } catch (e) { /* другой origin — пропускаем */ }
+}
 
 
 // ─── Init ───

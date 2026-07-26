@@ -886,6 +886,12 @@ body.page-texts .pd-header .pd-desc {
     overflow-x: auto;
     scrollbar-width: none;
     flex-wrap: nowrap;
+    /* авто-прячущаяся навигация: теги липнут под шапкой */
+    position: sticky;
+    top: var(--hh, 46px);
+    z-index: 8;
+    background-color: var(--bg);
+    transition: transform 0.3s ease;
   }
 
   body.page-split .hero::-webkit-scrollbar {
@@ -912,6 +918,20 @@ body.page-texts .pd-header .pd-desc {
     border-bottom: 0.5px solid var(--border);
     overflow: visible;
     scrollbar-width: none;
+    /* полоса проектов липнет под строкой тегов и прячется вместе с ней */
+    position: sticky;
+    top: calc(var(--hh, 46px) + var(--hero-h, 44px));
+    z-index: 7;
+    background-color: var(--bg);
+    transition: transform 0.3s ease;
+  }
+
+  /* при скролле кейса вниз — теги и полоса уезжают под шапку */
+  body.page-split.nav-hidden .hero {
+    transform: translateY(calc(-100% - var(--hh, 46px)));
+  }
+  body.page-split.nav-hidden .panel-list {
+    transform: translateY(calc(-100% - var(--hh, 46px) - var(--hero-h, 44px)));
   }
 
   .cards-grid {
