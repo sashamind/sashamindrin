@@ -340,8 +340,11 @@ function showNav() { document.body.classList.remove('nav-hidden'); }
 function setNavVars() {
   const h = document.querySelector('header');
   const hero = document.querySelector('.hero');
+  const strip = document.querySelector('.panel-list');
   if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px');
   if (hero) document.documentElement.style.setProperty('--hero-h', hero.offsetHeight + 'px');
+  if (strip && window.innerWidth <= 768)
+    document.documentElement.style.setProperty('--strip-h', strip.offsetHeight + 'px');
 }
 setNavVars();
 window.addEventListener('resize', () => { setNavVars(); if (window.innerWidth > 768) showNav(); });

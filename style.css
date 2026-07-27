@@ -891,7 +891,7 @@ body.page-texts .pd-header .pd-desc {
     top: var(--hh, 46px);
     z-index: 8;
     background-color: var(--bg);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, margin-bottom 0.3s ease;
   }
 
   body.page-split .hero::-webkit-scrollbar {
@@ -923,15 +923,19 @@ body.page-texts .pd-header .pd-desc {
     top: calc(var(--hh, 46px) + var(--hero-h, 44px));
     z-index: 7;
     background-color: var(--bg);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, margin-bottom 0.3s ease;
   }
 
-  /* при скролле кейса вниз — теги и полоса уезжают под шапку */
+  /* при скролле кейса вниз — теги и полоса уезжают под шапку.
+     margin-bottom схлопывает освобождённое место в потоке, иначе под
+     ними виден тёмный фон body (заметно на светлых кейсах). */
   body.page-split.nav-hidden .hero {
     transform: translateY(calc(-100% - var(--hh, 46px)));
+    margin-bottom: calc(-1 * var(--hero-h, 44px));
   }
   body.page-split.nav-hidden .panel-list {
     transform: translateY(calc(-100% - var(--hh, 46px) - var(--hero-h, 44px)));
+    margin-bottom: calc(-1 * var(--strip-h, 110px));
   }
 
   .cards-grid {
