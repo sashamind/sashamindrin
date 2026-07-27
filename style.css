@@ -872,8 +872,14 @@ body.page-texts .pd-header .pd-desc {
      навигацией и скроллится внутри себя. При скролле кейса навигация
      схлопывается, кейс дорастает до полной высоты — нет «двух скроллов». */
   body.page-split {
-    height: 100dvh;
+    height: 100svh;
     overflow: hidden;
+  }
+
+  /* низ футера над home-индикатором iOS */
+  body.page-split footer {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding-top: 14px;
   }
 
   .pd-empty {
@@ -974,11 +980,11 @@ body.page-texts .pd-header .pd-desc {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 16px 20px 60px;
-    height: calc(100dvh - var(--hh, 46px) - var(--hero-h, 44px) - var(--strip-h, 110px) - var(--footer-h, 52px));
+    height: calc(100svh - var(--hh, 46px) - var(--hero-h, 44px) - var(--strip-h, 110px) - var(--footer-h, 52px));
     transition: height 0.3s ease;
   }
   body.page-split.nav-hidden .panel-detail {
-    height: calc(100dvh - var(--hh, 46px) - var(--footer-h, 52px));
+    height: calc(100svh - var(--hh, 46px) - var(--footer-h, 52px));
   }
 
   .panel-detail.panel-iframe {
