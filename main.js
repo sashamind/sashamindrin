@@ -341,8 +341,10 @@ function setNavVars() {
   const h = document.querySelector('header');
   const hero = document.querySelector('.hero');
   const strip = document.querySelector('.panel-list');
+  const footer = document.querySelector('footer');
   if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px');
   if (hero) document.documentElement.style.setProperty('--hero-h', hero.offsetHeight + 'px');
+  if (footer) document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
   if (strip && window.innerWidth <= 768)
     document.documentElement.style.setProperty('--strip-h', strip.offsetHeight + 'px');
 }
@@ -365,6 +367,14 @@ function makeNavScroll() {
 const winNavScroll = makeNavScroll();
 window.addEventListener('scroll',
   () => winNavScroll(window.scrollY || document.documentElement.scrollTop), { passive: true });
+
+// на мобильном тело не скроллится — контент-кейсы и пустое состояние
+// скроллятся внутри самой панели
+const panelEl = document.getElementById('panelDetail');
+if (panelEl) {
+  const pdNavScroll = makeNavScroll();
+  panelEl.addEventListener('scroll', () => pdNavScroll(panelEl.scrollTop), { passive: true });
+}
 
 // кейсы-iframe скроллятся внутри себя — вешаем ту же логику на их окно
 function hookIframeNav(iframe) {

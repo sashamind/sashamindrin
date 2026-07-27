@@ -868,9 +868,12 @@ body.page-texts .pd-header .pd-desc {
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
+  /* Один скролл на мобильном: тело не скроллится, кейс занимает место под
+     навигацией и скроллится внутри себя. При скролле кейса навигация
+     схлопывается, кейс дорастает до полной высоты — нет «двух скроллов». */
   body.page-split {
-    height: auto;
-    overflow: auto;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   .pd-empty {
@@ -966,19 +969,26 @@ body.page-texts .pd-header .pd-desc {
     max-height: none;
   }
 
+  /* Контент-кейсы (не iframe) и пустое состояние скроллятся внутри панели */
   .panel-detail {
-    overflow: visible;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 16px 20px 60px;
+    height: calc(100dvh - var(--hh, 46px) - var(--hero-h, 44px) - var(--strip-h, 110px) - var(--footer-h, 52px));
+    transition: height 0.3s ease;
+  }
+  body.page-split.nav-hidden .panel-detail {
+    height: calc(100dvh - var(--hh, 46px) - var(--footer-h, 52px));
   }
 
   .panel-detail.panel-iframe {
-    overflow: visible;
+    overflow: hidden;
     padding: 0;
   }
 
   .panel-detail.panel-iframe > iframe.project-iframe {
-    height: 100svh;
-    min-height: 600px;
+    height: 100%;
+    min-height: 0;
   }
 
 
