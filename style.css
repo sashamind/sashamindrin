@@ -876,10 +876,13 @@ body.page-texts .pd-header .pd-desc {
     overflow: auto;
   }
 
-  /* низ футера над home-индикатором iOS */
-  body.page-split footer {
-    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    padding-top: 14px;
+  /* футер в столбик — email и копирайт не влезают в ряд на узком экране;
+     низ над home-индикатором iOS */
+  footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
   }
 
   .pd-empty {
