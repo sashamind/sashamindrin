@@ -31,24 +31,8 @@
     max-width: 480px;
     margin-top: 48px;
   }
-  /* Фон у снимков — не чистый чёрный, а тёмно-серый, поэтому он виден
-     прямоугольником на фоне страницы. Растушёвываем края в прозрачность,
-     чтобы граница растворялась в фоне (работает при любом тоне фона,
-     в отличие от mix-blend-mode: screen, который тёмно-серое осветляет). */
-  .pf-puppai .pup-feather {
-    --f: 90px;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
-    mask-composite: intersect;
-  }
-  /* Чёрный фон снимков темнее фона страницы (#000 против #0a0a0a), поэтому
-     feather снимает только края, а тёмный центр остаётся виден. screen
-     поднимает чистый чёрный ровно до фона страницы — центр тоже сливается,
+  /* Чёрный фон снимков (#000) темнее фона страницы (#0a0a0a). screen
+     поднимает чистый чёрный ровно до фона страницы — фон сливается,
      объект «висит» без подложки. */
   .pf-puppai .pup-screen { mix-blend-mode: screen; }
 </style>
@@ -67,7 +51,7 @@
 
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
-  <img class="pup-photo pup-feather pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
 </div>
