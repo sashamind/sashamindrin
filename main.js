@@ -255,7 +255,9 @@ async function renderProject(id) {
   panel.scrollTop = 0;
 
   try {
-    const res = await fetch(`projects/${project.folder}.html`);
+    // no-cache: браузер обязан перепроверить свежесть у сервера, иначе
+    // GitHub Pages/браузер могут отдавать старую версию страницы проекта.
+    const res = await fetch(`projects/${project.folder}.html`, { cache: 'no-cache' });
     if (!res.ok) throw new Error();
     const html = (await res.text()).trim();
 
