@@ -194,7 +194,7 @@ function initScrollFx(root) {
       const r = el.getBoundingClientRect();
       const dist = Math.abs(r.top + r.height / 2 - vh / 2);
       const k = Math.min(1, Math.max(0, (dist - flat) / fade));
-      el.style.opacity = (1 - k * 0.9).toFixed(3);
+      el.style.opacity = (1 - k).toFixed(3); // к краям гаснет в ноль
     });
   };
   const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
