@@ -966,6 +966,11 @@ body.page-texts .pd-header .pd-desc {
     aspect-ratio: 1 / 1;
   }
 
+  /* неактивные иконки проектов — ярче (≈50% вместо ~18%) */
+  .panel-list .card-inner::after {
+    opacity: 0.5;
+  }
+
   body.page-texts .panel-list {
     max-height: 42vh;
     overflow: hidden;
