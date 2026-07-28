@@ -14,40 +14,42 @@
     object-fit: contain;
     display: block;
   }
-  .pf-puppai .pup-logo { height: 168px; }
-  .pf-puppai .pup-wordmark { width: 300px; margin-top: 28px; }
+  .pf-puppai [data-fx="scroll"] { will-change: opacity; }
+  .pf-puppai .pup-logo { height: 112px; }
+  .pf-puppai .pup-wordmark { width: 200px; margin-top: 56px; }
   .pf-puppai .pup-concept {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
-    margin-top: 72px;
+    gap: 72px;
+    margin-top: 132px;
   }
-  .pf-puppai .pup-concept img { width: 360px; }
-  .pf-puppai .pup-appicon { width: 188px; margin-top: 72px; }
+  .pf-puppai .pup-concept img { width: 240px; }
+  .pf-puppai .pup-appicon { width: 125px; margin-top: 132px; }
   .pf-puppai .pup-photo {
     width: 100%;
     max-width: 480px;
     border-radius: 4px;
-    margin-top: 40px;
+    margin-top: 48px;
   }
+  .pf-puppai .pup-blend { mix-blend-mode: screen; }
 </style>
 
 <div class="pf-puppai">
-  <img class="pup-logo" src="assets/puppai/logo.svg" alt="PuppAI" />
-  <img class="pup-wordmark" src="assets/puppai/logoline.svg" alt="PUPPAi" />
+  <img class="pup-logo" data-fx="scroll" src="assets/puppai/logo.svg" alt="PuppAI" />
+  <img class="pup-wordmark" data-fx="scroll" src="assets/puppai/logoline.svg" alt="PUPPAi" />
 
   <div class="pup-concept">
-    <img src="assets/puppai/1.svg" alt="Puppy's butt" />
-    <img src="assets/puppai/2.svg" alt="Puppy, pet" />
-    <img src="assets/puppai/3.svg" alt="Singularity" />
-    <img src="assets/puppai/3-1.svg" alt="Intelligence" />
-    <img src="assets/puppai/4.svg" alt="Artificial" />
+    <img data-fx="scroll" src="assets/puppai/1.svg" alt="Puppy's butt" />
+    <img data-fx="scroll" src="assets/puppai/2.svg" alt="Puppy, pet" />
+    <img data-fx="scroll" src="assets/puppai/3.svg" alt="Singularity" />
+    <img data-fx="scroll" src="assets/puppai/3-1.svg" alt="Intelligence" />
+    <img data-fx="scroll" src="assets/puppai/4.svg" alt="Artificial" />
   </div>
 
-  <img class="pup-appicon" src="assets/puppai/group-3.svg" alt="App icon" />
+  <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
   <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
-  <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-blend" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-blend" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
 </div>

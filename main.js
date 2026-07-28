@@ -158,6 +158,7 @@ function startAscii(pre) {
 
 function renderEmpty() {
   activeProjectId = null;
+  if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
@@ -173,11 +174,49 @@ function renderEmpty() {
   if (pre) startAscii(pre);
 }
 
+// ─── Появление/исчезновение по скроллу (data-fx="scroll") ───
+// Прозрачность зависит от того, насколько элемент близок к центру
+// экрана: полная в центральной полосе, плавно гаснет к краям.
+// Скролл слушаем в capture-фазе на document — так ловится и внутренний
+// скролл панели (десктоп), и скролл body (мобильный), без привязки к
+// конкретному контейнеру.
+let scrollFxCleanup = null;
+function initScrollFx(root) {
+  const els = Array.from(root.querySelectorAll('[data-fx="scroll"]'));
+  if (!els.length) return null;
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const flat = vh * 0.30; // зона полной видимости вокруг центра
+    const fade = vh * 0.42; // длина затухания к краям
+    els.forEach(el => {
+      const r = el.getBoundingClientRect();
+      const dist = Math.abs(r.top + r.height / 2 - vh / 2);
+      const k = Math.min(1, Math.max(0, (dist - flat) / fade));
+      el.style.opacity = (1 - k * 0.9).toFixed(3);
+    });
+  };
+  const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+  document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+  window.addEventListener('resize', onScroll);
+  root.querySelectorAll('img').forEach(img => {
+    if (!img.complete) img.addEventListener('load', onScroll, { once: true });
+  });
+  update();
+  return () => {
+    document.removeEventListener('scroll', onScroll, { capture: true });
+    window.removeEventListener('resize', onScroll);
+    if (raf) cancelAnimationFrame(raf);
+  };
+}
+
 async function renderProject(id) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
   stopAscii();
+  if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   showNav(); // при выборе проекта навигация остаётся показанной
 
   document.querySelectorAll('.card[data-id]').forEach(c => {
@@ -232,6 +271,7 @@ async function renderProject(id) {
       if (body) {
         body.innerHTML = html;
         applyLangSections(body, currentLang);
+        scrollFxCleanup = initScrollFx(body);
       }
     }
   } catch {
