@@ -188,8 +188,9 @@ function initScrollFx(root) {
   const update = () => {
     raf = 0;
     const vh = window.innerHeight || document.documentElement.clientHeight;
-    const flat = vh * 0.30; // зона полной видимости вокруг центра
-    const fade = vh * 0.42; // длина затухания к краям
+    const flat = vh * 0.08; // узкая зона полной видимости у центра
+    const fade = vh * 0.27; // быстрое затухание: элемент виден только в центральной полосе,
+                            // у центра проявляется и полностью гаснет, не дойдя до краёв экрана
     els.forEach(el => {
       const r = el.getBoundingClientRect();
       const dist = Math.abs(r.top + r.height / 2 - vh / 2);
