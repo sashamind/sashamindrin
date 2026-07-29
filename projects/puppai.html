@@ -26,7 +26,21 @@
     gap: 72px;
     margin-top: 132px;
   }
-  .pf-puppai .pup-concept img { width: 168px; }
+  /* Марки нормализуем по высоте (у них разное соотношение сторон),
+     чтобы были одинаковыми и небольшими. */
+  .pf-puppai .pup-concept img { height: 80px; width: auto; }
+  .pf-puppai .pup-cpt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .pf-puppai .pup-cpt-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: rgba(255, 255, 255, 0.45);
+  }
   .pf-puppai .pup-appicon { width: 125px; margin-top: 132px; }
   /* Фон снимков подгоняется под фон страницы (#0a0a0a) в самих файлах,
      поэтому mix-blend-mode не нужен. */
@@ -65,11 +79,41 @@
   <img class="pup-wordmark" data-fx="scroll" src="assets/puppai/logoline.svg" alt="PUPPAi" />
 
   <div class="pup-concept">
-    <img data-fx="scroll" src="assets/puppai/1.svg" alt="Puppy's butt" />
-    <img data-fx="scroll" src="assets/puppai/2.svg" alt="Puppy, pet" />
-    <img data-fx="scroll" src="assets/puppai/3.svg" alt="Singularity" />
-    <img data-fx="scroll" src="assets/puppai/3-1.svg" alt="Intelligence" />
-    <img data-fx="scroll" src="assets/puppai/4.svg" alt="Artificial" />
+    <div class="pup-cpt" data-fx="scroll">
+      <img src="assets/puppai/1.svg" alt="Puppy's butt" />
+      <span class="pup-cpt-label">
+        <span class="lang-en">Puppy’s butt</span>
+        <span class="lang-ru">Попка щенка (Puppy’s butt)</span>
+      </span>
+    </div>
+    <div class="pup-cpt" data-fx="scroll">
+      <img src="assets/puppai/2.svg" alt="Puppy, pet" />
+      <span class="pup-cpt-label">
+        <span class="lang-en">Puppy, pet</span>
+        <span class="lang-ru">Щенок, питомец (Puppy, pet)</span>
+      </span>
+    </div>
+    <div class="pup-cpt" data-fx="scroll">
+      <img src="assets/puppai/4.svg" alt="Artificial" />
+      <span class="pup-cpt-label">
+        <span class="lang-en">Artificial</span>
+        <span class="lang-ru">Искусственный (Artificial)</span>
+      </span>
+    </div>
+    <div class="pup-cpt" data-fx="scroll">
+      <img src="assets/puppai/3-1.svg" alt="Intelligence" />
+      <span class="pup-cpt-label">
+        <span class="lang-en">Intelligence</span>
+        <span class="lang-ru">Интеллект (Intelligence)</span>
+      </span>
+    </div>
+    <div class="pup-cpt" data-fx="scroll">
+      <img src="assets/puppai/3.svg" alt="Singularity" />
+      <span class="pup-cpt-label">
+        <span class="lang-en">Singularity</span>
+        <span class="lang-ru">Сингулярность (Singularity)</span>
+      </span>
+    </div>
   </div>
 
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
