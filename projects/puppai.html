@@ -5,7 +5,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 110px 0 40px;
+    /* Нижний отступ даёт запас прокрутки, чтобы последнее фото могло
+       доехать до центра экрана и полностью проявиться (data-fx). */
+    padding: 110px 0 220px;
   }
   .pf-puppai img {
     width: auto;
@@ -72,7 +74,7 @@
 
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
-  <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather pup-collar" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather pup-phone" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
+  <img class="pup-photo" data-fx="scroll" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather pup-collar" data-fx="scroll" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather pup-phone" data-fx="scroll" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
 </div>
