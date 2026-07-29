@@ -27,11 +27,24 @@
   .pf-puppai .pup-concept img { width: 240px; }
   .pf-puppai .pup-appicon { width: 125px; margin-top: 132px; }
   /* Фон снимков подгоняется под фон страницы (#0a0a0a) в самих файлах,
-     поэтому никакого mix-blend-mode/маски здесь нет. */
+     поэтому mix-blend-mode не нужен. */
   .pf-puppai .pup-photo {
     width: 100%;
     max-width: 480px;
     margin-top: 48px;
+  }
+  /* Растушёвка краёв в прозрачность: жёсткая граница прямоугольника
+     растворяется в фоне, тона не меняются. */
+  .pf-puppai .pup-feather {
+    --f: 90px;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+    mask-composite: intersect;
   }
 </style>
 
@@ -50,6 +63,6 @@
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
   <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
-  <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
 </div>
