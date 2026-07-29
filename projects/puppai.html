@@ -25,6 +25,19 @@
     margin-top: 132px;
     display: block;
   }
+  /* Контейнер с фоном страницы + isolation: чтобы mix-blend-mode: screen
+     на лотти гарантированно смешивался именно с #0a0a0a (тёмный квадрат
+     анимации сливается с фоном, белое содержимое остаётся). */
+  .pf-puppai .pup-iso {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    isolation: isolate;
+    background: var(--bg);
+    margin-top: 132px;
+  }
+  .pf-puppai .pup-iso .pup-lottie { margin-top: 0; }
+  .pf-puppai .pup-screen { mix-blend-mode: screen; }
   .pf-puppai .pup-concept {
     display: flex;
     flex-direction: column;
@@ -126,9 +139,11 @@
     </div>
   </div>
 
-  <lottie-player class="pup-lottie" data-fx="scroll"
-    src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai_lottie2.json"
-    background="transparent" speed="1" loop autoplay></lottie-player>
+  <div class="pup-iso" data-fx="scroll">
+    <lottie-player class="pup-lottie pup-screen"
+      src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai_lottie2.json"
+      background="transparent" speed="1" loop autoplay></lottie-player>
+  </div>
 
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
