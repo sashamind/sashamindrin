@@ -33,7 +33,21 @@
   }
   /* Чёрный фон снимков (#000) темнее фона страницы (#0a0a0a). screen
      поднимает чистый чёрный ровно до фона страницы — фон сливается,
-     объект «висит» без подложки. */
+     объект «висит» без подложки.
+     ВАЖНО: mix-blend-mode смешивается с «подложкой» ближайшего контекста
+     наложения. Если между картинкой и фоном страницы есть стек-контекст без
+     собственного фона, screen смешивается с пустотой и чёрный остаётся
+     чёрным. Поэтому заворачиваем фото в контейнер с ЯВНЫМ фоном цвета
+     страницы и isolation: isolate — тогда screen гарантированно сливает
+     чёрный именно с #0a0a0a. */
+  .pf-puppai .pup-photos {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    isolation: isolate;
+    background: var(--bg);
+  }
   .pf-puppai .pup-screen { mix-blend-mode: screen; }
 </style>
 
@@ -51,7 +65,9 @@
 
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
-  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
+  <div class="pup-photos">
+    <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
+    <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
+    <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
+  </div>
 </div>
