@@ -24,7 +24,7 @@
     gap: 72px;
     margin-top: 132px;
   }
-  .pf-puppai .pup-concept img { width: 240px; }
+  .pf-puppai .pup-concept img { width: 168px; }
   .pf-puppai .pup-appicon { width: 125px; margin-top: 132px; }
   /* Фон снимков подгоняется под фон страницы (#0a0a0a) в самих файлах,
      поэтому mix-blend-mode не нужен. */
@@ -33,10 +33,20 @@
     max-width: 480px;
     margin-top: 48px;
   }
+  /* Ошейник крупнее остальных на ~30% (480 → 624). Выходит за контейнер
+     кейса (560), но панель на десктопе шире; на мобиле ограничиваем шириной
+     панели, чтобы не появлялся горизонтальный скролл. */
+  .pf-puppai .pup-collar { width: 624px; max-width: 100%; }
+  @media (min-width: 769px) {
+    .pf-puppai .pup-collar { max-width: 624px; }
+  }
+  /* Телефон на ~30% меньше остальных (480 → 336). */
+  .pf-puppai .pup-phone { max-width: 336px; }
   /* Растушёвка краёв в прозрачность: жёсткая граница прямоугольника
-     растворяется в фоне, тона не меняются. */
+     растворяется в фоне, тона не меняются. Значение в процентах, чтобы
+     растушёвка масштабировалась под размер картинки (у телефона он меньше). */
   .pf-puppai .pup-feather {
-    --f: 90px;
+    --f: 25%;
     -webkit-mask-image:
       linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
       linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
@@ -63,6 +73,6 @@
   <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
 
   <img class="pup-photo" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
-  <img class="pup-photo pup-feather" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather pup-collar" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
+  <img class="pup-photo pup-feather pup-phone" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
 </div>
