@@ -49,6 +49,21 @@
     background: var(--bg);
   }
   .pf-puppai .pup-screen { mix-blend-mode: screen; }
+  /* Ошейник — не объект на чёрном фоне, а фото с серым мехом, который
+     физически светлее страницы; screen его лишь осветляет. Поэтому тут не
+     screen, а feather: растушёвываем края в прозрачность, чтобы граница
+     прямоугольника растворилась в фоне, а мех остался тёмным как есть. */
+  .pf-puppai .pup-feather {
+    --f: 90px;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+    mask-composite: intersect;
+  }
 </style>
 
 <div class="pf-puppai">
@@ -67,7 +82,7 @@
 
   <div class="pup-photos">
     <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
-    <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
+    <img class="pup-photo pup-feather" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-group-23.webp" alt="" loading="lazy" />
     <img class="pup-photo pup-screen" src="https://kzzsmdgsjnkhtbzhjlyl.supabase.co/storage/v1/object/public/portfolio/shh-creative/media/puppai-pic5.webp" alt="" loading="lazy" />
   </div>
 </div>
