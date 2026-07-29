@@ -1,4 +1,4 @@
-# PuppAI — метаданные (статус: нужен исходник (в shh-creative выгрузки нет))
+# PuppAI — метаданные (статус: опубликован ✓)
 
 slug:           puppai
 title_ru:       PuppAI
@@ -6,8 +6,8 @@ title_en:       PuppAI
 year:           2026
 tags:           logos, web, interactive
 
-description_ru: 
-description_en: 
+description_ru: Логотип и айдентика для сервиса мониторинга поведения и здоровья домашних питомцев.
+description_en: Logo and identity for a pet behaviour and health monitoring service.
 
 task_ru:        
 task_en:        
