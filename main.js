@@ -159,6 +159,7 @@ function startAscii(pre) {
 function renderEmpty() {
   activeProjectId = null;
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
+  dropIframeNav(); // панель очищается — iframe прошлого кейса исчезает
   document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
@@ -218,6 +219,7 @@ async function renderProject(id) {
   activeProjectId = id;
   stopAscii();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
+  dropIframeNav(); // окно прошлого кейса выгружается вместе с iframe
   showNav(); // при выборе проекта навигация остаётся показанной
 
   document.querySelectorAll('.card[data-id]').forEach(c => {
@@ -378,7 +380,69 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
 
 
 // ─── Мобильная навигация: авто-скрытие тегов+полосы по направлению скролла ───
-function showNav() { document.body.classList.remove('nav-hidden'); }
+// Скролл-контекстов несколько (страница, панель, окно iframe-кейса), а
+// навигация одна — поэтому состояние общее, а не своё на каждый обработчик.
+// Иначе контекст, стоящий у нуля, «показывал» навигацию поверх того, который
+// в этот момент реально уезжал вниз.
+const NAV_HIDE_PX = 3;     // вниз — прячем практически с первого движения
+const NAV_SHOW_PX = 24;    // вверх — только на осознанном движении
+const NAV_SETTLE_MS = 350; // пока схлопывание меняет высоту документа
+
+const navSources = [];   // { getY, lastY, kind }
+let navHidden = false;
+let navAccum = 0;        // движение в одну сторону, копится до порога
+let navHiddenAt = -Infinity;
+
+function navReadY(s) {
+  try { return s.getY() || 0; } catch (_) { return 0; }
+}
+
+function showNav() {
+  navAccum = 0;
+  if (!navHidden) return;
+  navHidden = false;
+  document.body.classList.remove('nav-hidden');
+}
+
+function hideNav() {
+  navAccum = 0;
+  if (navHidden) return;
+  navHidden = true;
+  navHiddenAt = performance.now();
+  document.body.classList.add('nav-hidden');
+}
+
+// показываем только когда ВСЕ контексты у верха — иначе страница, стоящая
+// на нуле, перебивала скролл внутри кейса
+function navAllAtTop() {
+  return navSources.every(s => navReadY(s) <= 2);
+}
+
+function makeNavScroll(getY, kind) {
+  const src = { getY, lastY: 0, kind };
+  src.lastY = navReadY(src);
+  navSources.push(src);
+  return function () {
+    const y = navReadY(src);
+    const dy = y - src.lastY;
+    src.lastY = y;
+    if (window.innerWidth > 768) { showNav(); return; }
+    // схлопывание навигации укорачивает документ: у нижней кромки браузер
+    // подтягивает позицию вверх — это не «пользователь вернулся наверх»
+    const settling = performance.now() - navHiddenAt < NAV_SETTLE_MS;
+    if (y <= 2 && navAllAtTop()) { if (!settling) showNav(); return; }
+    if (!dy) return;
+    // смена направления обнуляет накопитель — дрожание не дёргает навигацию
+    navAccum = (navAccum > 0) === (dy > 0) ? navAccum + dy : dy;
+    if (!navHidden) {
+      if (navAccum >= NAV_HIDE_PX) hideNav();   // прячем без задержки
+    } else if (settling) {
+      navAccum = 0;
+    } else if (navAccum <= -NAV_SHOW_PX) {
+      showNav();
+    }
+  };
+}
 
 function setNavVars() {
   const h = document.querySelector('header');
@@ -394,39 +458,33 @@ function setNavVars() {
 setNavVars();
 window.addEventListener('resize', () => { setNavVars(); if (window.innerWidth > 768) showNav(); });
 
-// общая логика реакции на прокрутку конкретного скролл-контекста
-function makeNavScroll() {
-  let lastY = 0;
-  return function (y) {
-    if (window.innerWidth > 768) { showNav(); lastY = y; return; }
-    if (y < 12) { showNav(); lastY = y; return; }        // у верха всегда показываем
-    const dy = y - lastY;
-    if (dy > 6) document.body.classList.add('nav-hidden');       // вниз — прячем
-    else if (dy < -6) document.body.classList.remove('nav-hidden'); // вверх — показываем
-    lastY = y;
-  };
-}
+const winNavScroll = makeNavScroll(
+  () => window.scrollY || document.documentElement.scrollTop, 'window');
+window.addEventListener('scroll', winNavScroll, { passive: true });
 
-const winNavScroll = makeNavScroll();
-window.addEventListener('scroll',
-  () => winNavScroll(window.scrollY || document.documentElement.scrollTop), { passive: true });
-
-// на мобильном тело не скроллится — контент-кейсы и пустое состояние
-// скроллятся внутри самой панели
+// панель со своим скроллом (десктоп; на мобильном overflow: visible)
 const panelEl = document.getElementById('panelDetail');
 if (panelEl) {
-  const pdNavScroll = makeNavScroll();
-  panelEl.addEventListener('scroll', () => pdNavScroll(panelEl.scrollTop), { passive: true });
+  panelEl.addEventListener('scroll', makeNavScroll(() => panelEl.scrollTop, 'panel'),
+    { passive: true });
 }
 
 // кейсы-iframe скроллятся внутри себя — вешаем ту же логику на их окно
 function hookIframeNav(iframe) {
   try {
     const w = iframe.contentWindow;
-    const fn = makeNavScroll();
     w.addEventListener('scroll',
-      () => fn(w.scrollY || w.document.documentElement.scrollTop), { passive: true });
+      makeNavScroll(() => w.scrollY || w.document.documentElement.scrollTop, 'iframe'),
+      { passive: true });
   } catch (e) { /* другой origin — пропускаем */ }
+}
+
+// прошлый кейс выгружен — его окно больше не читаем, иначе мёртвый источник
+// висит в navAllAtTop()
+function dropIframeNav() {
+  for (let i = navSources.length - 1; i >= 0; i--) {
+    if (navSources[i].kind === 'iframe') navSources.splice(i, 1);
+  }
 }
 
 
