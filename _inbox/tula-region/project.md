@@ -6,8 +6,8 @@ title_en:       Tula Region
 year:           2024
 tags:           branding, motion
 
-description_ru: Логотип и айдентика для продвижения туризма в Тульской области.
-description_en: Logo and identity for promoting tourism in the Tula Region.
+description_ru: Концепция логотипа и айдентики для продвижения туризма в Тульской области.
+description_en: Logo and identity concept for promoting tourism in the Tula Region.
 
 task_ru:        Переосмыслить исторический герб региона: выделить ключевые метафоры и собрать из них новый, более лаконичный символ.
 task_en:        Rework the historical coat of arms of the region, distilling its key metaphors into a new, more streamlined symbol.

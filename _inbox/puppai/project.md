@@ -6,8 +6,8 @@ title_en:       PuppAI
 year:           2026
 tags:           logos, web, interactive
 
-description_ru: Логотип и айдентика для сервиса мониторинга поведения и здоровья домашних питомцев.
-description_en: Logo and identity for a pet behaviour and health monitoring service.
+description_ru: Концепция логотипа для сервиса мониторинга поведения и здоровья домашних питомцев.
+description_en: Logo concept for a pet behaviour and health monitoring service.
 
 task_ru:        
 task_en:        

@@ -6,8 +6,8 @@ title_en:       Tula Marathon
 year:           2026
 tags:           logos, motion
 
-description_ru: Айдентика и моушн Тульского марафона.
-description_en: Identity and motion for the Tula Marathon.
+description_ru: Концепция редизайна логотипа и айдентика Тульского марафона.
+description_en: Logo redesign concept and identity for the Tula Marathon.
 
 task_ru:        
 task_en:        

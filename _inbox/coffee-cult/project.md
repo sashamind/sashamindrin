@@ -6,8 +6,8 @@ title_en:       Coffee Cult
 year:           2025
 tags:           logos, illustration
 
-description_ru: Айдентика кофейного бренда.
-description_en: Identity for a coffee brand.
+description_ru: Концепция редизайна кофейного бренда.
+description_en: Redesign concept for a coffee brand.
 
 task_ru:        Создать айдентику кофейни — знак, упаковку и графику.
 task_en:        Create the identity for a coffee shop — mark, packaging and graphics.
