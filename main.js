@@ -33,6 +33,8 @@ function applyLang(lang) {
 
   const projectBody = document.getElementById('projectBody');
   if (projectBody) applyLangSections(projectBody, lang);
+
+  updateTitle(); // имя кейса во вкладке тоже двуязычное
 }
 
 langToggle.addEventListener('click', () => {
@@ -158,6 +160,7 @@ function startAscii(pre) {
 
 function renderEmpty() {
   activeProjectId = null;
+  updateTitle();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   dropIframeNav(); // панель очищается — iframe прошлого кейса исчезает
   document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
@@ -213,6 +216,49 @@ function initScrollFx(root) {
   };
 }
 
+// ─── Ссылки на проекты ───
+// Адрес вида #/coffee-cult — слаг совпадает с папкой кейса, поэтому ссылка
+// читается глазами. Именно хеш, а не путь: сайт статический и лежит на
+// GitHub Pages, про /coffee-cult сервер ничего не знает и отдал бы 404.
+const BASE_TITLE = document.title;
+
+function projectFromHash() {
+  let raw = (location.hash || '').replace(/^#\/?/, '').replace(/\/+$/, '').trim();
+  try { raw = decodeURIComponent(raw); } catch (_) { /* битый percent-encoding */ }
+  const slug = raw.toLowerCase();
+  if (!slug) return null;
+  return projectsData.find(p => p.folder === slug) || null;
+}
+
+// pushState/replaceState, а не location.hash: они не вызывают hashchange,
+// так что собственный переход не приводит к повторной отрисовке.
+function writeHash(project, replace) {
+  const target = project ? `#/${project.folder}` : '';
+  if ((location.hash || '') === target) return;
+  const url = target || location.pathname + location.search;
+  if (replace) history.replaceState(null, '', url);
+  else history.pushState(null, '', url);
+}
+
+function updateTitle() {
+  const project = projectsData.find(p => p.id === activeProjectId);
+  const name = project ? (currentLang === 'en' ? project.titleEn : project.titleRu) : null;
+  document.title = name ? `${name} — Sasha Mindrin` : BASE_TITLE;
+}
+
+// Адрес изменился снаружи: кнопка «назад», вставленная ссылка, правка строки.
+function syncFromHash() {
+  const project = projectFromHash();
+  if (project) {
+    if (project.id !== activeProjectId) renderProject(project.id, { updateUrl: false });
+  } else if (activeProjectId !== null) {
+    renderEmpty();
+  }
+}
+
+window.addEventListener('popstate', syncFromHash);
+window.addEventListener('hashchange', syncFromHash);
+
 // ─── Загрузка проекта ───
 // Разметка индикатора одна на оба вида кейсов: инлайновый показывает его
 // в теле панели, iframe-кейс — поверх всей панели.
@@ -247,10 +293,12 @@ function waitForEagerImages(root, timeout = 8000) {
   ]);
 }
 
-async function renderProject(id) {
+async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
+  if (updateUrl) writeHash(project, replaceUrl);
+  updateTitle();
   stopAscii();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   dropIframeNav(); // окно прошлого кейса выгружается вместе с iframe
@@ -429,7 +477,8 @@ function filterByTag(tag) {
 
   const activeCard = document.querySelector('.card.active');
   if (activeCard && activeCard.style.display === 'none' && firstVisible) {
-    renderProject(firstVisible.dataset.id);
+    // подмена кейса — побочный эффект фильтра, а не переход: не копим историю
+    renderProject(firstVisible.dataset.id, { replaceUrl: true });
   }
 }
 
@@ -558,5 +607,14 @@ function dropIframeNav() {
 
 
 // ─── Init ───
-renderEmpty();
+// Пришли по ссылке на кейс — открываем его, адрес уже верный и трогать
+// его не нужно, иначе в историю попадёт лишняя запись.
+const initialProject = projectFromHash();
+if (initialProject) {
+  renderProject(initialProject.id, { updateUrl: false });
+  const card = document.querySelector(`.card[data-id="${initialProject.id}"]`);
+  if (card) scrollToCard(card); // на мобильном лента карточек длиннее экрана
+} else {
+  renderEmpty();
+}
 applyLang(currentLang);
