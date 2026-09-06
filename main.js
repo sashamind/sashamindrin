@@ -213,6 +213,40 @@ function initScrollFx(root) {
   };
 }
 
+// ─── Загрузка проекта ───
+// Разметка индикатора одна на оба вида кейсов: инлайновый показывает его
+// в теле панели, iframe-кейс — поверх всей панели.
+function loadingMarkup(lang) {
+  const ru = 'проект загружается', en = 'loading project';
+  return `
+    <div class="pf-loading">
+      <span class="pf-loading-dots">···</span>
+      <span data-en="${en}" data-ru="${ru}">${lang === 'en' ? en : ru}</span>
+    </div>
+  `;
+}
+
+// Ждём картинки, которые грузятся сразу; lazy подтянутся при скролле и
+// держать ради них индикатор незачем. Таймаут — чтобы одна застрявшая
+// картинка не оставила кейс под заглушкой навсегда.
+function waitForEagerImages(root, timeout = 8000) {
+  const imgs = Array.from(root.querySelectorAll('img'))
+    .filter(img => img.loading !== 'lazy');
+  if (!imgs.length) return Promise.resolve();
+  const settled = imgs.map(img =>
+    img.complete && img.naturalWidth
+      ? Promise.resolve()
+      : new Promise(res => {
+          img.addEventListener('load', res, { once: true });
+          img.addEventListener('error', res, { once: true });
+        })
+  );
+  return Promise.race([
+    Promise.all(settled),
+    new Promise(res => setTimeout(res, timeout)),
+  ]);
+}
+
 async function renderProject(id) {
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
@@ -250,7 +284,7 @@ async function renderProject(id) {
         </div>
       </div>
       <div class="pd-body" id="projectBody">
-        <div class="post-loading">···</div>
+        ${loadingMarkup(t)}
       </div>
     </div>
   `;
@@ -264,22 +298,57 @@ async function renderProject(id) {
     if (!res.ok) throw new Error();
     const html = (await res.text()).trim();
 
+    // Пока грузились, могли переключиться на другой кейс — не затираем его.
+    if (activeProjectId !== id) return;
+
     if (html.startsWith('<iframe')) {
       // Страница проекта несёт собственную шапку (pf-header) с названием,
       // годом и описанием — панель её не дублирует.
       panel.classList.add('panel-iframe');
       panel.innerHTML = html;
+
+      // Панель отдана странице целиком, поэтому индикатор кладём поверх неё
+      // и снимаем, когда iframe отрапортует load: до этого там пустота.
+      const overlay = document.createElement('div');
+      overlay.className = 'pf-loading-overlay';
+      overlay.innerHTML = loadingMarkup(currentLang);
+      panel.appendChild(overlay);
+
+      const hide = () => {
+        overlay.classList.add('is-done');
+        overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+      };
+      const guard = setTimeout(hide, 15000); // страница не ответила — не держим заглушку
+
       const iframe = panel.querySelector('iframe');
-      if (iframe) iframe.addEventListener('load', () => hookIframeNav(iframe));
+      if (iframe) {
+        iframe.addEventListener('load', () => {
+          clearTimeout(guard);
+          hookIframeNav(iframe);
+          hide();
+        });
+      } else {
+        clearTimeout(guard);
+        hide();
+      }
     } else {
+      // Собираем фрагмент вне документа и ждём его первые картинки: иначе
+      // индикатор пропадал бы на пустом месте, до появления содержимого.
+      const holder = document.createElement('div');
+      holder.innerHTML = html;
+      await waitForEagerImages(holder);
+      if (activeProjectId !== id) return;
+
       const body = document.getElementById('projectBody');
       if (body) {
-        body.innerHTML = html;
+        body.innerHTML = '';
+        while (holder.firstChild) body.appendChild(holder.firstChild);
         applyLangSections(body, currentLang);
         scrollFxCleanup = initScrollFx(body);
       }
     }
   } catch {
+    if (activeProjectId !== id) return;
     const body = document.getElementById('projectBody');
     if (body) body.innerHTML = '';
   }

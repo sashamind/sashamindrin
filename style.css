@@ -848,6 +848,49 @@ body.page-texts .pd-header .pd-desc {
   animation: iconPulse 1.4s ease-in-out infinite;
 }
 
+/* ─── Загрузка проекта ─── */
+.pf-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--fg2);
+  padding: 8px 0;
+}
+
+/* Пульсируют только точки: мигающая подпись читалась бы хуже. */
+.pf-loading-dots {
+  animation: iconPulse 1.4s ease-in-out infinite;
+}
+
+/* Кейс в iframe занимает панель целиком, поэтому индикатор для него —
+   слой поверх панели, а не блок в потоке. */
+.panel-detail.panel-iframe {
+  position: relative;
+}
+
+.pf-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.35s ease;
+}
+
+.pf-loading-overlay.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pf-loading-overlay .pf-loading {
+  padding: 0;
+}
+
 .post-empty {
   font-family: var(--font-mono);
   font-size: 11px;
