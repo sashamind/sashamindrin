@@ -96,69 +96,8 @@ function applyLangSections(container, lang) {
   container.querySelectorAll('.lang-ru').forEach(el => el.style.display = lang === 'ru' ? '' : 'none');
 }
 
-// Пустое состояние: пока не выбран проект — минималистичная ASCII-анимация
-// и подпись «выберите проект».
-let asciiRAF = null;
-
-function stopAscii() {
-  if (asciiRAF) { cancelAnimationFrame(asciiRAF); asciiRAF = null; }
-}
-
-function startAscii(pre) {
-  stopAscii();
-  const COLS = 46, ROWS = 15;
-  const ramp = ' .·:-=+*#'; // от разреженного к плотному, в духе ascii-генератора
-  const ASPECT = 0.5;        // символ выше, чем шире — сжимаем ось X
-
-  // расстояние от точки до отрезка (с поправкой на пропорции символа)
-  function distSeg(px, py, ax, ay, bx, by) {
-    const vx = bx - ax, vy = by - ay;
-    const wx = px - ax, wy = py - ay;
-    const c2 = vx * vx * ASPECT * ASPECT + vy * vy;
-    let tt = c2 ? (wx * vx * ASPECT * ASPECT + wy * vy) / c2 : 0;
-    tt = Math.max(0, Math.min(1, tt));
-    const dx = (px - (ax + tt * vx)) * ASPECT, dy = py - (ay + tt * vy);
-    return Math.hypot(dx, dy);
-  }
-
-  // отрезки стрелки: влево (десктоп) или вверх (мобильный)
-  function segments(dir) {
-    const cx = (COLS - 1) / 2, cy = (ROWS - 1) / 2;
-    if (dir === 'up') {
-      const tipY = ROWS * 0.24, tailY = ROWS * 0.80, W = COLS * 0.16;
-      return [[cx, tipY, cx, tailY], [cx, tipY, cx - W, tipY + W * 0.8], [cx, tipY, cx + W, tipY + W * 0.8]];
-    }
-    const tipX = COLS * 0.16, tailX = COLS * 0.84, H = ROWS * 0.30;
-    return [[tipX, cy, tailX, cy], [tipX, cy, tipX + H / ASPECT, cy - H], [tipX, cy, tipX + H / ASPECT, cy + H]];
-  }
-
-  let t = 0, last = 0;
-  function frame(now) {
-    asciiRAF = requestAnimationFrame(frame);
-    if (now - last < 60) return;        // ~16 fps — спокойно и легко
-    last = now;
-    t += 0.05;
-    const dir = window.innerWidth <= 768 ? 'up' : 'left';
-    const segs = segments(dir);
-    let out = '';
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        let d = Infinity;
-        for (const s of segs) d = Math.min(d, distSeg(x, y, s[0], s[1], s[2], s[3]));
-        const base = Math.max(0, 1 - d / 1.15);          // толщина линии
-        // бегущая по стрелке волна плотности — «течёт» к острию
-        const along = dir === 'up' ? y : x;
-        const wave = 0.55 + 0.45 * Math.sin(along * 0.6 + t * 2.4);
-        const inten = base * wave;
-        out += inten <= 0.06 ? ' ' : ramp[Math.max(1, Math.min(ramp.length - 1, Math.floor(inten * ramp.length)))];
-      }
-      out += '\n';
-    }
-    pre.textContent = out;
-  }
-  asciiRAF = requestAnimationFrame(frame);
-}
-
+// Пустое состояние: пока не выбран проект — короткая справка обо мне,
+// ниже — простая линейная стрелка к списку слева.
 function renderEmpty() {
   activeProjectId = null;
   updateTitle();
@@ -170,13 +109,23 @@ function renderEmpty() {
   panel.classList.remove('panel-iframe');
   panel.innerHTML = `
     <div class="pd-empty">
-      <pre class="pd-ascii" aria-hidden="true"></pre>
-      <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+      <div class="pd-intro">
+        <p class="pd-intro-name" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</p>
+        <p class="pd-intro-role" data-en="designer" data-ru="дизайнер">designer</p>
+        <p class="pd-intro-line pd-intro-open" data-en="open to freelance projects and collaborations." data-ru="открыт к фриланс-проектам и коллаборациям.">open to freelance projects and collaborations.</p>
+      </div>
+
+      <div class="pd-point">
+        <svg class="pd-arrow" viewBox="0 0 132 24" fill="none" aria-hidden="true">
+          <line x1="131" y1="12" x2="7" y2="12" stroke="currentColor" stroke-width="0.75"/>
+          <polyline points="17,3.5 6.5,12 17,20.5" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+      </div>
     </div>
   `;
   panel.scrollTop = 0;
-  const pre = panel.querySelector('.pd-ascii');
-  if (pre) startAscii(pre);
+  startPulse();
 }
 
 // ─── Появление/исчезновение по скроллу (data-fx="scroll") ───
@@ -300,7 +249,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   activeProjectId = id;
   if (updateUrl) writeHash(project, replaceUrl);
   updateTitle();
-  stopAscii();
+  stopPulse();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   dropIframeNav(); // окно прошлого кейса выгружается вместе с iframe
   showNav(); // при выборе проекта навигация остаётся показанной
@@ -427,7 +376,10 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
     renderProject(card.dataset.id);
     scrollToCard(card);
   });
-  card.addEventListener('mouseenter', () => card.classList.add('hovered'));
+  card.addEventListener('mouseenter', () => {
+    stopPulse(); // мышь дошла до списка — подсказка больше не нужна
+    card.classList.add('hovered');
+  });
   card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
 
   const id = card.dataset.id;
@@ -452,6 +404,33 @@ document.querySelectorAll('.card[data-id]').forEach(card => {
     .catch(() => {})
     .finally(() => card.classList.remove('loading'));
 });
+
+
+// ─── Подсказка «сюда можно нажать» ───
+// Пока проект не выбран и мышь ещё не заходила в список, плитки слева
+// вразнобой дышат яркостью. Первое же наведение (или открытый кейс)
+// подсказку снимает — навсегда, повторять её уже незачем.
+let pulseStopped = false;
+
+function startPulse() {
+  if (pulseStopped) return;
+  const grid = document.querySelector('.cards-grid');
+  if (!grid) return;
+  allCards.forEach(card => {
+    if (card.style.getPropertyValue('--pulse-dur')) return;
+    // у каждой плитки свой период и отрицательная задержка: цикл
+    // начинается с середины, поэтому сетка не дышит в такт
+    card.style.setProperty('--pulse-dur', (3.4 + Math.random() * 3.8).toFixed(2) + 's');
+    card.style.setProperty('--pulse-delay', (-Math.random() * 7).toFixed(2) + 's');
+  });
+  grid.classList.add('pulsing');
+}
+
+function stopPulse() {
+  pulseStopped = true;
+  const grid = document.querySelector('.cards-grid');
+  if (grid) grid.classList.remove('pulsing');
+}
 
 
 // ─── Tag filter ───

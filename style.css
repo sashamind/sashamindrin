@@ -363,6 +363,37 @@ main {
   opacity: 0;
 }
 
+/* Пока проект не выбран и мышь ещё не заходила в список, плитки слева
+   вразнобой дышат яркостью — видно, что по ним можно нажать. Период и
+   сдвиг фазы у каждой свои, их задаёт main.js. */
+@keyframes tilePulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* на пике вуаль над плиткой приподнимается — миниатюра в этот момент
+   проступает вдвое сильнее, чем при постоянных 0.82 */
+@keyframes tileVeil {
+  0%, 100% { opacity: 0.82; }
+  50%      { opacity: 0.64; }
+}
+
+.cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner {
+  animation: tilePulse var(--pulse-dur, 5s) ease-in-out var(--pulse-delay, 0s) infinite;
+}
+
+/* вуаль дышит в такт со своей плиткой: период и сдвиг фазы те же */
+.cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner::after {
+  animation: tileVeil var(--pulse-dur, 5s) ease-in-out var(--pulse-delay, 0s) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cards-grid.pulsing .card .card-inner,
+  .cards-grid.pulsing .card .card-inner::after {
+    animation: none;
+  }
+}
+
 .card-label {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -808,20 +839,79 @@ body.page-texts .pd-header .pd-desc {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
   color: var(--fg2);
 }
 
-.pd-ascii {
+.pd-intro {
+  max-width: 420px;
+  text-align: center;
+  animation: pdFadeIn 0.6s ease both;
+}
+
+.pd-intro-name {
   margin: 0;
   font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--fg);
+}
+
+.pd-intro-role {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  opacity: 0.7;
+  text-transform: lowercase;
+}
+
+.pd-intro-line {
+  margin: 22px 0 0;
   font-size: 12px;
-  line-height: 1.15;
-  letter-spacing: 0.06em;
-  color: var(--fg2);
-  opacity: 0.5;
-  white-space: pre;
-  user-select: none;
+  line-height: 1.75;
+  color: var(--fg);
+  opacity: 0.88;
+}
+
+.pd-intro-open {
+  opacity: 0.62;
+}
+
+/* Стрелка к списку слева — отдельным ярусом, ниже блока «обо мне» */
+.pd-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(48px, 12vh, 120px);
+  animation: pdFadeIn 0.6s ease 0.25s both;
+}
+
+/* лёгкое движение в сторону, куда смотрит стрелка: влево на десктопе,
+   вверх на мобильном (там она развёрнута, и сдвиг идёт по её же оси) */
+@keyframes arrowNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-7px); }
+}
+
+@keyframes arrowNudgeUp {
+  0%, 100% { transform: rotate(90deg) translateX(0); }
+  50%      { transform: rotate(90deg) translateX(-7px); }
+}
+
+.pd-arrow {
+  width: 132px;
+  height: 24px;
+  color: var(--fg);
+  opacity: 0.45;
+  animation: arrowNudge 2.8s ease-in-out 0.9s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-arrow {
+    animation: none;
+  }
 }
 
 .pd-empty-text {
@@ -932,8 +1022,17 @@ body.page-texts .pd-header .pd-desc {
     min-height: 40vh;
   }
 
-  .pd-ascii {
-    font-size: 10px;
+  .pd-point {
+    margin-top: clamp(32px, 8vh, 72px);
+  }
+
+  /* лента карточек сверху — разворачиваем стрелку вверх; поля по бокам
+     компенсируют то, что повёрнутый бокс выходит за свою строку */
+  .pd-arrow {
+    width: 84px;
+    transform: rotate(90deg);
+    animation-name: arrowNudgeUp;
+    margin: 30px 0;
   }
 
   body.page-split .hero {
