@@ -3,13 +3,9 @@
 # Локальное состояние Supabase CLI
 supabase/.temp/
 
-# Растровые ассеты дампа лежат в Supabase Storage (бакет portfolio),
-# ссылки в HTML переписаны на публичные URL. SVG остаётся в репозитории:
-# Supabase отдаёт SVG и HTML как text/plain, поэтому их нельзя хостить там.
-shh-creative/images/*.png
-shh-creative/images/*.jpg
-shh-creative/images/*.gif
-shh-creative/images/*.webp
+# Медиа кейсов (shh-creative/images и shh-creative/media) лежит прямо в
+# репозитории и раздаётся с GitHub Pages — Supabase больше не используется.
+# Неиспользуемые оригиналы вынесены за пределы репозитория, в ../_unused-assets.
 
 # _inbox — папка-приёмник. Структура папок и метаданные (project.md,
 # README, .gitkeep) хранятся в git; сами дропнутые файлы — медиа,
