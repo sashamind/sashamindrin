@@ -100,6 +100,8 @@ function applyLangSections(container, lang) {
 // ниже — простая линейная стрелка к списку слева.
 function renderEmpty() {
   activeProjectId = null;
+  if (caseExpand) caseExpand.hidden = true;
+  setCaseFull(false);
   updateTitle();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
   dropIframeNav(); // панель очищается — iframe прошлого кейса исчезает
@@ -247,6 +249,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
+  if (caseExpand) caseExpand.hidden = false;
   if (updateUrl) writeHash(project, replaceUrl);
   updateTitle();
   stopPulse();
@@ -584,6 +587,34 @@ function dropIframeNav() {
     if (navSources[i].kind === 'iframe') navSources.splice(i, 1);
   }
 }
+
+// ─── Кейс на весь экран ───
+// Шапка, теги, список слева и подвал убираются — кейс занимает окно
+// целиком, как если открыть его страницу отдельным адресом.
+const caseExpand = document.getElementById('caseExpand');
+
+function setCaseFull(on) {
+  document.body.classList.toggle('case-full', on);
+  if (!caseExpand) return;
+  // подпись двуязычная и меняется вместе с состоянием, поэтому правим
+  // сами data-атрибуты — applyLang потом читает их как у всех остальных
+  caseExpand.dataset.en = on ? 'close' : 'expand';
+  caseExpand.dataset.ru = on ? 'свернуть' : 'развернуть';
+  caseExpand.textContent = currentLang === 'en' ? caseExpand.dataset.en : caseExpand.dataset.ru;
+}
+
+if (caseExpand) {
+  caseExpand.addEventListener('click', () => {
+    setCaseFull(!document.body.classList.contains('case-full'));
+    caseExpand.blur();
+  });
+}
+
+// Esc работает, пока фокус не внутри iframe — поэтому кнопка видна и в
+// развёрнутом состоянии: из него всегда есть выход мышью
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.body.classList.contains('case-full')) setCaseFull(false);
+});
 
 
 // ─── Init ───
