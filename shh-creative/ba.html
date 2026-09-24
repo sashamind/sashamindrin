@@ -42,6 +42,17 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
   }
 }
 
+/* Бутылка крупнее на 30%. Размер и положение этому элементу проставляет
+   скрипт зеро-блока в inline-стилях, поэтому ширину в CSS менять
+   бесполезно — масштабируем саму картинку внутри. Трогаем именно img:
+   у элемента включена пошаговая анимация по скроллу, и она управляет
+   трансформацией .tn-atom, так что своя перезаписалась бы. */
+#rec1535578721 .tn-elem[data-elem-id="1762628335004"] .tn-atom { overflow: visible; }
+#rec1535578721 .tn-elem[data-elem-id="1762628335004"] .tn-atom__img {
+  transform: scale(1.3);
+  transform-origin: center center;
+}
+
 /* Blend mode: screen — hide black pixels on GIF and surrounding images */
 #rec1535578721 .tn-elem[data-elem-id="1762628335004"],
 #rec1535578721 .tn-elem[data-elem-id="1762628335004"] .tn-atom,
@@ -289,6 +300,91 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   #rec1168059081 .sch-source .sch-words { margin-top: 2px; }
   #rec1168059081 .sch-down { display: none; }
 
+  /* ── Появление при прокрутке ──
+     Класс fx вешает js: без него всё видно сразу, поэтому при отключённых
+     скриптах схема не пропадает. is-in добавляется, когда секция входит в
+     кадр, и запускает всю очередь. */
+  #rec1168059081.fx .sch-idea-label,
+  #rec1168059081.fx .sch-idea .sch-words li,
+  #rec1168059081.fx .sch-mark,
+  #rec1168059081.fx .sch-source-mark .sch-svg,
+  #rec1168059081.fx .sch-source-name,
+  #rec1168059081.fx .sch-source .sch-words li {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  /* знак не подъезжает, а проявляется с еле заметным ростом */
+  #rec1168059081.fx .sch-mark {
+    transform: scale(0.94);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  #rec1168059081.fx.is-in .sch-idea-label,
+  #rec1168059081.fx.is-in .sch-idea .sch-words li,
+  #rec1168059081.fx.is-in .sch-mark,
+  #rec1168059081.fx.is-in .sch-source-mark .sch-svg,
+  #rec1168059081.fx.is-in .sch-source-name,
+  #rec1168059081.fx.is-in .sch-source .sch-words li {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* очередь: заголовок, слова по одному, знак */
+  #rec1168059081.fx.is-in .sch-idea-label            { transition-delay: 0.05s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(1) { transition-delay: 0.20s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(2) { transition-delay: 0.28s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(3) { transition-delay: 0.36s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(4) { transition-delay: 0.44s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(5) { transition-delay: 0.52s; }
+  #rec1168059081.fx.is-in .sch-idea .sch-words li:nth-child(6) { transition-delay: 0.60s; }
+  #rec1168059081.fx.is-in .sch-mark                  { transition-delay: 0.75s; }
+
+  /* Ветки выходят по очереди: левая целиком, затем середина, затем
+     правая. Задержки внутри ветки отсчитываются от её начала —
+     стрелка, остриё, знак, название, свойства. */
+  #rec1168059081.fx.is-in .sch-source:nth-child(1) .sch-source-mark .sch-svg { transition-delay: 1.65s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(1) .sch-source-name { transition-delay: 1.75s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(1) .sch-words li:nth-child(1) { transition-delay: 1.83s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(1) .sch-words li:nth-child(2) { transition-delay: 1.89s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(1) .sch-words li:nth-child(3) { transition-delay: 1.95s; }
+
+  #rec1168059081.fx.is-in .sch-source:nth-child(2) .sch-source-mark .sch-svg { transition-delay: 2.40s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(2) .sch-source-name { transition-delay: 2.50s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(2) .sch-words li:nth-child(1) { transition-delay: 2.58s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(2) .sch-words li:nth-child(2) { transition-delay: 2.64s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(2) .sch-words li:nth-child(3) { transition-delay: 2.70s; }
+
+  #rec1168059081.fx.is-in .sch-source:nth-child(3) .sch-source-mark .sch-svg { transition-delay: 3.15s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(3) .sch-source-name { transition-delay: 3.25s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(3) .sch-words li:nth-child(1) { transition-delay: 3.33s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(3) .sch-words li:nth-child(2) { transition-delay: 3.39s; }
+  #rec1168059081.fx.is-in .sch-source:nth-child(3) .sch-words li:nth-child(3) { transition-delay: 3.45s; }
+
+  /* стрелки прочерчиваются: длину контура и задержку проставляет js */
+  #rec1168059081.fx .sch-arrows line,
+  #rec1168059081.fx .sch-arrows polyline {
+    transition: stroke-dashoffset 0.7s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #rec1168059081.fx .sch-idea-label,
+    #rec1168059081.fx .sch-idea .sch-words li,
+    #rec1168059081.fx .sch-mark,
+    #rec1168059081.fx .sch-source-mark .sch-svg,
+    #rec1168059081.fx .sch-source-name,
+    #rec1168059081.fx .sch-source .sch-words li {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    #rec1168059081.fx .sch-arrows line,
+    #rec1168059081.fx .sch-arrows polyline {
+      stroke-dashoffset: 0 !important;
+      transition: none;
+    }
+  }
+
   @media screen and (max-width: 768px) {
     #rec1168059081 { padding: 64px 20px; }
     #rec1168059081 .sch-mark { margin-top: 32px; }
@@ -380,7 +476,254 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   </div>
 
 </figure>
-</div> <div id="rec1167900991" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167900991 .t396__artboard {height:800px;background-color:#0a0a0a;}#rec1167900991 .t396__filter {height:800px;}#rec1167900991 .t396__carrier{height:800px;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:540px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:600px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:300px;height:100vh;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:320px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media (min-width:1200px){#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="1752706219247"]{opacity:0;}}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="176263255839273570"]{opacity:0;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167900991" data-artboard-screens="320,480,640,960,1200" data-artboard-height="800" data-artboard-valign="center" data-artboard-upscale="grid" data-artboard-height-res-320="320" data-artboard-height-res-480="300" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="600" data-artboard-height-res-960="540"> <div class="t396__carrier" data-artboard-recid="1167900991"></div> <div class="t396__filter" data-artboard-recid="1167900991"></div> <div class='t396__elem tn-elem tn-elem__11679009911752706219247 t396__elem--anim-hidden' data-elem-id='1752706219247' data-elem-type='image' data-field-top-value="265" data-field-left-value="233" data-field-height-value="280" data-field-width-value="744" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-animate-sbs-event="scroll" data-animate-sbs-trg="1" data-animate-sbs-trgofst="0" data-animate-sbs-opts="[{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':'0','dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':0,'ro':0,'di':0,'dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':300,'dd':'0','fi':'0'}]" data-field-filewidth-value="1680" data-field-fileheight-value="632" data-field-heightmode-value="hug" data-field-top-res-320-value="109" data-field-left-res-320-value="15" data-field-height-res-320-value="113" data-field-width-res-320-value="300" data-field-top-res-480-value="74" data-field-left-res-480-value="29" data-field-height-res-480-value="163" data-field-width-res-480-value="432" data-field-top-res-640-value="216" data-field-left-res-640-value="109" data-field-height-res-640-value="163" data-field-width-res-640-value="433" data-field-top-res-960-value="166" data-field-left-res-960-value="194" data-field-height-res-960-value="219" data-field-width-res-960-value="583"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3565-3235-4134-b232-383365383039__untitled.webp'
+
+<script>
+(function () {
+  var sec = document.getElementById('rec1168059081');
+  if (!sec || !window.IntersectionObserver) return;
+
+  var strokes = sec.querySelectorAll('.sch-arrows line, .sch-arrows polyline');
+  // прячем контуры, отмотав пунктир на всю длину: линия как бы ещё не проведена
+  for (var i = 0; i < strokes.length; i++) {
+    var el = strokes[i], len = el.getTotalLength();
+    el.style.strokeDasharray = len;
+    el.style.strokeDashoffset = len;
+    // порядок в разметке: луч и остриё левой ветки, затем средней, затем
+    // правой. Ветка стартует своим чередом, остриё — вслед за своим лучом.
+    var branch = Math.floor(i / 2), isHead = i % 2 === 1;
+    el.style.transitionDelay = (0.95 + branch * 0.75 + (isHead ? 0.55 : 0)).toFixed(2) + 's';
+  }
+  sec.classList.add('fx');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      sec.classList.add('is-in');
+      for (var i = 0; i < strokes.length; i++) strokes[i].style.strokeDashoffset = 0;
+      io.disconnect(); // показываем один раз, а не при каждом проходе мимо
+    });
+  }, { threshold: 0.25 });
+  io.observe(sec);
+})();
+</script>
+</div> <div id="rec-ba-uzor" class="r t-rec" style=" ">
+<style>
+  /* Узор во всю ширину сразу за схемой: светлая секция кончается, полоса
+     начинается от края до края — уже на тёмном.
+     Рендер нарисован чёрным по белому, поэтому сначала инвертируем его
+     (узор становится светлым, подложка — чёрной), а затем screen гасит
+     чёрное: на экране остаётся только рисунок поверх тёмного фона. */
+  #rec-ba-uzor {
+    background: #0a0a0a;
+    line-height: 0;
+  }
+  #rec-ba-uzor img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: invert(1);
+    mix-blend-mode: screen;
+  }
+</style>
+<img class="ba-fx" src="media/ba-uzor.webp" alt="" width="2880" height="941" loading="lazy" decoding="async" />
+</div> <div id="rec-ba-elements" class="r t-rec" style=" ">
+<style>
+  /* Рендеры визиток и меню на тёмном — исходники с прозрачным фоном,
+     поэтому подложка ничем не гасится и края остаются мягкими. */
+  #rec-ba-elements {
+    background: #0a0a0a;
+    padding: 80px 40px 100px;
+  }
+  /* Круговой орнамент над рядом: медленное вращение, один оборот за 45 с.
+     Вектор, поэтому на любом размере остаётся чистым. */
+  #rec-ba-elements .el-circle {
+    display: block;
+    width: 220px;
+    height: auto;
+    margin: 0 auto 64px;
+    animation: circleSpin 45s linear infinite;
+  }
+
+  @keyframes circleSpin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-elements .el-circle { animation: none; }
+  }
+
+  /* меню слева, визитки справа. Доли flex заданы теми же числами, что и
+     прежние ширины, поэтому соотношение 924 к 385 держится при любой
+     ширине панели, а max-width ряда не даёт им разрастись на широкой. */
+  #rec-ba-elements .el-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    margin: 0 auto;
+  }
+  #rec-ba-elements img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* без этого элемент flex не сжимается меньше собственной ширины
+       картинки (1900 и 1400 px) и заданный размер не работает */
+    min-width: 0;
+  }
+  /* размеры заданы по отдельности: не растут, но на узкой панели
+     ужимаются вместе, сохраняя соотношение */
+  #rec-ba-elements .el-menu    { flex: 0 1 1015px; }
+  #rec-ba-elements .el-buscard { flex: 0 1 351px; }
+
+  /* Тарелки: три кадра сменяют друг друга раз в секунду. Первый лежит в
+     потоке и держит высоту блока, два других — поверх него. Переключение
+     резкое: в кейфреймах прозрачность падает на соседних долях процента,
+     без плавного перехода. */
+  /* Нижний ряд: тарелки слева, флаг справа впритык к краю секции.
+     Отрицательное поле справа гасит её padding, поэтому штанга флага
+     уходит за край экрана, а не повисает в воздухе. */
+  #rec-ba-elements .el-bottom {
+    display: flex;
+    align-items: center;
+    margin: 90px -40px 0 0;
+  }
+  #rec-ba-elements .el-plates {
+    position: relative;
+    flex: 0 1 560px;
+    min-width: 0;
+    margin-left: 6%;    /* тарелки сдвинуты влево, но не прижаты к краю */
+    margin-right: auto;
+  }
+  #rec-ba-elements .el-flag {
+    flex: 0 1 640px;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #rec-ba-elements .el-plates img {
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    animation: plateCycle 3s linear infinite;
+  }
+  #rec-ba-elements .el-plates img:first-child { position: relative; }
+  #rec-ba-elements .el-plates img + img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #rec-ba-elements .el-plates img:nth-child(2) { animation-delay: 1s; }
+  #rec-ba-elements .el-plates img:nth-child(3) { animation-delay: 2s; }
+
+  @keyframes plateCycle {
+    0%      { opacity: 1; }
+    33.33%  { opacity: 1; }
+    33.34%  { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-elements .el-plates img { animation: none; }
+    #rec-ba-elements .el-plates img:first-child { opacity: 1; }
+  }
+
+  @media screen and (max-width: 768px) {
+    #rec-ba-elements { padding: 40px 0 56px; }
+    /* на узком экране ряд разворачивается в столбец, флаг по-прежнему
+       прижат к правому краю */
+    #rec-ba-elements .el-bottom {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 40px;
+      margin: 56px 0 0;
+    }
+    #rec-ba-elements .el-plates {
+      flex: 0 1 auto;
+      width: 76%;
+      margin: 0 auto;
+    }
+    #rec-ba-elements .el-flag { flex: 0 1 auto; width: 76%; }
+    #rec-ba-elements .el-circle { width: 150px; margin-bottom: 40px; }
+    /* рядом на узком экране им не встать — возвращаем в столбец */
+    #rec-ba-elements .el-row {
+      flex-direction: column;
+      gap: 32px;
+    }
+    #rec-ba-elements .el-menu    { max-width: 96%; }
+    #rec-ba-elements .el-buscard { max-width: 80%; }
+  }
+</style>
+<img class="el-circle ba-fx-fade" src="media/ba-uzor-circle.svg" alt="" width="509" height="512" loading="lazy" decoding="async" />
+
+<div class="el-row">
+  <img class="el-menu ba-fx" src="media/ba-menu.webp" alt="" width="2100" height="2101" loading="lazy" decoding="async" />
+  <img class="el-buscard ba-fx" src="media/ba-buscard.webp" alt="" width="1400" height="1400" loading="lazy" decoding="async" />
+</div>
+
+<div class="el-bottom">
+  <div class="el-plates ba-fx">
+    <img src="media/ba-plate-1.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
+    <img src="media/ba-plate-2.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
+    <img src="media/ba-plate-3.webp" alt="" width="1200" height="1199" loading="lazy" decoding="async" />
+  </div>
+  <img class="el-flag ba-fx" src="media/ba-flag.webp" alt="" width="1400" height="1400" loading="lazy" decoding="async" />
+</div>
+</div> <style>
+  /* ── Появление по прокрутке для узора, круга, ряда и тарелок ──
+     Классы ba-fx / ba-fx-fade расставлены в разметке, но прячут элемент
+     только вместе с ba-fx-on, который вешает скрипт. Без скриптов всё
+     видно сразу. */
+  .ba-fx-on .ba-fx {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+  /* кругу трогать transform нельзя — он занят вращением, поэтому только
+     прозрачность */
+  .ba-fx-on .ba-fx-fade {
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .ba-fx-on .ba-fx.is-in,
+  .ba-fx-on .ba-fx-fade.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  /* визитки выходят следом за меню, а не одновременно */
+  .ba-fx-on .el-buscard { transition-delay: 0.18s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ba-fx-on .ba-fx,
+    .ba-fx-on .ba-fx-fade {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+<script>
+(function () {
+  if (!window.IntersectionObserver) return;
+  var els = document.querySelectorAll('.ba-fx, .ba-fx-fade');
+  if (!els.length) return;
+  document.documentElement.classList.add('ba-fx-on');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target); // каждый показывается один раз
+    });
+    // отрицательное поле снизу поднимает черту срабатывания выше края
+    // экрана: элемент должен зайти в кадр на четверть высоты окна, а не
+    // проявляться в тот момент, когда только показался снизу
+  }, { threshold: 0.2, rootMargin: '0px 0px -25% 0px' });
+
+  for (var i = 0; i < els.length; i++) io.observe(els[i]);
+})();
+</script>
+<div id="rec1167900991" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167900991 .t396__artboard {height:800px;background-color:#0a0a0a;}#rec1167900991 .t396__filter {height:800px;}#rec1167900991 .t396__carrier{height:800px;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:540px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:600px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:300px;height:100vh;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:320px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media (min-width:1200px){#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="1752706219247"]{opacity:0;}}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="176263255839273570"]{opacity:0;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167900991" data-artboard-screens="320,480,640,960,1200" data-artboard-height="800" data-artboard-valign="center" data-artboard-upscale="grid" data-artboard-height-res-320="320" data-artboard-height-res-480="300" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="600" data-artboard-height-res-960="540"> <div class="t396__carrier" data-artboard-recid="1167900991"></div> <div class="t396__filter" data-artboard-recid="1167900991"></div> <div class='t396__elem tn-elem tn-elem__11679009911752706219247 t396__elem--anim-hidden' data-elem-id='1752706219247' data-elem-type='image' data-field-top-value="265" data-field-left-value="233" data-field-height-value="280" data-field-width-value="744" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-animate-sbs-event="scroll" data-animate-sbs-trg="1" data-animate-sbs-trgofst="0" data-animate-sbs-opts="[{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':'0','dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':0,'ro':0,'di':0,'dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':300,'dd':'0','fi':'0'}]" data-field-filewidth-value="1680" data-field-fileheight-value="632" data-field-heightmode-value="hug" data-field-top-res-320-value="109" data-field-left-res-320-value="15" data-field-height-res-320-value="113" data-field-width-res-320-value="300" data-field-top-res-480-value="74" data-field-left-res-480-value="29" data-field-height-res-480-value="163" data-field-width-res-480-value="432" data-field-top-res-640-value="216" data-field-left-res-640-value="109" data-field-height-res-640-value="163" data-field-width-res-640-value="433" data-field-top-res-960-value="166" data-field-left-res-960-value="194" data-field-height-res-960-value="219" data-field-width-res-960-value="583"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3565-3235-4134-b232-383365383039__untitled.webp'
 src='images/tild3565-3235-4134-b232-383365383039__-__resize__20x__untitled.webp'
 alt='' imgfield='tn_img_1752706219247'
 /> </div> </div> <div class='t396__elem tn-elem tn-elem__1167900991176263255839273570 t396__elem--anim-hidden' data-elem-id='176263255839273570' data-elem-type='image' data-field-top-value="265" data-field-left-value="233" data-field-height-value="280" data-field-width-value="744" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-animate-mobile="y" data-animate-sbs-event="scroll" data-animate-sbs-trg="1" data-animate-sbs-trgofst="0" data-animate-sbs-opts="[{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':'0','dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':0,'ro':0,'di':0,'dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':200,'dd':400,'fi':'0'}]" data-field-filewidth-value="1680" data-field-fileheight-value="632" data-field-heightmode-value="hug" data-field-top-res-320-value="109" data-field-left-res-320-value="15" data-field-height-res-320-value="113" data-field-width-res-320-value="300" data-animate-sbs-opts-res-320="[{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':'0','dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':0,'ro':0,'di':0,'dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':100,'dd':200,'fi':'0'}]" data-field-top-res-480-value="74" data-field-left-res-480-value="29" data-field-height-res-480-value="163" data-field-width-res-480-value="432" data-field-top-res-640-value="216" data-field-left-res-640-value="109" data-field-height-res-640-value="163" data-field-width-res-640-value="433" data-field-top-res-960-value="166" data-field-left-res-960-value="194" data-field-height-res-960-value="219" data-field-width-res-960-value="583"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3734-6366-4661-b263-353836323936__42.webp'
@@ -395,19 +738,155 @@ alt='' imgfield='tn_img_1752706219247'
 /> </div> </div> <div class='t396__elem tn-elem tn-elem__11680914761752706337385' data-elem-id='1752706337385' data-elem-type='image' data-field-top-value="-46" data-field-left-value="-759" data-field-height-value="810" data-field-width-value="270" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="895" data-field-fileheight-value="2684" data-field-widthmode-value="fixed" data-field-heightmode-value="hug" data-field-top-res-320-value="41" data-field-left-res-320-value="87" data-field-height-res-320-value="438" data-field-width-res-320-value="146" data-field-top-res-480-value="59" data-field-left-res-480-value="-287" data-field-height-res-480-value="474" data-field-width-res-480-value="158" data-field-top-res-640-value="1" data-field-left-res-640-value="-446" data-field-height-res-640-value="783" data-field-width-res-640-value="261" data-field-top-res-960-value="-79" data-field-left-res-960-value="-582" data-field-height-res-960-value="810"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild6465-3336-4661-a233-616434383933__4.webp'
 src='images/tild6465-3336-4661-a233-616434383933__-__resize__20x__4.webp'
 alt='' imgfield='tn_img_1752706337385'
-/> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1168091476');});});</script> <!-- /T396 --> </div> <div id="rec1168072391" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1168072391 .t396__artboard {min-height:600px;height:100vh;background-color:#0a0a0a;}#rec1168072391 .t396__filter {min-height:600px;height:100vh;}#rec1168072391 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1168072391 .t396__artboard,#rec1168072391 .t396__filter,#rec1168072391 .t396__carrier {min-height:300px;}#rec1168072391 .t396__filter {}#rec1168072391 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1168072391 .t396__artboard,#rec1168072391 .t396__filter,#rec1168072391 .t396__carrier {min-height:270px;}#rec1168072391 .t396__filter {}#rec1168072391 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1168072391 .t396__artboard,#rec1168072391 .t396__filter,#rec1168072391 .t396__carrier {min-height:220px;height:100vh;}#rec1168072391 .t396__filter {}#rec1168072391 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1168072391 .t396__artboard,#rec1168072391 .t396__filter,#rec1168072391 .t396__carrier {min-height:1119px;}#rec1168072391 .t396__filter {}#rec1168072391 .t396__carrier {background-attachment:scroll;}}#rec1168072391 .tn-elem[data-elem-id="1752708551282"]{z-index:3;top:calc(50vh - 300px + 209px);;left:calc(50% - 600px + 1004px);;width:159px;height:auto;}#rec1168072391 .tn-elem[data-elem-id="1752708551282"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1168072391 .tn-elem[data-elem-id="1752708551282"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1168072391 .tn-elem[data-elem-id="1752708551282"]{display:table;top:78px;;left:calc(50% - 480px + 731px);;width:100px;height:auto;}}@media screen and (max-width:959px){#rec1168072391 .tn-elem[data-elem-id="1752708551282"]{display:table;top:110px;;left:calc(50% - 320px + 508px);;width:71px;height:auto;}}@media screen and (max-width:639px){#rec1168072391 .tn-elem[data-elem-id="1752708551282"]{display:table;top:84px;;left:calc(50% - 240px + 362px);;width:47px;height:auto;}}@media screen and (max-width:479px){#rec1168072391 .tn-elem[data-elem-id="1752708551282"]{display:table;top:856px;;left:calc(50% - 160px + 101px);;width:100px;height:auto;}}#rec1168072391 .tn-elem[data-elem-id="1752708605082"]{z-index:3;top:calc(50vh - 300px + 209px);;left:calc(50% - 600px + 676px);;width:159px;height:auto;}#rec1168072391 .tn-elem[data-elem-id="1752708605082"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1168072391 .tn-elem[data-elem-id="1752708605082"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1168072391 .tn-elem[data-elem-id="1752708605082"]{display:table;top:78px;;left:calc(50% - 480px + 525px);;width:100px;height:auto;}}@media screen and (max-width:959px){#rec1168072391 .tn-elem[data-elem-id="1752708605082"]{display:table;top:110px;;left:calc(50% - 320px + 363px);;width:71px;height:auto;}}@media screen and (max-width:639px){#rec1168072391 .tn-elem[data-elem-id="1752708605082"]{display:table;top:84px;;left:calc(50% - 240px + 265px);;width:47px;height:auto;}}@media screen and (max-width:479px){#rec1168072391 .tn-elem[data-elem-id="1752708605082"]{display:table;top:613px;;left:calc(50% - 160px + 101px);;width:100px;height:auto;}}#rec1168072391 .tn-elem[data-elem-id="1752708588502"]{z-index:3;top:calc(50vh - 300px + 209px);;left:calc(50% - 600px + 348px);;width:159px;height:auto;}#rec1168072391 .tn-elem[data-elem-id="1752708588502"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1168072391 .tn-elem[data-elem-id="1752708588502"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1168072391 .tn-elem[data-elem-id="1752708588502"]{display:table;top:78px;;left:calc(50% - 480px + 318px);;width:100px;height:auto;}}@media screen and (max-width:959px){#rec1168072391 .tn-elem[data-elem-id="1752708588502"]{display:table;top:110px;;left:calc(50% - 320px + 216px);;width:71px;height:auto;}}@media screen and (max-width:639px){#rec1168072391 .tn-elem[data-elem-id="1752708588502"]{display:table;top:84px;;left:calc(50% - 240px + 167px);;width:47px;height:auto;}}@media screen and (max-width:479px){#rec1168072391 .tn-elem[data-elem-id="1752708588502"]{display:table;top:371px;;left:calc(50% - 160px + 101px);;width:100px;height:auto;}}#rec1168072391 .tn-elem[data-elem-id="1752708573574"]{z-index:3;top:calc(50vh - 300px + 209px);;left:calc(50% - 600px + 20px);;width:159px;height:auto;}#rec1168072391 .tn-elem[data-elem-id="1752708573574"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1168072391 .tn-elem[data-elem-id="1752708573574"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1168072391 .tn-elem[data-elem-id="1752708573574"]{display:table;top:78px;;left:calc(50% - 480px + 112px);;width:100px;height:auto;}}@media screen and (max-width:959px){#rec1168072391 .tn-elem[data-elem-id="1752708573574"]{display:table;top:110px;;left:calc(50% - 320px + 70px);;width:71px;height:auto;}}@media screen and (max-width:639px){#rec1168072391 .tn-elem[data-elem-id="1752708573574"]{display:table;top:84px;;left:calc(50% - 240px + 70px);;width:47px;height:auto;}}@media screen and (max-width:479px){#rec1168072391 .tn-elem[data-elem-id="1752708573574"]{display:table;top:130px;;left:calc(50% - 160px + 103px);;width:100px;height:auto;}}#rec1168072391 .tn-elem[data-elem-id="1752709051080"]{z-index:3;top:calc(50vh - 300px + 42px);;left:calc(50% - 600px + 472px);;width:257px;height:auto;}#rec1168072391 .tn-elem[data-elem-id="1752709051080"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;--t396-borderstyle:solid;--t396-borderstyle-existed:1;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1168072391 .tn-elem[data-elem-id="1752709051080"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1168072391 .tn-elem[data-elem-id="1752709051080"]{display:table;left:calc(50% - 480px + 409px);;height:auto;}}@media screen and (max-width:959px){#rec1168072391 .tn-elem[data-elem-id="1752709051080"]{display:table;top:47px;;left:calc(50% - 320px + 262px);;width:120px;height:auto;}}@media screen and (max-width:639px){#rec1168072391 .tn-elem[data-elem-id="1752709051080"]{display:table;top:27px;;left:calc(50% - 240px + 180px);;width:120px;height:auto;}}@media screen and (max-width:479px){#rec1168072391 .tn-elem[data-elem-id="1752709051080"]{display:table;top:63px;;left:calc(50% - 160px + 80px);;width:160px;height:auto;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1168072391" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="1119" data-artboard-height-res-480="220" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="270" data-artboard-height-res-960="300"> <div class="t396__carrier" data-artboard-recid="1168072391"></div> <div class="t396__filter" data-artboard-recid="1168072391"></div> <div class='t396__elem tn-elem tn-elem__11680723911752708551282' data-elem-id='1752708551282' data-elem-type='image' data-field-top-value="209" data-field-left-value="1004" data-field-height-value="222" data-field-width-value="159" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="805" data-field-fileheight-value="1125" data-field-heightmode-value="hug" data-field-top-res-320-value="856" data-field-left-res-320-value="101" data-field-height-res-320-value="140" data-field-width-res-320-value="100" data-field-top-res-480-value="84" data-field-left-res-480-value="362" data-field-height-res-480-value="66" data-field-width-res-480-value="47" data-field-top-res-640-value="110" data-field-left-res-640-value="508" data-field-height-res-640-value="99" data-field-width-res-640-value="71" data-field-top-res-960-value="78" data-field-left-res-960-value="731" data-field-height-res-960-value="140" data-field-width-res-960-value="100"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild6633-3761-4331-b761-623738313433__photo.webp'
-src='images/tild6633-3761-4331-b761-623738313433__-__resize__20x__photo.webp'
-alt='' imgfield='tn_img_1752708551282'
-/> </div> </div> <div class='t396__elem tn-elem tn-elem__11680723911752708605082' data-elem-id='1752708605082' data-elem-type='image' data-field-top-value="209" data-field-left-value="676" data-field-height-value="222" data-field-width-value="159" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="805" data-field-fileheight-value="1125" data-field-heightmode-value="hug" data-field-top-res-320-value="613" data-field-left-res-320-value="101" data-field-height-res-320-value="140" data-field-width-res-320-value="100" data-field-top-res-480-value="84" data-field-left-res-480-value="265" data-field-height-res-480-value="66" data-field-width-res-480-value="47" data-field-top-res-640-value="110" data-field-left-res-640-value="363" data-field-height-res-640-value="99" data-field-width-res-640-value="71" data-field-top-res-960-value="78" data-field-left-res-960-value="525" data-field-height-res-960-value="140" data-field-width-res-960-value="100"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3062-3337-4966-b438-653232663130__hokusay.webp'
-src='images/tild3062-3337-4966-b438-653232663130__-__resize__20x__hokusay.webp'
-alt='' imgfield='tn_img_1752708605082'
-/> </div> </div> <div class='t396__elem tn-elem tn-elem__11680723911752708588502' data-elem-id='1752708588502' data-elem-type='image' data-field-top-value="209" data-field-left-value="348" data-field-height-value="222" data-field-width-value="159" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="805" data-field-fileheight-value="1125" data-field-heightmode-value="hug" data-field-top-res-320-value="371" data-field-left-res-320-value="101" data-field-height-res-320-value="140" data-field-width-res-320-value="100" data-field-top-res-480-value="84" data-field-left-res-480-value="167" data-field-height-res-480-value="66" data-field-width-res-480-value="47" data-field-top-res-640-value="110" data-field-left-res-640-value="216" data-field-height-res-640-value="99" data-field-width-res-640-value="71" data-field-top-res-960-value="78" data-field-left-res-960-value="318" data-field-height-res-960-value="140" data-field-width-res-960-value="100"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3530-6566-4462-b566-363564353338__bilibin.webp'
-src='images/tild3530-6566-4462-b566-363564353338__-__resize__20x__bilibin.webp'
-alt='' imgfield='tn_img_1752708588502'
-/> </div> </div> <div class='t396__elem tn-elem tn-elem__11680723911752708573574' data-elem-id='1752708573574' data-elem-type='image' data-field-top-value="209" data-field-left-value="20" data-field-height-value="222" data-field-width-value="159" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="805" data-field-fileheight-value="1125" data-field-heightmode-value="hug" data-field-top-res-320-value="130" data-field-left-res-320-value="103" data-field-height-res-320-value="140" data-field-width-res-320-value="100" data-field-top-res-480-value="84" data-field-left-res-480-value="70" data-field-height-res-480-value="66" data-field-width-res-480-value="47" data-field-top-res-640-value="110" data-field-left-res-640-value="70" data-field-height-res-640-value="99" data-field-width-res-640-value="71" data-field-top-res-960-value="78" data-field-left-res-960-value="112" data-field-height-res-960-value="140" data-field-width-res-960-value="100"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3261-6634-4238-b832-636135353962__photo.webp'
-src='images/tild3261-6634-4238-b832-636135353962__-__resize__20x__photo.webp'
-alt='' imgfield='tn_img_1752708573574'
-/> </div> </div> <div class='t396__elem tn-elem tn-elem__11680723911752709051080' data-elem-id='1752709051080' data-elem-type='image' data-field-top-value="42" data-field-left-value="472" data-field-height-value="18" data-field-width-value="257" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="128" data-field-fileheight-value="9" data-field-heightmode-value="hug" data-field-top-res-320-value="63" data-field-left-res-320-value="80" data-field-height-res-320-value="11" data-field-width-res-320-value="160" data-field-widthmode-res-320-value="fixed" data-field-top-res-480-value="27" data-field-left-res-480-value="180" data-field-height-res-480-value="8" data-field-width-res-480-value="120" data-field-widthmode-res-480-value="fixed" data-field-top-res-640-value="47" data-field-left-res-640-value="262" data-field-height-res-640-value="8" data-field-width-res-640-value="120" data-field-widthmode-res-640-value="fixed" data-field-left-res-960-value="409" data-field-height-res-960-value="10"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3963-3036-4161-b362-396431313561___516.svg'
-src='images/tild3963-3036-4161-b362-396431313561___516.svg'
-alt='' imgfield='tn_img_1752709051080'
-/> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1168072391');});});</script> <!-- /T396 --> </div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="width:100%;height:100%;max-width:100%;max-height:100%;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_last.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  </body> </html>
+/> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1168091476');});});</script> <!-- /T396 --> </div> <div id="rec-ba-bilibin" class="r t-rec" style=" ">
+<style>
+  /* «Билибин или Хокусай?» — заголовок шрифтом проекта и картинка,
+     вырезанная по основному знаку. Маска — тот же контур, что и знак в
+     схеме, вынесен отдельным svg со сплошной заливкой: для mask-image
+     важна не краска, а форма непрозрачной области. */
+  #rec-ba-bilibin {
+    background: #0a0a0a;
+    padding: 140px 40px 160px;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+  }
+  #rec-ba-bilibin .bh-title {
+    margin: 0 0 80px;
+    font-size: clamp(13px, 1.2vw, 18px);
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: #e8e8e8;
+  }
+  #rec-ba-bilibin .bh-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+  }
+  #rec-ba-bilibin .bh-mask {
+    position: relative;
+    flex: 0 1 220px;
+    min-width: 0;
+    /* пропорции берём у самого знака, чтобы картинку не сплющивало */
+    aspect-ratio: 89.43 / 124.97;
+    margin: 0 auto;
+    overflow: hidden;
+    -webkit-mask: url('media/ba-znak-mask.svg') center / contain no-repeat;
+    mask: url('media/ba-znak-mask.svg') center / contain no-repeat;
+  }
+  /* картинка заведомо больше окна маски: запас по краям и есть то, за счёт
+     чего она может ездить за мышью, не оголяя контур */
+  #rec-ba-bilibin .bh-mask img {
+    position: absolute;
+    inset: -9%;
+    width: 118%;
+    height: 118%;
+    object-fit: cover;
+    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media screen and (max-width: 768px) {
+    #rec-ba-bilibin { padding: 72px 20px 88px; }
+    #rec-ba-bilibin .bh-title { margin-bottom: 56px; }
+    #rec-ba-bilibin .bh-row { gap: 20px; }
+    #rec-ba-bilibin .bh-mask { flex: 0 1 40%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-bilibin .bh-mask img { transition: none; }
+  }
+</style>
+
+<p class="bh-title"><span class="lang-ru">Билибин или Хокусай?</span><span class="lang-en">Bilibin or Hokusai?</span></p>
+
+<div class="bh-row">
+  <div class="bh-mask">
+    <img src="images/tild3530-6566-4462-b566-363564353338__bilibin.webp" alt="" width="805" height="1125" loading="lazy" decoding="async" />
+  </div>
+  <div class="bh-mask">
+    <img src="images/tild3062-3337-4966-b438-653232663130__hokusay.webp" alt="" width="805" height="1125" loading="lazy" decoding="async" />
+  </div>
+</div>
+
+<script>
+(function () {
+  var boxes = document.querySelectorAll('#rec-ba-bilibin .bh-mask');
+  if (!boxes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var MAX = 16; // предел сдвига в пикселях — меньше запаса картинки по краям
+  var frame = null;
+
+  function move(e) {
+    if (frame) return;              // не чаще кадра: mousemove сыплет часто
+    frame = requestAnimationFrame(function () {
+      frame = null;
+      // каждый знак считает сдвиг от своего центра, поэтому левый и правый
+      // ведут себя по-разному — они смотрят на курсор с разных сторон
+      for (var i = 0; i < boxes.length; i++) {
+        var r = boxes[i].getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2);
+        var dy = (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2);
+        dx = Math.max(-1, Math.min(1, dx));
+        dy = Math.max(-1, Math.min(1, dy));
+        // картинка идёт навстречу курсору — так содержимое кажется лежащим
+        // глубже маски, а не приклеенным к ней
+        var img = boxes[i].querySelector('img');
+        if (img) img.style.transform = 'translate(' + (-dx * MAX).toFixed(1) + 'px,' +
+                                                      (-dy * MAX).toFixed(1) + 'px)';
+      }
+    });
+  }
+
+  window.addEventListener('mousemove', move, { passive: true });
+  window.addEventListener('mouseout', function (e) {
+    if (e.relatedTarget) return;                     // курсор ушёл из окна
+    reset();
+  });
+
+  // ── то же самое на телефоне, только вместо мыши наклон корпуса ──
+  var base = null;      // как телефон держали в первый момент — это и есть ноль
+  var tframe = null;
+
+  function tilt(e) {
+    if (e.beta === null || e.gamma === null) return;
+    if (!base) base = { b: e.beta, g: e.gamma };
+    if (tframe) return;
+    tframe = requestAnimationFrame(function () {
+      tframe = null;
+      // наклон в градусах от исходного положения; 25° — полный ход
+      var dx = Math.max(-1, Math.min(1, (e.gamma - base.g) / 25));
+      var dy = Math.max(-1, Math.min(1, (e.beta - base.b) / 25));
+      for (var i = 0; i < boxes.length; i++) {
+        var im = boxes[i].querySelector('img');
+        if (im) im.style.transform = 'translate(' + (-dx * MAX).toFixed(1) + 'px,' +
+                                                    (-dy * MAX).toFixed(1) + 'px)';
+      }
+    });
+  }
+
+  function reset() {
+    for (var i = 0; i < boxes.length; i++) {
+      var im = boxes[i].querySelector('img');
+      if (im) im.style.transform = '';
+    }
+  }
+
+  if (window.DeviceOrientationEvent) {
+    // iOS с 13-й версии отдаёт наклон только после явного разрешения, и
+    // запросить его можно исключительно в ответ на касание — поэтому
+    // спрашиваем при первом тапе, один раз
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      var ask = function () {
+        document.removeEventListener('touchend', ask);
+        DeviceOrientationEvent.requestPermission().then(function (state) {
+          if (state === 'granted') window.addEventListener('deviceorientation', tilt);
+        }).catch(function () {});
+      };
+      document.addEventListener('touchend', ask, { once: true });
+    } else {
+      window.addEventListener('deviceorientation', tilt);
+    }
+  }
+})();
+</script>
+</div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="width:100%;height:100%;max-width:100%;max-height:100%;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_last.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  </body> </html>
