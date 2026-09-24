@@ -363,34 +363,35 @@ main {
   opacity: 0;
 }
 
-/* Пока проект не выбран и мышь ещё не заходила в список, плитки слева
+/* Пока проект не выбран и мышь ещё не заходила в список, знаки проектов
    вразнобой дышат яркостью — видно, что по ним можно нажать. Период и
-   сдвиг фазы у каждой свои, их задаёт main.js. */
+   сдвиг фазы у каждой плитки свои, их задаёт main.js.
+   Мигает именно знак, а не подложка: раньше анимация висела на .card-inner,
+   а она лежит поверх рамки плитки, и вместе со знаком пульсировали фон и
+   разделительные линии сетки. */
 @keyframes tilePulse {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 1; }
+  0%, 100% { opacity: 0.07; }
+  50%      { opacity: 0.36; }
 }
 
-/* на пике вуаль над плиткой приподнимается — миниатюра в этот момент
-   проступает вдвое сильнее, чем при постоянных 0.82 */
-@keyframes tileVeil {
-  0%, 100% { opacity: 0.82; }
-  50%      { opacity: 0.64; }
+/* на время подсказки вуаль снимается: её роль — приглушать знак — берёт
+   на себя сама прозрачность знака, зато подложка остаётся неподвижной */
+.cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner::after {
+  opacity: 0;
 }
 
-.cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner {
+.cards-grid.pulsing .card:not(.active):not(.hovered) .card-thumb,
+.cards-grid.pulsing .card:not(.active):not(.hovered) .card-icon {
   animation: tilePulse var(--pulse-dur, 5s) ease-in-out var(--pulse-delay, 0s) infinite;
 }
 
-/* вуаль дышит в такт со своей плиткой: период и сдвиг фазы те же */
-.cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner::after {
-  animation: tileVeil var(--pulse-dur, 5s) ease-in-out var(--pulse-delay, 0s) infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .cards-grid.pulsing .card .card-inner,
-  .cards-grid.pulsing .card .card-inner::after {
+  .cards-grid.pulsing .card .card-thumb,
+  .cards-grid.pulsing .card .card-icon {
     animation: none;
+  }
+  .cards-grid.pulsing .card:not(.active):not(.hovered) .card-inner::after {
+    opacity: 0.82;
   }
 }
 
@@ -910,34 +911,47 @@ body.page-texts .pd-header .pd-desc {
   animation: pdFadeIn 0.6s ease both;
 }
 
-.pd-intro-name {
+/* одним абзацем, без деления на имя и должность */
+.pd-intro-text {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  color: var(--fg);
-}
-
-.pd-intro-role {
-  margin: 8px 0 0;
-  font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
   color: var(--fg);
-  opacity: 0.7;
-  text-transform: lowercase;
+  opacity: 0.9;
 }
 
-.pd-intro-line {
-  margin: 22px 0 0;
-  font-size: 12px;
-  line-height: 1.75;
-  color: var(--fg);
-  opacity: 0.88;
+/* Имя внутри того же абзаца — ссылка на страницу «обо мне».
+   Выделено только насыщенностью, размер и шрифт общие с абзацем.
+   На наведении из-под него выезжает линия: масштабируется от левого края,
+   а не проявляется целиком, поэтому читается как росчерк. */
+.pd-intro-name {
+  position: relative;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
 }
 
-.pd-intro-open {
-  opacity: 0.62;
+.pd-intro-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 0.5px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s ease;
+}
+
+.pd-intro-name:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-intro-name::after { transition: none; }
 }
 
 /* Стрелка к списку слева — отдельным ярусом, ниже блока «обо мне» */
@@ -952,21 +966,24 @@ body.page-texts .pd-header .pd-desc {
 
 /* лёгкое движение в сторону, куда смотрит стрелка: влево на десктопе,
    вверх на мобильном (там она развёрнута, и сдвиг идёт по её же оси) */
+/* на движении стрелка ещё и чуть вытягивается: начало координат — у
+   хвоста, поэтому растягивается она остриём вперёд, а не в обе стороны */
 @keyframes arrowNudge {
-  0%, 100% { transform: translateX(0); }
-  50%      { transform: translateX(-7px); }
+  0%, 100% { transform: translateX(0) scaleX(1); }
+  50%      { transform: translateX(-5px) scaleX(1.1); }
 }
 
 @keyframes arrowNudgeUp {
-  0%, 100% { transform: rotate(90deg) translateX(0); }
-  50%      { transform: rotate(90deg) translateX(-7px); }
+  0%, 100% { transform: rotate(90deg) translateX(0) scaleX(1); }
+  50%      { transform: rotate(90deg) translateX(-5px) scaleX(1.1); }
 }
 
 .pd-arrow {
-  width: 132px;
+  width: 88px;
   height: 24px;
   color: var(--fg);
   opacity: 0.45;
+  transform-origin: right center;
   animation: arrowNudge 2.8s ease-in-out 0.9s infinite;
 }
 
@@ -1091,10 +1108,10 @@ body.page-texts .pd-header .pd-desc {
   /* лента карточек сверху — разворачиваем стрелку вверх; поля по бокам
      компенсируют то, что повёрнутый бокс выходит за свою строку */
   .pd-arrow {
-    width: 84px;
+    width: 58px;
     transform: rotate(90deg);
     animation-name: arrowNudgeUp;
-    margin: 30px 0;
+    margin: 20px 0;
   }
 
   body.page-split .hero {

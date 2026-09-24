@@ -112,14 +112,12 @@ function renderEmpty() {
   panel.innerHTML = `
     <div class="pd-empty">
       <div class="pd-intro">
-        <p class="pd-intro-name" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</p>
-        <p class="pd-intro-role" data-en="designer" data-ru="дизайнер">designer</p>
-        <p class="pd-intro-line pd-intro-open" data-en="open to freelance projects and collaborations." data-ru="открыт к фриланс-проектам и коллаборациям.">open to freelance projects and collaborations.</p>
+        <p class="pd-intro-text" data-en="<a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer. I focus on creating visual communications and concepts." data-ru="<a class='pd-intro-name' href='about.html'>Саша Миндрин</a>, дизайнер. Фокусируюсь на создании визуальных коммуникаций и концепций."><a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer. I focus on creating visual communications and concepts.</p>
       </div>
 
       <div class="pd-point">
-        <svg class="pd-arrow" viewBox="0 0 132 24" fill="none" aria-hidden="true">
-          <line x1="131" y1="12" x2="7" y2="12" stroke="currentColor" stroke-width="0.75"/>
+        <svg class="pd-arrow" viewBox="0 0 88 24" fill="none" aria-hidden="true">
+          <line x1="87" y1="12" x2="7" y2="12" stroke="currentColor" stroke-width="0.75"/>
           <polyline points="17,3.5 6.5,12 17,20.5" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
@@ -615,6 +613,20 @@ if (caseExpand) {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.body.classList.contains('case-full')) setCaseFull(false);
 });
+
+
+const siteHome = document.getElementById('siteHome');
+if (siteHome) {
+  siteHome.addEventListener('click', e => {
+    // мы уже на главной — не перезагружаем её, а просто снимаем кейс
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    setCaseFull(false);
+    history.pushState(null, '', location.pathname + location.search);
+    renderEmpty();
+    applyLang(currentLang);
+  });
+}
 
 
 // ─── Init ───
