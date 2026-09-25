@@ -1018,6 +1018,38 @@ body.page-texts .pd-header .pd-desc {
 }
 
 /* ─── Загрузка проекта ─── */
+/* Кольцо-прелоадер: бледная окружность целиком и поверх неё дуга, которая
+   не только крутится, но и меняет длину — дышащий пунктир выглядит живее
+   равномерного вращения и не даёт ощущения зависшего кадра. */
+.pf-spinner {
+  width: 26px;
+  height: 26px;
+  color: var(--fg);
+  opacity: 0.55;
+  animation: pfSpin 1.4s linear infinite;
+}
+
+.pf-spinner-arc {
+  /* 2πr ≈ 113 — длина окружности; ею же меряем пунктир */
+  stroke-dasharray: 28 85;
+  animation: pfArc 1.6s ease-in-out infinite;
+}
+
+@keyframes pfSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pfArc {
+  0%   { stroke-dasharray: 10 103; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 60 53;  stroke-dashoffset: -20; }
+  100% { stroke-dasharray: 10 103; stroke-dashoffset: -113; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-spinner { animation-duration: 3s; }
+  .pf-spinner-arc { animation: none; stroke-dasharray: 40 73; }
+}
+
 .pf-loading {
   display: flex;
   align-items: center;
@@ -1030,10 +1062,6 @@ body.page-texts .pd-header .pd-desc {
 }
 
 /* Пульсируют только точки: мигающая подпись читалась бы хуже. */
-.pf-loading-dots {
-  animation: iconPulse 1.4s ease-in-out infinite;
-}
-
 /* Кейс в iframe занимает панель целиком, поэтому индикатор для него —
    слой поверх панели, а не блок в потоке. */
 .panel-detail.panel-iframe {
@@ -1107,9 +1135,14 @@ body.page-texts .pd-header .pd-desc {
 
   /* лента карточек сверху — разворачиваем стрелку вверх; поля по бокам
      компенсируют то, что повёрнутый бокс выходит за свою строку */
+  /* на мобильном точка отсчёта в центре: при развороте на 90° она же
+     задаёт, вокруг чего крутится бокс, и хвостовая точка уводила стрелку
+     вправо от середины экрана. Вытягивание от этого идёт в обе стороны,
+     но на таком размере разница незаметна. */
   .pd-arrow {
     width: 58px;
     transform: rotate(90deg);
+    transform-origin: center center;
     animation-name: arrowNudgeUp;
     margin: 20px 0;
   }
@@ -1221,6 +1254,10 @@ body.page-texts .pd-header .pd-desc {
 
   /* на мобильном страница скроллится телом — в полноэкранном режиме
      запираем его и отдаём кейсу ровно экран */
+  /* на телефоне разворота нет: кейс и так во всю ширину, а прятать шапку
+     со списком незачем — выходить из режима было бы нечем */
+  .case-expand { display: none; }
+
   body.page-split.case-full {
     height: 100svh;
     overflow: hidden;

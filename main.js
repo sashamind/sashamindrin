@@ -112,7 +112,7 @@ function renderEmpty() {
   panel.innerHTML = `
     <div class="pd-empty">
       <div class="pd-intro">
-        <p class="pd-intro-text" data-en="<a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer. I focus on creating visual communications and concepts." data-ru="<a class='pd-intro-name' href='about.html'>Саша Миндрин</a>, дизайнер. Фокусируюсь на создании визуальных коммуникаций и концепций."><a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer. I focus on creating visual communications and concepts.</p>
+        <p class="pd-intro-text" data-en="<a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer." data-ru="<a class='pd-intro-name' href='about.html'>Саша Миндрин</a>, дизайнер."><a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer.</p>
       </div>
 
       <div class="pd-point">
@@ -216,7 +216,11 @@ function loadingMarkup(lang) {
   const ru = 'проект загружается', en = 'loading project';
   return `
     <div class="pf-loading">
-      <span class="pf-loading-dots">···</span>
+      <svg class="pf-spinner" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="0.75" opacity="0.18"/>
+        <circle class="pf-spinner-arc" cx="20" cy="20" r="18" stroke="currentColor"
+                stroke-width="0.75" stroke-linecap="round"/>
+      </svg>
       <span data-en="${en}" data-ru="${ru}">${lang === 'en' ? en : ru}</span>
     </div>
   `;
@@ -612,6 +616,12 @@ if (caseExpand) {
 // развёрнутом состоянии: из него всегда есть выход мышью
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.body.classList.contains('case-full')) setCaseFull(false);
+});
+
+// сузили окно до мобильного, а кейс развёрнут — кнопка выхода там скрыта,
+// поэтому снимаем режим сами, иначе из него не выбраться
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768 && document.body.classList.contains('case-full')) setCaseFull(false);
 });
 
 
