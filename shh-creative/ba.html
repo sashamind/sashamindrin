@@ -214,7 +214,7 @@ window.addEventListener('scroll',updateVisible);updateVisible();
   // Fallback: reveal after 800ms regardless
   setTimeout(function(){obs.disconnect();reveal();},800);
 })();
-window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;usedWords=[];orbitEls.forEach((el,i)=>{const nw=randomWord();usedWords.push(nw);orbitMeta[i].word=nw;el.textContent=nw;});});</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1533969491');});});</script> <!-- /T396 --> </div> <div id="rec1168059081" class="r t-rec" style=" ">
+window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;usedWords=[];orbitEls.forEach((el,i)=>{const nw=randomWord();usedWords.push(nw);orbitMeta[i].word=nw;el.textContent=nw;});});</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1533969491');});});</script> <!-- /T396 --> </div> <div id="rec1168059081" class="r t-rec" style=" " data-animationappear="off">
 <style>
   /* Схема «идея знака». Была одной SVG-простынёй на 97 КБ (плюс её
      мобильный двойник) — стала вёрсткой: знаки инлайновым вектором,
@@ -497,16 +497,20 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      sec.classList.add('is-in');
-      for (var i = 0; i < strokes.length; i++) strokes[i].style.strokeDashoffset = 0;
-      io.disconnect(); // показываем один раз, а не при каждом проходе мимо
+      sec.classList.toggle('is-in', e.isIntersecting);
+      for (var i = 0; i < strokes.length; i++) {
+        // уходя из кадра, отматываем пунктир назад — вернувшись, стрелки
+        // прочертятся заново вместе со всей очередью
+        strokes[i].style.strokeDashoffset = e.isIntersecting
+          ? 0
+          : strokes[i].getTotalLength();
+      }
     });
   }, { threshold: 0.25 });
   io.observe(sec);
 })();
 </script>
-</div> <div id="rec-ba-uzor" class="r t-rec" style=" ">
+</div> <div id="rec-ba-uzor" class="r t-rec" style=" " data-animationappear="off">
 <style>
   /* Узор во всю ширину сразу за схемой: светлая секция кончается, полоса
      начинается от края до края — уже на тёмном.
@@ -526,7 +530,94 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   }
 </style>
 <img class="ba-fx" src="media/ba-uzor.webp" alt="" width="2880" height="941" loading="lazy" decoding="async" />
-</div> <div id="rec-ba-elements" class="r t-rec" style=" ">
+</div> <div id="rec-ba-quote" class="r t-rec" style=" " data-animationappear="off">
+<style>
+  /* Тихий экран между предметами и остальным кейсом: две строки и подпись. */
+  #rec-ba-quote {
+    background: #0a0a0a;
+    padding: 180px 40px;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+  }
+  /* ширина по самой длинной строке: подпись тогда встаёт ровно под правым
+     краем цитаты, а не по краю экрана */
+  #rec-ba-quote .q-wrap {
+    width: fit-content;
+    margin: 0 auto;
+  }
+  #rec-ba-quote .q-text {
+    margin: 0;
+    font-size: clamp(17px, 2.1vw, 32px);
+    font-weight: 600;
+    font-style: italic;
+    line-height: 1.55;
+    color: #e42322;
+  }
+  #rec-ba-quote .q-author {
+    margin: 32px 0 0;
+    text-align: right;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #e8e8e8;
+  }
+  /* Появление: цитата наводится на резкость и чуть подрастает, будто
+     проступает из темноты. Подпись ждёт, пока текст дочитается, и выходит
+     следом — задержка равна длительности проявления. Селекторы с id
+     перебивают общее правило .ba-fx, которым живут остальные блоки. */
+  /* длительности заданы на состоянии «видно»: они управляют появлением.
+     Гашение живёт на исходном состоянии и нарочно короткое — иначе, уходя
+     из кадра, цитата исчезала бы те же пять секунд и с той же задержкой. */
+  .ba-fx-on #rec-ba-quote .q-text {
+    opacity: 0;
+    transform: scale(0.94);
+    filter: blur(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease;
+  }
+  .ba-fx-on #rec-ba-quote .q-text.is-in {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    transition: opacity 3.3s ease,
+                transform 3.9s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 3.3s ease;
+  }
+  .ba-fx-on #rec-ba-quote .q-author {
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .ba-fx-on #rec-ba-quote .q-author.is-in {
+    opacity: 1;
+    transform: none;
+    transition: opacity 2.1s ease 3.45s,
+                transform 2.1s cubic-bezier(0.22, 1, 0.36, 1) 3.45s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ba-fx-on #rec-ba-quote .q-text,
+    .ba-fx-on #rec-ba-quote .q-author {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    #rec-ba-quote { padding: 90px 20px; }
+    #rec-ba-quote .q-author { margin-top: 28px; }
+  }
+</style>
+
+<figure class="q-wrap">
+  <p class="q-text ba-fx">
+    <span class="lang-ru">«Ищи меня, свищи<br />в ночи густой как щи».</span><span class="lang-en">“Look for me, whistle for me<br />in a night as thick as shchi.”</span>
+  </p>
+  <figcaption class="q-author ba-fx">— Хаски</figcaption>
+</figure>
+</div> <div id="rec-ba-elements" class="r t-rec" style=" " data-animationappear="off">
 <style>
   /* Рендеры визиток и меню на тёмном — исходники с прозрачным фоном,
      поэтому подложка ничем не гасится и края остаются мягкими. */
@@ -552,22 +643,19 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec-ba-elements .el-circle { animation: none; }
   }
 
-  /* меню слева, визитки справа. Доли flex заданы теми же числами, что и
-     прежние ширины, поэтому соотношение 924 к 385 держится при любой
-     ширине панели, а max-width ряда не даёт им разрастись на широкой. */
+  /* меню слева, визитки справа */
   #rec-ba-elements .el-row {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 36px;
-    margin: 0 auto;
   }
   #rec-ba-elements img {
     display: block;
     width: 100%;
     height: auto;
     /* без этого элемент flex не сжимается меньше собственной ширины
-       картинки (1900 и 1400 px) и заданный размер не работает */
+       картинки и заданный размер не работает */
     min-width: 0;
   }
   /* размеры заданы по отдельности: не растут, но на узкой панели
@@ -575,10 +663,6 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   #rec-ba-elements .el-menu    { flex: 0 1 1015px; }
   #rec-ba-elements .el-buscard { flex: 0 1 351px; }
 
-  /* Тарелки: три кадра сменяют друг друга раз в секунду. Первый лежит в
-     потоке и держит высоту блока, два других — поверх него. Переключение
-     резкое: в кейфреймах прозрачность падает на соседних долях процента,
-     без плавного перехода. */
   /* Нижний ряд: тарелки слева, флаг справа впритык к краю секции.
      Отрицательное поле справа гасит её padding, поэтому штанга флага
      уходит за край экрана, а не повисает в воздухе. */
@@ -589,45 +673,76 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   }
   #rec-ba-elements .el-plates {
     position: relative;
-    flex: 0 1 560px;
+    flex: 0 1 448px;
     min-width: 0;
     margin-left: 6%;    /* тарелки сдвинуты влево, но не прижаты к краю */
     margin-right: auto;
   }
   #rec-ba-elements .el-flag {
-    flex: 0 1 640px;
+    flex: 0 1 832px;
     min-width: 0;
     width: 100%;
     height: auto;
     display: block;
   }
-  #rec-ba-elements .el-plates img {
+
+  /* Тарелки листаются вручную. Первая лежит в потоке и держит высоту
+     площадки, остальные наложены поверх; видна та, у которой is-on. */
+  #rec-ba-elements .pl-stage { position: relative; }
+  #rec-ba-elements .pl-stage img {
     width: 100%;
     height: auto;
     opacity: 0;
-    animation: plateCycle 3s linear infinite;
+    /* приходящая тарелка растёт из чуть меньшего размера */
+    transform: scale(0.93);
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  #rec-ba-elements .el-plates img:first-child { position: relative; }
-  #rec-ba-elements .el-plates img + img {
+  #rec-ba-elements .pl-stage img:first-child { position: relative; }
+  #rec-ba-elements .pl-stage img + img {
     position: absolute;
     top: 0;
     left: 0;
   }
-  #rec-ba-elements .el-plates img:nth-child(2) { animation-delay: 1s; }
-  #rec-ba-elements .el-plates img:nth-child(3) { animation-delay: 2s; }
-
-  @keyframes plateCycle {
-    0%      { opacity: 1; }
-    33.33%  { opacity: 1; }
-    33.34%  { opacity: 0; }
-    100%    { opacity: 0; }
+  #rec-ba-elements .pl-stage img.is-on { opacity: 1; transform: none; }
+  /* уходящая, наоборот, сжимается и гаснет быстрее приходящей: иначе в
+     середине обе полупрозрачные и картинка на миг проваливается */
+  #rec-ba-elements .pl-stage img.is-out {
+    opacity: 0;
+    transform: scale(0.93);
+    transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  #rec-ba-elements .pl-nav {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 28px;
+  }
+  #rec-ba-elements .pl-nav button {
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 0;
+    color: #e42322;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  #rec-ba-elements .pl-nav button:hover { opacity: 1; }
+  #rec-ba-elements .pl-nav svg { display: block; width: 38px; height: 12px; }
+  #rec-ba-elements .pl-nav line,
+  #rec-ba-elements .pl-nav polyline {
+    stroke: currentColor;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #rec-ba-elements .pl-next svg { transform: scaleX(-1); }
 
   @media (prefers-reduced-motion: reduce) {
-    #rec-ba-elements .el-plates img { animation: none; }
-    #rec-ba-elements .el-plates img:first-child { opacity: 1; }
+    #rec-ba-elements .pl-stage img { transition: none; }
   }
-
   @media screen and (max-width: 768px) {
     #rec-ba-elements { padding: 40px 0 56px; }
     /* на узком экране ряд разворачивается в столбец, флаг по-прежнему
@@ -640,18 +755,20 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     }
     #rec-ba-elements .el-plates {
       flex: 0 1 auto;
-      width: 76%;
+      width: 61%;
       margin: 0 auto;
     }
-    #rec-ba-elements .el-flag { flex: 0 1 auto; width: 76%; }
+    #rec-ba-elements .el-flag { flex: 0 1 auto; width: 96%; }
     #rec-ba-elements .el-circle { width: 150px; margin-bottom: 40px; }
-    /* рядом на узком экране им не встать — возвращаем в столбец */
+    /* рядом на узком экране им не встать — возвращаем в столбец.
+       flex: 0 1 auto обязателен: в колонке основная ось вертикальная, и
+       заданные для ряда доли начинают править высотой, ломая пропорции. */
     #rec-ba-elements .el-row {
       flex-direction: column;
       gap: 32px;
     }
-    #rec-ba-elements .el-menu    { max-width: 96%; }
-    #rec-ba-elements .el-buscard { max-width: 80%; }
+    #rec-ba-elements .el-menu    { flex: 0 1 auto; max-width: 96%; }
+    #rec-ba-elements .el-buscard { flex: 0 1 auto; max-width: 80%; }
   }
 </style>
 <img class="el-circle ba-fx-fade" src="media/ba-uzor-circle.svg" alt="" width="509" height="512" loading="lazy" decoding="async" />
@@ -662,10 +779,26 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 </div>
 
 <div class="el-bottom">
-  <div class="el-plates ba-fx">
-    <img src="media/ba-plate-1.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
-    <img src="media/ba-plate-2.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
-    <img src="media/ba-plate-3.webp" alt="" width="1200" height="1199" loading="lazy" decoding="async" />
+  <div class="el-plates ba-fx" data-carousel>
+    <div class="pl-stage">
+      <img class="is-on" src="media/ba-plate-1.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
+      <img src="media/ba-plate-2.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async" />
+      <img src="media/ba-plate-3.webp" alt="" width="1200" height="1199" loading="lazy" decoding="async" />
+    </div>
+    <div class="pl-nav">
+      <button type="button" class="pl-prev" aria-label="Предыдущая тарелка">
+        <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+          <line x1="37" y1="6" x2="3" y2="6"/>
+          <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+        </svg>
+      </button>
+      <button type="button" class="pl-next" aria-label="Следующая тарелка">
+        <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+          <line x1="37" y1="6" x2="3" y2="6"/>
+          <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+        </svg>
+      </button>
+    </div>
   </div>
   <img class="el-flag ba-fx" src="media/ba-flag.webp" alt="" width="1400" height="1400" loading="lazy" decoding="async" />
 </div>
@@ -702,25 +835,49 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     }
   }
 </style>
+
 <script>
 (function () {
-  if (!window.IntersectionObserver) return;
-  var els = document.querySelectorAll('.ba-fx, .ba-fx-fade');
-  if (!els.length) return;
-  document.documentElement.classList.add('ba-fx-on');
+  var stage = document.querySelector('#rec-ba-elements .pl-stage');
+  var nav = document.querySelector('#rec-ba-elements .pl-nav');
+  if (!stage || !nav) return;
+  var imgs = stage.querySelectorAll('img');
+  var i = 0;
 
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      e.target.classList.add('is-in');
-      io.unobserve(e.target); // каждый показывается один раз
-    });
-    // отрицательное поле снизу поднимает черту срабатывания выше края
-    // экрана: элемент должен зайти в кадр на четверть высоты окна, а не
-    // проявляться в тот момент, когда только показался снизу
-  }, { threshold: 0.2, rootMargin: '0px 0px -25% 0px' });
+  function show(next) {
+    var out = imgs[i];
+    for (var k = 0; k < imgs.length; k++) imgs[k].classList.remove('is-out');
+    out.classList.remove('is-on');
+    out.classList.add('is-out');
+    // по кругу в обе стороны: с первой назад попадаем на последнюю
+    i = (next + imgs.length) % imgs.length;
+    imgs[i].classList.add('is-on');
+  }
 
-  for (var i = 0; i < els.length; i++) io.observe(els[i]);
+  nav.querySelector('.pl-prev').addEventListener('click', function () { show(i - 1); });
+  nav.querySelector('.pl-next').addEventListener('click', function () { show(i + 1); });
+
+  // Стрелки на клавиатуре достаются той карусели, чей центр ближе к центру
+  // экрана: иначе одно нажатие перелистывало бы сразу все на странице.
+  function nearestCarousel() {
+    var all = document.querySelectorAll('[data-carousel]');
+    var best = null, bestD = Infinity, mid = window.innerHeight / 2;
+    for (var k = 0; k < all.length; k++) {
+      var r = all[k].getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) continue;
+      var d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < bestD) { bestD = d; best = all[k]; }
+    }
+    return best;
+  }
+
+  var root = document.querySelector('#rec-ba-elements .el-plates');
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    if (nearestCarousel() !== root) return;
+    e.preventDefault();
+    show(e.key === 'ArrowLeft' ? i - 1 : i + 1);
+  });
 })();
 </script>
 <div id="rec1167900991" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167900991 .t396__artboard {height:800px;background-color:#0a0a0a;}#rec1167900991 .t396__filter {height:800px;}#rec1167900991 .t396__carrier{height:800px;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:540px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {height:600px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:300px;height:100vh;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167900991 .t396__artboard,#rec1167900991 .t396__filter,#rec1167900991 .t396__carrier {min-height:320px;}#rec1167900991 .t396__filter {}#rec1167900991 .t396__carrier {background-attachment:scroll;}}#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="1752706219247"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media (min-width:1200px){#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="1752706219247"]{opacity:0;}}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="1752706219247"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{z-index:3;top:265px;;left:calc(50% - 600px + 233px);;width:744px;height:auto;}#rec1167900991 .tn-elem.t396__elem--anim-hidden[data-elem-id="176263255839273570"]{opacity:0;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom{border-radius:0px 0px 0px 0px;background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}#rec1167900991 .tn-elem[data-elem-id="176263255839273570"] .tn-atom__img{border-radius:0px 0px 0px 0px;object-position:center center;}@media screen and (max-width:1199px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:166px;;left:calc(50% - 480px + 194px);;width:583px;height:auto;}}@media screen and (max-width:959px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:216px;;left:calc(50% - 320px + 109px);;width:433px;height:auto;}}@media screen and (max-width:639px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:74px;;left:calc(50% - 240px + 29px);;width:432px;height:auto;}}@media screen and (max-width:479px){#rec1167900991 .tn-elem[data-elem-id="176263255839273570"]{display:table;top:109px;;left:calc(50% - 160px + 15px);;width:300px;height:auto;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167900991" data-artboard-screens="320,480,640,960,1200" data-artboard-height="800" data-artboard-valign="center" data-artboard-upscale="grid" data-artboard-height-res-320="320" data-artboard-height-res-480="300" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="600" data-artboard-height-res-960="540"> <div class="t396__carrier" data-artboard-recid="1167900991"></div> <div class="t396__filter" data-artboard-recid="1167900991"></div> <div class='t396__elem tn-elem tn-elem__11679009911752706219247 t396__elem--anim-hidden' data-elem-id='1752706219247' data-elem-type='image' data-field-top-value="265" data-field-left-value="233" data-field-height-value="280" data-field-width-value="744" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-animate-sbs-event="scroll" data-animate-sbs-trg="1" data-animate-sbs-trgofst="0" data-animate-sbs-opts="[{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':'0','dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':0,'ro':0,'di':0,'dd':'0','fi':'0'},{'mx':0,'my':0,'sx':1,'sy':1,'op':1,'ro':0,'di':300,'dd':'0','fi':'0'}]" data-field-filewidth-value="1680" data-field-fileheight-value="632" data-field-heightmode-value="hug" data-field-top-res-320-value="109" data-field-left-res-320-value="15" data-field-height-res-320-value="113" data-field-width-res-320-value="300" data-field-top-res-480-value="74" data-field-left-res-480-value="29" data-field-height-res-480-value="163" data-field-width-res-480-value="432" data-field-top-res-640-value="216" data-field-left-res-640-value="109" data-field-height-res-640-value="163" data-field-width-res-640-value="433" data-field-top-res-960-value="166" data-field-left-res-960-value="194" data-field-height-res-960-value="219" data-field-width-res-960-value="583"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild3565-3235-4134-b232-383365383039__untitled.webp'
@@ -738,7 +895,7 @@ alt='' imgfield='tn_img_1752706219247'
 /> </div> </div> <div class='t396__elem tn-elem tn-elem__11680914761752706337385' data-elem-id='1752706337385' data-elem-type='image' data-field-top-value="-46" data-field-left-value="-759" data-field-height-value="810" data-field-width-value="270" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-filewidth-value="895" data-field-fileheight-value="2684" data-field-widthmode-value="fixed" data-field-heightmode-value="hug" data-field-top-res-320-value="41" data-field-left-res-320-value="87" data-field-height-res-320-value="438" data-field-width-res-320-value="146" data-field-top-res-480-value="59" data-field-left-res-480-value="-287" data-field-height-res-480-value="474" data-field-width-res-480-value="158" data-field-top-res-640-value="1" data-field-left-res-640-value="-446" data-field-height-res-640-value="783" data-field-width-res-640-value="261" data-field-top-res-960-value="-79" data-field-left-res-960-value="-582" data-field-height-res-960-value="810"> <div class='tn-atom'> <img class='tn-atom__img t-img' data-original='images/tild6465-3336-4661-a233-616434383933__4.webp'
 src='images/tild6465-3336-4661-a233-616434383933__-__resize__20x__4.webp'
 alt='' imgfield='tn_img_1752706337385'
-/> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1168091476');});});</script> <!-- /T396 --> </div> <div id="rec-ba-bilibin" class="r t-rec" style=" ">
+/> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1168091476');});});</script> <!-- /T396 --> </div> <div id="rec-ba-bilibin" class="r t-rec" style=" " data-animationappear="off">
 <style>
   /* «Билибин или Хокусай?» — заголовок шрифтом проекта и картинка,
      вырезанная по основному знаку. Маска — тот же контур, что и знак в
@@ -762,7 +919,6 @@ alt='' imgfield='tn_img_1752706337385'
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 48px;
   }
   #rec-ba-bilibin .bh-mask {
     position: relative;
@@ -770,50 +926,158 @@ alt='' imgfield='tn_img_1752706337385'
     min-width: 0;
     /* пропорции берём у самого знака, чтобы картинку не сплющивало */
     aspect-ratio: 89.43 / 124.97;
-    margin: 0 auto;
     overflow: hidden;
     -webkit-mask: url('media/ba-znak-mask.svg') center / contain no-repeat;
     mask: url('media/ba-znak-mask.svg') center / contain no-repeat;
   }
-  /* картинка заведомо больше окна маски: запас по краям и есть то, за счёт
-     чего она может ездить за мышью, не оголяя контур */
-  #rec-ba-bilibin .bh-mask img {
+  /* слой заведомо больше окна маски: запас по краям и есть то, за счёт
+     чего содержимое может ездить за мышью, не оголяя контур знака */
+  #rec-ba-bilibin .bh-slider {
     position: absolute;
-    inset: -9%;
-    width: 118%;
-    height: 118%;
-    object-fit: cover;
+    /* запас по краям должен быть больше хода параллакса: скрипт берёт
+       15% ширины маски, здесь запас 17% — с небольшим зазором */
+    inset: -17%;
     will-change: transform;
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
+  /* четыре кадра лежат в ряд и едут все вместе: под маской это читается
+     как то, что картинки выталкивают друг друга */
+  /* восемь кадров подряд: Билибин и Хокусай чередуются, поэтому стрелка
+     каждый раз показывает следующего автора */
+  #rec-ba-bilibin .bh-track {
+    display: flex;
+    width: 800%;
+    height: 100%;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #rec-ba-bilibin .bh-track img {
+    flex: 0 0 12.5%;
+    width: 12.5%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #rec-ba-bilibin .bh-nav {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 44px;
+  }
+  #rec-ba-bilibin .bh-nav button {
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 0;
+    color: #e42322;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  #rec-ba-bilibin .bh-nav button:hover { opacity: 1; }
+  #rec-ba-bilibin .bh-nav svg { display: block; width: 38px; height: 12px; }
+  #rec-ba-bilibin .bh-nav line,
+  #rec-ba-bilibin .bh-nav polyline {
+    stroke: currentColor;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #rec-ba-bilibin .bh-next svg { transform: scaleX(-1); }
+
   @media screen and (max-width: 768px) {
     #rec-ba-bilibin { padding: 72px 20px 88px; }
     #rec-ba-bilibin .bh-title { margin-bottom: 56px; }
-    #rec-ba-bilibin .bh-row { gap: 20px; }
-    #rec-ba-bilibin .bh-mask { flex: 0 1 40%; }
+    #rec-ba-bilibin .bh-mask { flex: 0 1 62%; }
   }
   @media (prefers-reduced-motion: reduce) {
-    #rec-ba-bilibin .bh-mask img { transition: none; }
+    #rec-ba-bilibin .bh-slider,
+    #rec-ba-bilibin .bh-track { transition: none; }
   }
 </style>
 
 <p class="bh-title"><span class="lang-ru">Билибин или Хокусай?</span><span class="lang-en">Bilibin or Hokusai?</span></p>
 
-<div class="bh-row">
+<div class="bh-row" data-carousel>
   <div class="bh-mask">
-    <img src="images/tild3530-6566-4462-b566-363564353338__bilibin.webp" alt="" width="805" height="1125" loading="lazy" decoding="async" />
+    <div class="bh-slider">
+      <div class="bh-track">
+      <img src="media/ba-bh-b_1.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-h_1.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-b_2.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-h_2.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-b_3.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-h_3.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-b_4.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      <img src="media/ba-bh-h_4.webp" alt="" width="640" height="800" loading="lazy" decoding="async" />
+      </div>
+    </div>
   </div>
-  <div class="bh-mask">
-    <img src="images/tild3062-3337-4966-b438-653232663130__hokusay.webp" alt="" width="805" height="1125" loading="lazy" decoding="async" />
-  </div>
+</div>
+
+<div class="bh-nav">
+  <button type="button" class="bh-prev" aria-label="Предыдущая пара">
+    <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+      <line x1="37" y1="6" x2="3" y2="6"/>
+      <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+    </svg>
+  </button>
+  <button type="button" class="bh-next" aria-label="Следующая пара">
+    <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+      <line x1="37" y1="6" x2="3" y2="6"/>
+      <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+    </svg>
+  </button>
 </div>
 
 <script>
 (function () {
   var boxes = document.querySelectorAll('#rec-ba-bilibin .bh-mask');
-  if (!boxes.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!boxes.length) return;
 
-  var MAX = 16; // предел сдвига в пикселях — меньше запаса картинки по краям
+  // ── листание пар: обе ленты едут синхронно, кадр выталкивает кадр ──
+  var tracks = document.querySelectorAll('#rec-ba-bilibin .bh-track');
+  var nav = document.querySelector('#rec-ba-bilibin .bh-nav');
+  if (nav && tracks.length) {
+    var n = tracks[0].children.length, at = 0;
+    var slide = function (step) {
+      at = (at + step + n) % n;
+      for (var t = 0; t < tracks.length; t++) {
+        tracks[t].style.transform = 'translateX(' + (-at * (100 / n)) + '%)';
+      }
+    };
+    nav.querySelector('.bh-prev').addEventListener('click', function () { slide(-1); });
+    nav.querySelector('.bh-next').addEventListener('click', function () { slide(1); });
+
+  // Стрелки на клавиатуре достаются той карусели, чей центр ближе к центру
+  // экрана: иначе одно нажатие перелистывало бы сразу все на странице.
+  function nearestCarousel() {
+    var all = document.querySelectorAll('[data-carousel]');
+    var best = null, bestD = Infinity, mid = window.innerHeight / 2;
+    for (var k = 0; k < all.length; k++) {
+      var r = all[k].getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) continue;
+      var d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < bestD) { bestD = d; best = all[k]; }
+    }
+    return best;
+  }
+
+    var root = document.querySelector('#rec-ba-bilibin .bh-row');
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (nearestCarousel() !== root) return;
+      e.preventDefault();
+      slide(e.key === 'ArrowLeft' ? -1 : 1);
+    });
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Предел сдвига считаем от ширины самой маски: запас ленты по краям —
+  // 17% ширины, и фиксированные 34 px на узком экране вылезли бы за него,
+  // оголив контур знака. Берём 15% ширины, но не больше 34.
+  function limit(r) { return Math.min(34, r.width * 0.15); }
   var frame = null;
 
   function move(e) {
@@ -830,9 +1094,10 @@ alt='' imgfield='tn_img_1752706337385'
         dy = Math.max(-1, Math.min(1, dy));
         // картинка идёт навстречу курсору — так содержимое кажется лежащим
         // глубже маски, а не приклеенным к ней
-        var img = boxes[i].querySelector('img');
-        if (img) img.style.transform = 'translate(' + (-dx * MAX).toFixed(1) + 'px,' +
-                                                      (-dy * MAX).toFixed(1) + 'px)';
+        var m = limit(r);
+        var lay = boxes[i].querySelector('.bh-slider');
+        if (lay) lay.style.transform = 'translate(' + (-dx * m).toFixed(1) + 'px,' +
+                                                      (-dy * m).toFixed(1) + 'px)';
       }
     });
   }
@@ -857,17 +1122,18 @@ alt='' imgfield='tn_img_1752706337385'
       var dx = Math.max(-1, Math.min(1, (e.gamma - base.g) / 25));
       var dy = Math.max(-1, Math.min(1, (e.beta - base.b) / 25));
       for (var i = 0; i < boxes.length; i++) {
-        var im = boxes[i].querySelector('img');
-        if (im) im.style.transform = 'translate(' + (-dx * MAX).toFixed(1) + 'px,' +
-                                                    (-dy * MAX).toFixed(1) + 'px)';
+        var m = limit(boxes[i].getBoundingClientRect());
+        var lay = boxes[i].querySelector('.bh-slider');
+        if (lay) lay.style.transform = 'translate(' + (-dx * m).toFixed(1) + 'px,' +
+                                                      (-dy * m).toFixed(1) + 'px)';
       }
     });
   }
 
   function reset() {
     for (var i = 0; i < boxes.length; i++) {
-      var im = boxes[i].querySelector('img');
-      if (im) im.style.transform = '';
+      var lay = boxes[i].querySelector('.bh-slider');
+      if (lay) lay.style.transform = '';
     }
   }
 
@@ -889,4 +1155,164 @@ alt='' imgfield='tn_img_1752706337385'
   }
 })();
 </script>
-</div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="width:100%;height:100%;max-width:100%;max-height:100%;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_last.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  </body> </html>
+</div> <div id="rec-ba-merch" class="r t-rec" style=" " data-animationappear="off">
+<style>
+  /* Мерч: четыре макета, листаются стрелками — так же, как тарелки.
+     Видна та картинка, у которой is-on; остальные лежат поверх первой,
+     она же держит высоту площадки. */
+  #rec-ba-merch {
+    background: #0a0a0a;
+    padding: 120px 40px 140px;
+  }
+  #rec-ba-merch .mr-stage {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  #rec-ba-merch .mr-stage img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    /* приходящий макет растёт из чуть меньшего размера */
+    transform: scale(0.93);
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #rec-ba-merch .mr-stage img:first-child { position: relative; }
+  #rec-ba-merch .mr-stage img + img {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #rec-ba-merch .mr-stage img.is-on { opacity: 1; transform: none; }
+  /* уходящий сжимается и гаснет быстрее приходящего: иначе в середине оба
+     полупрозрачные и картинка на миг проваливается */
+  #rec-ba-merch .mr-stage img.is-out {
+    opacity: 0;
+    transform: scale(0.93);
+    transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #rec-ba-merch .mr-nav {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 36px;
+  }
+  #rec-ba-merch .mr-nav button {
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 0;
+    color: #e42322;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  #rec-ba-merch .mr-nav button:hover { opacity: 1; }
+  #rec-ba-merch .mr-nav svg { display: block; width: 38px; height: 12px; }
+  #rec-ba-merch .mr-nav line,
+  #rec-ba-merch .mr-nav polyline {
+    stroke: currentColor;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #rec-ba-merch .mr-next svg { transform: scaleX(-1); }
+
+  @media screen and (max-width: 768px) {
+    #rec-ba-merch { padding: 64px 20px 80px; }
+    #rec-ba-merch .mr-nav { margin-top: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-merch .mr-stage img { transition: none; }
+  }
+</style>
+
+<div class="mr-stage ba-fx" data-carousel>
+    <img class="is-on" src="media/ba-merch-1.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+    <img src="media/ba-merch-2.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+    <img src="media/ba-merch-3.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+    <img src="media/ba-merch-4.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+</div>
+
+<div class="mr-nav">
+  <button type="button" class="mr-prev" aria-label="Предыдущий макет">
+    <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+      <line x1="37" y1="6" x2="3" y2="6"/>
+      <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+    </svg>
+  </button>
+  <button type="button" class="mr-next" aria-label="Следующий макет">
+    <svg viewBox="0 0 38 12" fill="none" aria-hidden="true">
+      <line x1="37" y1="6" x2="3" y2="6"/>
+      <polyline points="10.5,1.5 2.5,6 10.5,10.5"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+(function () {
+  var stage = document.querySelector('#rec-ba-merch .mr-stage');
+  var nav = document.querySelector('#rec-ba-merch .mr-nav');
+  if (!stage || !nav) return;
+  var imgs = stage.querySelectorAll('img'), i = 0;
+
+  function show(next) {
+    var out = imgs[i];
+    for (var k = 0; k < imgs.length; k++) imgs[k].classList.remove('is-out');
+    out.classList.remove('is-on');
+    out.classList.add('is-out');
+    i = (next + imgs.length) % imgs.length;   // по кругу в обе стороны
+    imgs[i].classList.add('is-on');
+  }
+
+  nav.querySelector('.mr-prev').addEventListener('click', function () { show(i - 1); });
+  nav.querySelector('.mr-next').addEventListener('click', function () { show(i + 1); });
+
+  // клавиши достаются той карусели, чей центр ближе к центру экрана
+  function nearestCarousel() {
+    var all = document.querySelectorAll('[data-carousel]');
+    var best = null, bestD = Infinity, mid = window.innerHeight / 2;
+    for (var k = 0; k < all.length; k++) {
+      var r = all[k].getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) continue;
+      var d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < bestD) { bestD = d; best = all[k]; }
+    }
+    return best;
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    if (nearestCarousel() !== stage) return;
+    e.preventDefault();
+    show(e.key === 'ArrowLeft' ? i - 1 : i + 1);
+  });
+})();
+</script>
+</div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="width:100%;height:100%;max-width:100%;max-height:100%;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_last.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  <script>
+(function () {
+  if (!window.IntersectionObserver) return;
+  var els = document.querySelectorAll('.ba-fx, .ba-fx-fade');
+  if (!els.length) return;
+  document.documentElement.classList.add('ba-fx-on');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      // класс и вешается, и снимается: уходя из кадра элемент гаснет и
+      // проявится снова, когда вернётся
+      e.target.classList.toggle('is-in', e.isIntersecting);
+    });
+    // Поля сужают рабочую полосу экрана с обеих сторон. Снизу — чтобы
+    // элемент не проявлялся в момент, когда только показался из-за края,
+    // а зашёл в кадр на четверть высоты окна. Сверху — чтобы начинал
+    // гаснуть заранее, ещё не дойдя до верхней кромки.
+  }, { threshold: 0.2, rootMargin: '-18% 0px -25% 0px' });
+
+  for (var i = 0; i < els.length; i++) io.observe(els[i]);
+})();
+</script>
+
+</body> </html>
