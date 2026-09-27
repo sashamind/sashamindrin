@@ -964,18 +964,13 @@ body.page-texts .pd-header .pd-desc {
   animation: pdFadeIn 0.6s ease 0.25s both;
 }
 
-/* лёгкое движение в сторону, куда смотрит стрелка: влево на десктопе,
-   вверх на мобильном (там она развёрнута, и сдвиг идёт по её же оси) */
-/* на движении стрелка ещё и чуть вытягивается: начало координат — у
-   хвоста, поэтому растягивается она остриём вперёд, а не в обе стороны */
+/* лёгкое движение влево — туда, куда смотрит стрелка (только десктоп,
+   на мобильном стрелки нет).
+   На движении она ещё и чуть вытягивается: начало координат — у хвоста,
+   поэтому растягивается она остриём вперёд, а не в обе стороны */
 @keyframes arrowNudge {
   0%, 100% { transform: translateX(0) scaleX(1); }
   50%      { transform: translateX(-5px) scaleX(1.1); }
-}
-
-@keyframes arrowNudgeUp {
-  0%, 100% { transform: rotate(90deg) translateX(0) scaleX(1); }
-  50%      { transform: rotate(90deg) translateX(-5px) scaleX(1.1); }
 }
 
 .pd-arrow {
@@ -998,6 +993,16 @@ body.page-texts .pd-header .pd-desc {
   font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--fg2);
+}
+
+/* мигание подсказки на мобильном (сама анимация включается в медиазапросе) */
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-empty-text { animation: none; }
 }
 
 .post-img-placeholder {
@@ -1050,10 +1055,14 @@ body.page-texts .pd-header .pd-desc {
   .pf-spinner-arc { animation: none; stroke-dasharray: 40 73; }
 }
 
+/* Индикатор занимает высокий бокс и стоит в его середине: иначе фраза
+   липнет к описанию проекта и выглядит как часть текста. */
 .pf-loading {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  min-height: 55vh;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -1086,6 +1095,7 @@ body.page-texts .pd-header .pd-desc {
 
 .pf-loading-overlay .pf-loading {
   padding: 0;
+  min-height: 0;
 }
 
 .post-empty {
@@ -1116,35 +1126,56 @@ body.page-texts .pd-header .pd-desc {
     overflow: auto;
   }
 
-  /* футер в столбик — email и копирайт не влезают в ряд на узком экране;
-     низ над home-индикатором iOS */
+  /* футер в одну строку: кегль ужимается по ширине экрана, чтобы email и
+     копирайт помещались в ряд даже на 320px; низ над home-индикатором iOS */
   footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+    gap: 12px;
     padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .footer-email,
+  .footer-copy {
+    font-size: clamp(7.5px, 2.9vw, 10px);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
   }
 
   .pd-empty {
     min-height: 40vh;
+    justify-content: flex-start;
   }
 
+  /* подсказка переезжает наверх, вплотную под ленту логотипов: на мобильном
+     кейсы лежат прямо над ней, так что стрелка уже ничего не объясняет */
   .pd-point {
-    margin-top: clamp(32px, 8vh, 72px);
+    order: -1;
+    margin-top: 14px;
   }
 
-  /* лента карточек сверху — разворачиваем стрелку вверх; поля по бокам
-     компенсируют то, что повёрнутый бокс выходит за свою строку */
-  /* на мобильном точка отсчёта в центре: при развороте на 90° она же
-     задаёт, вокруг чего крутится бокс, и хвостовая точка уводила стрелку
-     вправо от середины экрана. Вытягивание от этого идёт в обе стороны,
-     но на таком размере разница незаметна. */
   .pd-arrow {
-    width: 58px;
-    transform: rotate(90deg);
-    transform-origin: center center;
-    animation-name: arrowNudgeUp;
-    margin: 20px 0;
+    display: none;
+  }
+
+  /* вместо стрелки подсказка слегка пульсирует — тем же приёмом, что и
+     плитки кейсов, поэтому читается как приглашение нажать */
+  .pd-empty-text {
+    animation: hintPulse 2.8s ease-in-out infinite;
+  }
+
+  /* имя центрируется в том, что осталось под подсказкой, — то есть садится
+     чуть ниже середины панели */
+  .pd-intro {
+    margin: auto 0;
+  }
+
+  /* Панель кейса начинается под лентой логотипов и тянется на целый экран,
+     поэтому её середина уходит за нижний край. Фон слоя по-прежнему кроет
+     панель, а саму фразу со спиннером крепим к середине экрана. */
+  .pf-loading-overlay .pf-loading {
+    position: fixed;
+    top: 50svh;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   body.page-split .hero {
@@ -1215,6 +1246,26 @@ body.page-texts .pd-header .pd-desc {
 
   .cards-grid::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Строка тегов и лента кейсов — полупрозрачные с размытием, как шапка:
+     кейс, уезжающий под них при скролле, просвечивает, а не обрывается
+     сплошной плашкой. Плитки и подложки прозрачные, иначе фон ленты
+     перекрыли бы они сами. */
+  body.page-split .hero,
+  .panel-list {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  body.dark.page-split .hero,
+  body.dark .panel-list {
+    background-color: rgba(10, 10, 10, 0.7);
+  }
+  .panel-list .cards-grid,
+  .panel-list .card:not(.active):not(.hovered),
+  .panel-list .card-inner {
+    background-color: transparent;
   }
 
   .panel-list .card {
