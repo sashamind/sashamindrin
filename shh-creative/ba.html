@@ -1202,6 +1202,31 @@ alt='' imgfield='tn_img_1752706337385'
 
 <script>
 (function () {
+  // Кадры лежат в ленте бок о бок, а видна через маску одна клетка.
+  // Для ленивой загрузки остальные «за краем», и браузер тянул каждый только
+  // в момент, когда тот въезжал под маску. Поэтому, как только секция
+  // оказывается в полутора экранах от видимой области, грузим и
+  // декодируем все кадры разом — к пролистыванию они уже готовы.
+  var sec = document.getElementById('rec-ba-bilibin');
+  if (!sec) return;
+  var imgs = sec.querySelectorAll('.bh-track img');
+  function warm() {
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].loading = 'eager';
+      if (imgs[i].decode) imgs[i].decode().catch(function () {});
+    }
+  }
+  if (!window.IntersectionObserver) { warm(); return; }
+  var io = new IntersectionObserver(function (en) {
+    if (!en[0].isIntersecting) return;
+    io.disconnect();
+    warm();
+  }, { rootMargin: '150% 0px 150% 0px' });
+  io.observe(sec);
+})();
+</script>
+<script>
+(function () {
   var boxes = document.querySelectorAll('#rec-ba-bilibin .bh-mask');
   if (!boxes.length) return;
 
