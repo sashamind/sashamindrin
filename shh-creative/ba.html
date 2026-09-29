@@ -714,6 +714,35 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
             mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
   }
   #rec-ba-quote .q-wind-top { top: -12px; }
+  /* Lottie 600×600, знак в нём занимает примерно треть, остальное —
+     пустые поля; отрицательные отступы их поджимают. Контур в файле
+     белый, перекрашиваем в красный кейса. */
+  #rec-ba-quote .q-inf {
+    position: relative;
+    width: 253px;
+    height: 253px;
+    /* после неваляшки — пропуск: она успевает уйти (гаснет у верхней
+       трети экрана), и только тогда подходят линии с цитатой */
+    margin: 0 auto 32vh;
+  }
+  /* толщина — как у линий ветра: 1.2px на экране при любом масштабе */
+  /* порядок сверху вниз: неваляшка, линии, цитата, линии. Верхние
+     линии живут в .q-body вместе с цитатой, поэтому стоят под неваляшкой;
+     отступ сверху, что раньше был у секции, теперь у .q-body */
+  #rec-ba-quote.t-rec { padding-top: 70px; }
+  /* боковые поля секции гасим, чтобы линии шли от края до края экрана */
+  #rec-ba-quote .q-body { position: relative; margin: 0 -40px; padding: 180px 40px 0; }
+  #rec-ba-quote .q-inf path {
+    stroke: #e42322;
+    stroke-width: 1.2px;
+    stroke-opacity: 0.85;
+    vector-effect: non-scaling-stroke;
+  }
+  @media screen and (max-width: 768px) {
+    #rec-ba-quote .q-inf { width: 173px; height: 173px; margin: 0 auto 26vh; }
+    #rec-ba-quote.t-rec { padding-top: 40px; }
+    #rec-ba-quote .q-body { margin: 0 -20px; padding: 130px 20px 0; }
+  }
   #rec-ba-quote .q-wind-bot { bottom: -12px; }
   #rec-ba-quote .q-wind path {
     fill: none;
@@ -753,6 +782,10 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   }
 </style>
 
+<!-- Неваляшка-бесконечность: контур знака бесконечно прочерчивает сам
+     себя. Стоит над цитатой. -->
+<div class="q-inf ba-fx-fade" id="ba-inf" aria-hidden="true"></div>
+<div class="q-body">
 <svg class="q-wind q-wind-top" viewBox="0 0 1200 180" aria-hidden="true">
   <path pathLength="1" d="M-20,110 C180,100 300,70 430,78 C540,85 590,128 548,140 C505,152 488,100 540,84 C640,54 820,96 960,82 C1060,72 1140,60 1220,64"/>
   <path pathLength="1" d="M-20,60 C150,52 280,40 400,50 C520,60 640,86 760,74 C860,64 880,30 850,24 C818,18 806,52 842,62 C930,86 1080,58 1220,70"/>
@@ -763,6 +796,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   </p>
   <figcaption class="q-author ba-fx">— Хаски</figcaption>
 </figure>
+</div>
 <svg class="q-wind q-wind-bot" viewBox="0 0 1200 180" aria-hidden="true">
   <path pathLength="1" d="M-20,50 C120,58 240,80 360,72 C430,67 452,34 426,28 C398,22 386,58 420,70 C520,104 700,90 880,96 C1000,100 1120,84 1220,88"/>
   <path pathLength="1" d="M-20,120 C160,126 320,110 480,116 C640,122 740,146 880,134 C960,127 990,100 964,92 C936,84 922,118 958,128 C1040,150 1140,124 1220,118"/>
@@ -1206,7 +1240,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 <div class="el-orn">
   <p class="el-note el-note-l"><span class="lang-ru"><b>Узор</b> — петли, замкнутые в&nbsp;круг: бесконечный путь, где&nbsp;каждое препятствие — часть движения.</span><span class="lang-en"><b>The pattern</b> — loops closed into a&nbsp;circle: an&nbsp;endless path where every obstacle is&nbsp;part of&nbsp;the&nbsp;journey.</span></p>
   <div class="el-orn-mid">
-    <svg class="el-circle ba-fx-fade" id="uz-svg" viewBox="-1.35 -1.35 2.7 2.7" aria-hidden="true"></svg>
+    <svg class="el-circle" id="uz-svg" viewBox="-1.35 -1.35 2.7 2.7" aria-hidden="true"></svg>
     <button type="button" class="uz-toggle" id="uz-toggle" aria-expanded="false" aria-controls="uz-panel">
       <span class="uz-t-open"><span class="lang-ru">настроить узор</span><span class="lang-en">tune the pattern</span></span><span class="uz-t-close"><span class="lang-ru">скрыть</span><span class="lang-en">hide</span></span>
       <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><polyline points="1,1 5,5 9,1"/></svg>
@@ -1316,7 +1350,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle {
     visibility: visible;
     opacity: 0.55;
-    transition: opacity 0.8s ease 1.35s, visibility 0s 1.35s;
+    transition: opacity 0.8s ease 1.5s, visibility 0s 1.5s;
   }
   .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle:hover,
   .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle[aria-expanded="true"] { opacity: 1; transition-delay: 0s; }
@@ -1328,9 +1362,13 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   .ba-fx-on #rec-ba-elements .el-orn.is-in .el-note {
     opacity: 0.75;
     transform: none;
-    transition: opacity 0.8s ease 0.75s, transform 0.8s ease 0.75s;
+    transition: opacity 0.8s ease 0.9s, transform 0.8s ease 0.9s;
   }
-  .ba-fx-on #rec-ba-elements .el-orn.is-in .el-note-r { transition-delay: 1.05s; }
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .el-note-r { transition-delay: 1.2s; }
+  /* узор ждёт своей очереди прозрачным и выходит из темноты, когда
+     доходит почти до середины экрана (см. скрипт узора) */
+  #rec-ba-elements #uz-svg { transition: opacity 1.2s ease; }
+  #rec-ba-elements #uz-svg.uz-wait { opacity: 0; }
 
   @media (prefers-reduced-motion: reduce) {
     .ba-fx-on .ba-fx,
@@ -1845,6 +1883,28 @@ alt='' imgfield='tn_img_1752706337385'
 })();
 </script>
 <script>
+(function () {
+  var box = document.getElementById('ba-inf');
+  if (!box || !window.lottie) return;
+  var anim = null;
+  function start() {
+    if (!anim) {
+      anim = lottie.loadAnimation({
+        container: box, renderer: 'svg', loop: true, autoplay: false,
+        path: 'media/ba_inf.json'
+      });
+    }
+    anim.play();
+  }
+  // грузим и крутим только рядом с экраном, вне кадра — пауза
+  if (!window.IntersectionObserver) { start(); return; }
+  new IntersectionObserver(function (en) {
+    if (en[0].isIntersecting) start();
+    else if (anim) anim.pause();
+  }, { rootMargin: '200px 0px' }).observe(box);
+})();
+</script>
+<script>
 /* Живой узор: одна замкнутая нить из n петель. Формула и режимы — из
    «Петли времени»; здесь она встроена в кейс и управляется панелью. */
 (function () {
@@ -2049,11 +2109,31 @@ alt='' imgfield='tn_img_1752706337385'
     }, { rootMargin: '100px 0px' }).observe(svg);
   } else visible = true;
 
+  // ── появление ──
+  // Узор не проявляется заранее: ждёт, пока почти целиком войдёт в
+  // среднюю полосу экрана, и тогда медленно выходит из темноты. Следом
+  // (задержки в css) выходят подписи и кнопка — их ведёт is-in на .el-orn.
+  // Гаснет, только когда уйдёт из полосы совсем, чтобы не мигать у края.
+  var orn = svg.closest('.el-orn');
+  if (window.IntersectionObserver) {
+    svg.classList.add('uz-wait');
+    new IntersectionObserver(function (en) {
+      var r = en[0].intersectionRatio;
+      if (r >= 0.9 && svg.classList.contains('uz-wait')) {
+        svg.classList.remove('uz-wait');
+        orn.classList.add('is-in');
+      } else if (!en[0].isIntersecting && !svg.classList.contains('uz-wait')) {
+        svg.classList.add('uz-wait');
+        orn.classList.remove('is-in');
+      }
+    }, { threshold: [0, 0.9], rootMargin: '-18% 0px -30% 0px' }).observe(svg);
+  }
+
   syncInputs();
   setAnim(S.anim);
 })();
 </script>
-</div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="position:absolute;left:50%;top:50%;width:600px;height:600px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:visible;pointer-events:none;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="flex:none;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_nevalyashka_floor.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  <script>
+</div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="position:absolute;left:50%;top:50%;width:600px;height:600px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:visible;pointer-events:none;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div style="position:relative;flex:none;"><div id="lottie"></div><!-- финальная фраза под неваляшкой: вне потока, чтобы не сдвигать саму неваляшку с центра --><p class="ba-thanks ba-fx" style="position:absolute;top:100%;left:-200px;right:-200px;margin:14px 0 0;text-align:center;font-family:'Raleway',sans-serif;font-size:13px;font-weight:400;letter-spacing:0.06em;line-height:1.5;color:#111111;"><span class="lang-ru">Спасибо за&nbsp;просмотр!</span><span class="lang-en">Thanks for&nbsp;watching!</span></p></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_nevalyashka_floor.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  <script>
 (function () {
   if (!window.IntersectionObserver) return;
   var els = document.querySelectorAll('.ba-fx, .ba-fx-fade');
