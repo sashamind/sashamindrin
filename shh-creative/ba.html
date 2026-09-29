@@ -631,14 +631,89 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec-ba-quote { padding: 90px 20px; }
     #rec-ba-quote .q-author { margin-top: 28px; }
   }
+
+  /* ── Ветер над цитатой и под ней ──
+     Тонкие красные линии с петлями — те же завихрения, что в узоре и на наличнике.
+     Анимация как trim path: по линии пролетает отрезок — вырастает,
+     скользит и сходит на нет. pathLength="1" делает длины в dasharray
+     долями пути, поэтому одни ключевые кадры годятся для любой линии.
+     Порывы разной длины и с разными паузами, чтобы не шли в ногу.
+     Крутится только пока секция в кадре (класс wind-on вешает скрипт). */
+  #rec-ba-quote { position: relative; overflow: hidden; }
+  #rec-ba-quote .q-wind {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    /* к краям линии растворяются: порыв приходит из-за экрана */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  }
+  #rec-ba-quote .q-wind-top { top: -12px; }
+  #rec-ba-quote .q-wind-bot { bottom: -12px; }
+  #rec-ba-quote .q-wind path {
+    fill: none;
+    stroke: #e42322;
+    stroke-opacity: 0.85;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 0 1.5;
+    opacity: 0;
+  }
+  #rec-ba-quote.wind-on .q-wind path {
+    animation: baGust 12s cubic-bezier(0.45, 0.05, 0.35, 1) infinite;
+  }
+  #rec-ba-quote.wind-on .q-wind path:nth-child(1) { animation-duration: 11s;  animation-delay: 0.3s; }
+  #rec-ba-quote.wind-on .q-wind path:nth-child(2) { animation-duration: 13s;  animation-delay: 3.2s; }
+  #rec-ba-quote.wind-on .q-wind-bot path:nth-child(1) { animation-duration: 12s;  animation-delay: 5.4s; }
+  #rec-ba-quote.wind-on .q-wind-bot path:nth-child(2) { animation-duration: 14s;  animation-delay: 1.8s; }
+  /* порыв занимает первые 60% цикла, остальное — затишье */
+  @keyframes baGust {
+    0%   { stroke-dasharray: 0 1.5;    stroke-dashoffset: 0;  opacity: 0; }
+    6%   { opacity: 1; }
+    28%  { stroke-dasharray: 0.34 1.5; }
+    52%  { opacity: 1; }
+    60%  { stroke-dasharray: 0 1.5;    stroke-dashoffset: -1; opacity: 0; }
+    100% { stroke-dasharray: 0 1.5;    stroke-dashoffset: -1; opacity: 0; }
+  }
+  /* на телефоне линии шире экрана вдвое: иначе петли сжимаются в точки */
+  @media screen and (max-width: 768px) {
+    #rec-ba-quote { padding-top: 130px; padding-bottom: 130px; }
+    #rec-ba-quote .q-wind { width: 200%; left: -50%; }
+    #rec-ba-quote .q-wind-top { top: -8px; }
+    #rec-ba-quote .q-wind-bot { bottom: -8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-quote .q-wind { display: none; }
+  }
 </style>
 
+<svg class="q-wind q-wind-top" viewBox="0 0 1200 180" aria-hidden="true">
+  <path pathLength="1" d="M-20,110 C180,100 300,70 430,78 C540,85 590,128 548,140 C505,152 488,100 540,84 C640,54 820,96 960,82 C1060,72 1140,60 1220,64"/>
+  <path pathLength="1" d="M-20,60 C150,52 280,40 400,50 C520,60 640,86 760,74 C860,64 880,30 850,24 C818,18 806,52 842,62 C930,86 1080,58 1220,70"/>
+</svg>
 <figure class="q-wrap">
   <p class="q-text ba-fx">
     <span class="lang-ru">«Ищи меня, свищи<br />в ночи густой как щи».</span><span class="lang-en">“Look for me, whistle for me<br />in a night as thick as shchi.”</span>
   </p>
   <figcaption class="q-author ba-fx">— Хаски</figcaption>
 </figure>
+<svg class="q-wind q-wind-bot" viewBox="0 0 1200 180" aria-hidden="true">
+  <path pathLength="1" d="M-20,50 C120,58 240,80 360,72 C430,67 452,34 426,28 C398,22 386,58 420,70 C520,104 700,90 880,96 C1000,100 1120,84 1220,88"/>
+  <path pathLength="1" d="M-20,120 C160,126 320,110 480,116 C640,122 740,146 880,134 C960,127 990,100 964,92 C936,84 922,118 958,128 C1040,150 1140,124 1220,118"/>
+</svg>
+<script>
+(function () {
+  // ветер дует, только пока цитата на экране
+  var sec = document.getElementById('rec-ba-quote');
+  if (!sec || !window.IntersectionObserver) { if (sec) sec.classList.add('wind-on'); return; }
+  new IntersectionObserver(function (en) {
+    sec.classList.toggle('wind-on', en[0].isIntersecting);
+  }).observe(sec);
+})();
+</script>
 </div> <div id="rec-ba-elements" class="r t-rec" style=" " data-animationappear="off">
 <style>
   /* Рендеры визиток и меню на тёмном — исходники с прозрачным фоном,
@@ -736,6 +811,9 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     width: 280px;
     max-width: 100%;
     margin: 110px auto 0;
+    /* рендер на чистом чёрном, а секция чуть светлее (#0a0a0a):
+       lighten растворяет чёрную подложку в фоне, наличник не трогает */
+    mix-blend-mode: lighten;
   }
   /* подпись под наличником: та же, что у круга, только по центру */
   #rec-ba-elements .el-note-nal {
@@ -839,9 +917,9 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   }
 </style>
 <div class="el-orn">
-  <p class="el-note el-note-l ba-fx"><span class="lang-ru"><b>Петля</b> — из&nbsp;резьбы русских наличников</span><span class="lang-en"><b>The loop</b> — from the&nbsp;carving of&nbsp;Russian window frames</span></p>
+  <p class="el-note el-note-l"><span class="lang-ru"><b>Петля</b> — из&nbsp;резьбы русских наличников</span><span class="lang-en"><b>The loop</b> — from the&nbsp;carving of&nbsp;Russian window frames</span></p>
   <img class="el-circle ba-fx-fade" src="media/ba-uzor-circle.svg" alt="" width="509" height="512" loading="lazy" decoding="async" />
-  <p class="el-note el-note-r ba-fx"><span class="lang-ru"><b>Круг</b> — как&nbsp;энсо, дзенский знак пустоты и&nbsp;полноты</span><span class="lang-en"><b>The circle</b> — like ens&#333;, the&nbsp;Zen sign of&nbsp;emptiness and&nbsp;fullness</span></p>
+  <p class="el-note el-note-r"><span class="lang-ru"><b>Круг</b> — как&nbsp;энсо, дзенский знак пустоты и&nbsp;полноты</span><span class="lang-en"><b>The circle</b> — like ens&#333;, the&nbsp;Zen sign of&nbsp;emptiness and&nbsp;fullness</span></p>
 </div>
 
 <div class="el-row">
@@ -873,8 +951,8 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   </div>
   <img class="el-flag ba-fx" src="media/ba-flag.webp" alt="" width="1400" height="1400" loading="lazy" decoding="async" />
 </div>
-<img class="el-nalichnik ba-fx" src="media/ba-nalichnik.webp" alt="" width="560" height="943" loading="lazy" decoding="async" />
-<p class="el-note el-note-nal ba-fx"><span class="lang-ru"><b>Наличник × якисуги</b><br />Русская резьба, обожжённая по-японски: огонь делает дерево чёрным и&nbsp;бережёт его от&nbsp;воды, гнили и&nbsp;времени.</span><span class="lang-en"><b>Nalichnik × yakisugi</b><br />Russian carving, charred the&nbsp;Japanese way: fire turns the&nbsp;wood black and&nbsp;guards it against water, rot and&nbsp;time.</span></p>
+<img class="el-nalichnik ba-fx" src="media/ba-nalichnik.webp?v=3" alt="" width="560" height="943" loading="lazy" decoding="async" />
+<p class="el-note el-note-nal ba-fx"><span class="lang-ru"><b>Наличник × якисуги</b><br />Русская резьба +&nbsp;дерево, обожжённое по-японски.</span><span class="lang-en"><b>Nalichnik × yakisugi</b><br />Russian carving +&nbsp;wood charred the&nbsp;Japanese way.</span></p>
 </div> <style>
   /* ── Появление по прокрутке для узора, круга, ряда и тарелок ──
      Классы ba-fx / ba-fx-fade расставлены в разметке, но прячут элемент
@@ -898,11 +976,30 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   }
   /* визитки выходят следом за меню, а не одновременно */
   .ba-fx-on .el-buscard { transition-delay: 0.18s; }
+  /* Подписи у круга не следят за прокруткой сами: их ведёт круг (скрипт
+     вешает is-in на .el-orn вместе с ним). Сначала проявляется круг,
+     потом левая подпись, за ней правая. Гаснут сразу, без задержки. */
+  .ba-fx-on #rec-ba-elements .el-orn .el-note {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .el-note {
+    opacity: 0.75;
+    transform: none;
+    transition: opacity 0.8s ease 0.75s, transform 0.8s ease 0.75s;
+  }
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .el-note-r { transition-delay: 1.05s; }
 
   @media (prefers-reduced-motion: reduce) {
     .ba-fx-on .ba-fx,
     .ba-fx-on .ba-fx-fade {
       opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .ba-fx-on #rec-ba-elements .el-orn .el-note {
+      opacity: 0.75;
       transform: none;
       transition: none;
     }
@@ -1392,6 +1489,10 @@ alt='' imgfield='tn_img_1752706337385'
       // класс и вешается, и снимается: уходя из кадра элемент гаснет и
       // проявится снова, когда вернётся
       e.target.classList.toggle('is-in', e.isIntersecting);
+      // круг заодно ведёт свои подписи
+      if (e.target.classList.contains('el-circle')) {
+        e.target.parentNode.classList.toggle('is-in', e.isIntersecting);
+      }
     });
     // Поля сужают рабочую полосу экрана с обеих сторон. Снизу — чтобы
     // элемент не проявлялся в момент, когда только показался из-за края,
