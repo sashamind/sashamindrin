@@ -423,6 +423,43 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
       margin: 34px auto 26px;
       opacity: 0.32;
     }
+    /* В столбце источники проявляются по одному, когда до них доходит
+       прокрутка (класс src-in ставит js): сначала прочерчивается стрелка,
+       за ней остриё, знак, название и свойства. Так идёт цепочка
+       стрелка — текст — стрелка — текст. */
+    #rec1168059081.fx .sch-down line,
+    #rec1168059081.fx .sch-down polyline {
+      stroke-dasharray: var(--len, 0);
+      stroke-dashoffset: var(--len, 0);
+      transition: stroke-dashoffset 0.45s ease;
+    }
+    #rec1168059081.fx .sch-source.src-in .sch-down line,
+    #rec1168059081.fx .sch-source.src-in .sch-down polyline { stroke-dashoffset: 0; }
+    #rec1168059081.fx .sch-source.src-in .sch-down polyline { transition: stroke-dashoffset 0.25s ease 0.4s; }
+
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-source-mark .sch-svg,
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-source-name,
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-words li:nth-child(n) {
+      opacity: 0;
+      transform: translateY(8px);
+      transition-delay: 0s;
+    }
+    #rec1168059081.fx .sch-source.src-in .sch-source-mark .sch-svg,
+    #rec1168059081.fx .sch-source.src-in .sch-source-name,
+    #rec1168059081.fx .sch-source.src-in .sch-words li { opacity: 1; transform: none; }
+    #rec1168059081.fx .sch-source.src-in .sch-source-mark .sch-svg { transition-delay: 0.6s; }
+    #rec1168059081.fx .sch-source.src-in .sch-source-name { transition-delay: 0.75s; }
+    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(1) { transition-delay: 0.85s; }
+    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(2) { transition-delay: 0.93s; }
+    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(3) { transition-delay: 1.01s; }
+    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(4) { transition-delay: 1.09s; }
+  }
+  @media screen and (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    #rec1168059081.fx .sch-down line,
+    #rec1168059081.fx .sch-down polyline { stroke-dashoffset: 0; transition: none; }
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-source-mark .sch-svg,
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-source-name,
+    #rec1168059081.fx.is-in .sch-source:not(.src-in) .sch-words li:nth-child(n) { opacity: 1; transform: none; }
   }
 </style>
 
@@ -516,6 +553,32 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     el.style.transitionDelay = (0.95 + branch * 0.75 + (isHead ? 0.55 : 0)).toFixed(2) + 's';
   }
   sec.classList.add('fx');
+
+  // короткие стрелки мобильного столбца: длину отдаём в css через --len
+  var downs = sec.querySelectorAll('.sch-down line, .sch-down polyline');
+  for (var j = 0; j < downs.length; j++) {
+    downs[j].style.setProperty('--len', Math.ceil(downs[j].getTotalLength() + 1));
+  }
+  // На телефоне каждый источник проявляется сам, когда доходит до него
+  // прокрутка. Если в кадр вошли сразу несколько, они встают в очередь:
+  // следующий стартует, когда предыдущий отыграл стрелку и текст.
+  // На десктопе класс src-in ни на что не влияет.
+  var nextAt = 0, STEP = 1100;
+  var srcIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var f = e.target;
+      clearTimeout(f._srcT);
+      if (e.isIntersecting) {
+        var now = Date.now(), at = Math.max(now, nextAt);
+        nextAt = at + STEP;
+        f._srcT = setTimeout(function () { f.classList.add('src-in'); }, at - now);
+      } else {
+        f.classList.remove('src-in');
+      }
+    });
+  }, { rootMargin: '0px 0px -22% 0px' });
+  var srcs = sec.querySelectorAll('.sch-source');
+  for (var k = 0; k < srcs.length; k++) srcIo.observe(srcs[k]);
 
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
@@ -722,14 +785,22 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     background: #0a0a0a;
     padding: 80px 40px 100px;
   }
-  /* Круговой орнамент над рядом: медленное вращение, один оборот за 45 с.
-     Вектор, поэтому на любом размере остаётся чистым. */
+  /* Круговой орнамент над рядом — живой: кривая из петель строится
+     скриптом (см. uzor ниже) и по умолчанию медленно вращается.
+     overflow: visible — при большом размахе петли выходят за рамку. */
   #rec-ba-elements .el-circle {
     display: block;
     flex: none;
     width: 220px;
-    height: auto;
-    animation: circleSpin 45s linear infinite;
+    height: 220px;
+    overflow: visible;
+  }
+  #rec-ba-elements .el-orn-mid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    flex: none;
   }
   /* По бокам от круга — две короткие подписи о том, откуда он взялся:
      русская резьба и японский энсо. Колонки равной ширины держат круг
@@ -739,7 +810,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     align-items: center;
     justify-content: center;
     gap: 72px;
-    margin: 0 auto 64px;
+    margin: 0 auto 34px;
   }
   #rec-ba-elements .el-note {
     flex: 0 1 240px;
@@ -754,16 +825,12 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   #rec-ba-elements .el-note b { font-weight: 600; color: #e42322; }
   #rec-ba-elements .el-note-l { text-align: right; }
 
-  @keyframes circleSpin {
-    to { transform: rotate(360deg); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #rec-ba-elements .el-circle { animation: none; }
-  }
 
   /* меню слева, визитки справа */
+  /* отступ от узора до меню и визиток держит сам ряд, поэтому он один
+     и тот же при открытой и закрытой панели */
   #rec-ba-elements .el-row {
+    margin-top: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -878,6 +945,175 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   @media (prefers-reduced-motion: reduce) {
     #rec-ba-elements .pl-stage img { transition: none; }
   }
+  /* ── Настройки узора ──
+     Кнопка под кругом раскрывает панель под рядом с подписями.
+     Всё в языке кейса: Raleway, тонкие линии, красный #e42322. */
+  #rec-ba-elements .uz-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: #e8e8e8;
+    opacity: 0.55;
+    transition: opacity 0.2s ease, color 0.2s ease;
+  }
+  #rec-ba-elements .uz-toggle:hover,
+  #rec-ba-elements .uz-toggle[aria-expanded="true"] { opacity: 1; }
+  /* стрелка: вниз — панель закрыта, вверх — открыта */
+  #rec-ba-elements .uz-toggle svg { width: 9px; height: 6px; flex: none; transition: transform 0.35s ease; }
+  #rec-ba-elements .uz-toggle polyline { stroke: #e42322; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+  #rec-ba-elements .uz-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  #rec-ba-elements .uz-t-close,
+  #rec-ba-elements .uz-toggle[aria-expanded="true"] .uz-t-open { display: none; }
+  #rec-ba-elements .uz-toggle[aria-expanded="true"] .uz-t-close { display: inline; }
+
+  /* панель раскрывается по высоте через grid 0fr → 1fr */
+  #rec-ba-elements .uz-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    margin: 0 auto;
+    transition: grid-template-rows 0.5s ease, opacity 0.4s ease, margin 0.5s ease;
+  }
+  #rec-ba-elements .uz-wrap[hidden] { display: none; }
+  #rec-ba-elements .uz-wrap.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    margin: 0 auto 34px;
+  }
+  #rec-ba-elements .uz-panel {
+    overflow: hidden;
+    min-height: 0;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 4px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #e8e8e8;
+  }
+  #rec-ba-elements .uz-formula {
+    margin: 0 0 16px;
+    padding: 9px 0;
+    border-top: 1px solid rgba(232, 232, 232, 0.14);
+    border-bottom: 1px solid rgba(232, 232, 232, 0.14);
+    font-size: 10px;
+    line-height: 1.8;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.5;
+  }
+  #rec-ba-elements .uz-ctl { margin-bottom: 12px; }
+  #rec-ba-elements .uz-ctl label,
+  #rec-ba-elements .uz-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  #rec-ba-elements .uz-ctl output {
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: #e42322;
+  }
+  /* ползунок: волосяная линия и красная точка */
+  #rec-ba-elements .uz-ctl input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 20px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  #rec-ba-elements .uz-ctl input[type=range]::-webkit-slider-runnable-track {
+    height: 1px;
+    background: rgba(232, 232, 232, 0.3);
+  }
+  #rec-ba-elements .uz-ctl input[type=range]::-moz-range-track {
+    height: 1px;
+    background: rgba(232, 232, 232, 0.3);
+  }
+  #rec-ba-elements .uz-ctl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    margin-top: -6px;
+    border: 0;
+    border-radius: 50%;
+    background: #e42322;
+    transition: transform 0.2s ease;
+  }
+  #rec-ba-elements .uz-ctl input[type=range]::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border: 0;
+    border-radius: 50%;
+    background: #e42322;
+  }
+  #rec-ba-elements .uz-ctl input[type=range]:active::-webkit-slider-thumb { transform: scale(1.3); }
+  #rec-ba-elements .uz-seg,
+  #rec-ba-elements .uz-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 22px;
+  }
+  /* Кнопки панели — просто слова, без рамок и заливки. Выбранный режим
+     подчёркнут красной линией, «Копировать SVG» написано красным. */
+  #rec-ba-elements .uz-panel button {
+    padding: 6px 0 5px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #e8e8e8;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.25s ease, color 0.2s ease;
+  }
+  #rec-ba-elements .uz-panel button:hover { opacity: 1; }
+  #rec-ba-elements .uz-panel button[aria-pressed="true"] {
+    opacity: 1;
+    border-bottom-color: #e42322;
+  }
+  #rec-ba-elements .uz-panel .uz-primary {
+    opacity: 1;
+    color: #e42322;
+    font-weight: 600;
+  }
+  #rec-ba-elements .uz-panel .uz-primary:hover { color: #ff4a48; }
+  #rec-ba-elements .uz-panel button:focus-visible,
+  #rec-ba-elements .uz-toggle:focus-visible,
+  #rec-ba-elements .uz-ctl input:focus-visible { outline: 1px solid #e42322; outline-offset: 3px; }
+  #rec-ba-elements .uz-hint {
+    min-height: 1.7em;
+    margin: 4px 0 0;
+    font-size: 11px;
+    line-height: 1.7;
+    opacity: 0.55;
+  }
+  #rec-ba-elements .uz-actions { align-items: center; padding-top: 0; }
+  #rec-ba-elements .uz-status { flex-basis: 100%; margin: 4px 0 0; font-size: 11px; opacity: 0.6; }
+  @media (prefers-reduced-motion: reduce) {
+    #rec-ba-elements .uz-wrap { transition: none; }
+  }
+
   @media screen and (max-width: 768px) {
     #rec-ba-elements { padding: 40px 0 56px; }
     /* на узком экране ряд разворачивается в столбец, флаг по-прежнему
@@ -896,7 +1132,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec-ba-elements .el-flag { flex: 0 1 auto; width: 96%; }
     #rec-ba-elements .el-nalichnik { width: 46%; margin-top: 64px; }
     #rec-ba-elements .el-note-nal { max-width: 280px; margin-top: 28px; padding: 0 20px; box-sizing: content-box; }
-    #rec-ba-elements .el-circle { width: 150px; }
+    #rec-ba-elements .el-circle { width: 170px; height: 170px; }
     #rec-ba-elements .el-orn {
       flex-direction: column;
       gap: 28px;
@@ -905,21 +1141,105 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     }
     #rec-ba-elements .el-note,
     #rec-ba-elements .el-note-l { flex: none; max-width: 260px; text-align: center; }
+    /* В столбце обе подписи идут над узором, под ним — кнопка,
+       а сразу за ней панель: узор и настройки помещаются на один экран. */
+    #rec-ba-elements .el-orn-mid { display: contents; }
+    #rec-ba-elements .el-orn { gap: 18px; margin-bottom: 20px; }
+    #rec-ba-elements .el-note-l { order: 1; }
+    #rec-ba-elements .el-note-r { order: 2; margin-bottom: 22px; }
+    #rec-ba-elements .el-circle { order: 3; }
+    #rec-ba-elements .uz-toggle { order: 4; margin-top: 4px; }
+    #rec-ba-elements .uz-wrap.is-open { margin: 0 auto 20px; }
+    /* панель — горизонтальная лента карточек, листается пальцем;
+       край следующей карточки подсказывает, что там есть ещё */
+    #rec-ba-elements .uz-panel { max-width: none; padding: 0; }
+    #rec-ba-elements .uz-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 0 20px;
+      padding: 2px 20px 6px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    #rec-ba-elements .uz-scroll::-webkit-scrollbar { display: none; }
+    #rec-ba-elements .uz-scroll > * {
+      flex: 0 0 68%;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 10px 14px 6px;
+      border: 1px solid rgba(232, 232, 232, 0.14);
+      border-radius: 0;
+      scroll-snap-align: start;
+    }
+    /* режимы в одну строку: карточка по ширине слов, той же высоты */
+    #rec-ba-elements .uz-scroll > .uz-ctl-motion { flex-basis: auto; }
+    #rec-ba-elements .uz-seg { flex-wrap: nowrap; gap: 16px; }
+    #rec-ba-elements .uz-seg button { padding: 0 0 2px; white-space: nowrap; }
+    #rec-ba-elements .uz-formula,
+    #rec-ba-elements .uz-hint,
+    #rec-ba-elements .uz-status:empty { display: none; }
+    /* копировать и сбросить — не в ленте, а всегда под ней */
+    #rec-ba-elements .uz-actions { justify-content: center; padding: 10px 20px 0; }
     /* рядом на узком экране им не встать — возвращаем в столбец.
        flex: 0 1 auto обязателен: в колонке основная ось вертикальная, и
        заданные для ряда доли начинают править высотой, ломая пропорции. */
     #rec-ba-elements .el-row {
+      margin-top: 115px;
       flex-direction: column;
       gap: 32px;
     }
     #rec-ba-elements .el-menu    { flex: 0 1 auto; max-width: 96%; }
-    #rec-ba-elements .el-buscard { flex: 0 1 auto; max-width: 80%; }
+    #rec-ba-elements .el-buscard { flex: 0 1 auto; max-width: 66%; }
   }
 </style>
 <div class="el-orn">
   <p class="el-note el-note-l"><span class="lang-ru"><b>Петля</b> — из&nbsp;резьбы русских наличников</span><span class="lang-en"><b>The loop</b> — from the&nbsp;carving of&nbsp;Russian window frames</span></p>
-  <img class="el-circle ba-fx-fade" src="media/ba-uzor-circle.svg" alt="" width="509" height="512" loading="lazy" decoding="async" />
+  <div class="el-orn-mid">
+    <svg class="el-circle ba-fx-fade" id="uz-svg" viewBox="-1.35 -1.35 2.7 2.7" aria-hidden="true"></svg>
+    <button type="button" class="uz-toggle" id="uz-toggle" aria-expanded="false" aria-controls="uz-panel">
+      <span class="uz-t-open"><span class="lang-ru">настроить узор</span><span class="lang-en">tune the pattern</span></span><span class="uz-t-close"><span class="lang-ru">скрыть</span><span class="lang-en">hide</span></span>
+      <svg viewBox="0 0 10 6" fill="none" aria-hidden="true"><polyline points="1,1 5,5 9,1"/></svg>
+    </button>
+  </div>
   <p class="el-note el-note-r"><span class="lang-ru"><b>Круг</b> — как&nbsp;энсо, дзенский знак пустоты и&nbsp;полноты</span><span class="lang-en"><b>The circle</b> — like ens&#333;, the&nbsp;Zen sign of&nbsp;emptiness and&nbsp;fullness</span></p>
+</div>
+
+<div class="uz-wrap" id="uz-panel" hidden>
+<div class="uz-panel">
+<div class="uz-scroll">
+  <p class="uz-formula"><span id="uz-fx"></span><br /><span id="uz-fy"></span></p>
+  <div class="uz-ctl">
+    <label for="uz-n"><span><span class="lang-ru">петли</span><span class="lang-en">loops</span></span><output id="uz-n-out"></output></label>
+    <input type="range" id="uz-n" min="6" max="24" step="1" />
+  </div>
+  <div class="uz-ctl">
+    <label for="uz-d"><span><span class="lang-ru">размах петли</span><span class="lang-en">loop reach</span></span><output id="uz-d-out"></output></label>
+    <input type="range" id="uz-d" min="0" max="0.6" step="0.001" />
+  </div>
+  <div class="uz-ctl">
+    <label for="uz-w"><span><span class="lang-ru">толщина нити</span><span class="lang-en">thread weight</span></span><output id="uz-w-out"></output></label>
+    <input type="range" id="uz-w" min="1" max="20" step="0.5" />
+  </div>
+  <div class="uz-ctl uz-ctl-motion">
+    <span class="uz-title"><span class="lang-ru">движение</span><span class="lang-en">motion</span></span>
+    <div class="uz-seg" id="uz-anim" role="group">
+      <button type="button" data-v="stop"><span class="lang-ru">Стоп</span><span class="lang-en">Still</span></button>
+      <button type="button" data-v="spin"><span class="lang-ru">Вращение</span><span class="lang-en">Spin</span></button>
+      <button type="button" data-v="draw"><span class="lang-ru">Рисование</span><span class="lang-en">Draw</span></button>
+      <button type="button" data-v="clock"><span class="lang-ru">Ход</span><span class="lang-en">Run</span></button>
+      <button type="button" data-v="breath"><span class="lang-ru">Дыхание</span><span class="lang-en">Breath</span></button>
+    </div>
+    <p class="uz-hint" id="uz-hint"></p>
+  </div>
+</div>
+  <div class="uz-actions">
+    <button type="button" class="uz-primary" id="uz-copy"><span class="lang-ru">Копировать SVG</span><span class="lang-en">Copy SVG</span></button>
+    <button type="button" id="uz-reset"><span class="lang-ru">Сбросить</span><span class="lang-en">Reset</span></button>
+    <p class="uz-status" id="uz-status" role="status"></p>
+  </div>
+</div>
 </div>
 
 <div class="el-row">
@@ -979,6 +1299,18 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   /* Подписи у круга не следят за прокруткой сами: их ведёт круг (скрипт
      вешает is-in на .el-orn вместе с ним). Сначала проявляется круг,
      потом левая подпись, за ней правая. Гаснут сразу, без задержки. */
+  .ba-fx-on #rec-ba-elements .el-orn .uz-toggle {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease, visibility 0s 0.4s;
+  }
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle {
+    visibility: visible;
+    opacity: 0.55;
+    transition: opacity 0.8s ease 1.35s, visibility 0s 1.35s;
+  }
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle:hover,
+  .ba-fx-on #rec-ba-elements .el-orn.is-in .uz-toggle[aria-expanded="true"] { opacity: 1; transition-delay: 0s; }
   .ba-fx-on #rec-ba-elements .el-orn .el-note {
     opacity: 0;
     transform: translateY(12px);
@@ -1003,6 +1335,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
       transform: none;
       transition: none;
     }
+    .ba-fx-on #rec-ba-elements .el-orn .uz-toggle { visibility: visible; opacity: 0.55; transition: none; }
   }
 </style>
 
@@ -1502,6 +1835,215 @@ alt='' imgfield='tn_img_1752706337385'
   });
 })();
 </script>
+<script>
+/* Живой узор: одна замкнутая нить из n петель. Формула и режимы — из
+   «Петли времени»; здесь она встроена в кейс и управляется панелью. */
+(function () {
+  var svg = document.getElementById('uz-svg');
+  if (!svg) return;
+  var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2;
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var RED = '#e42322', BG = '#0a0a0a';
+  var SQ = 0.66;  // сплюснутость петли по радиусу, как в исходнике
+  var DEF = { n: 12, d: 0.31, w: 7.5, anim: reduce ? 'stop' : 'spin' };
+  var S = Object.assign({}, DEF);
+
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  var common = { fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+  var gAll = el('g', {});
+  var main = el('path', common), prog = el('path', common);
+  var dot = el('circle', { r: 0.04, fill: '#ffffff' });
+  gAll.appendChild(main); gAll.appendChild(prog); gAll.appendChild(dot);
+  svg.appendChild(gAll);
+
+  // точка на кривой: t = 0 на 12 часах, обход по часовой
+  function P(t, d, n) {
+    var a = d * SQ, b = d;
+    var A = a * Math.cos(n * t), B = b * Math.sin(n * t);
+    var x = Math.cos(t) * (1 + A) + B * Math.sin(t);
+    var y = Math.sin(t) * (1 + A) - B * Math.cos(t);
+    return [y, -x];
+  }
+  function build(d, n, t0, t1, close) {
+    var steps = Math.max(2, Math.ceil(Math.abs(t1 - t0) / TAU * n * 96)), o = '';
+    for (var i = 0; i <= steps; i++) {
+      var p = P(t0 + (t1 - t0) * i / steps, d, n);
+      o += (i ? 'L' : 'M') + p[0].toFixed(4) + ' ' + p[1].toFixed(4);
+    }
+    return close ? o + 'Z' : o;
+  }
+  function sw() { return S.w * 0.006; }
+
+  function renderShape(d) {
+    var w = sw(), n = S.n;
+    main.setAttribute('stroke', RED);
+    main.setAttribute('stroke-width', w);
+    main.setAttribute('opacity', S.anim === 'clock' ? 0.3 : 1);
+    if (S.anim !== 'draw') main.setAttribute('d', build(d, n, 0, TAU, true));
+    prog.setAttribute('stroke', RED);
+    prog.setAttribute('stroke-width', w * 1.2);
+    dot.setAttribute('r', Math.max(w * 1.1, 0.02));
+    var ds = d.toFixed(3), as = (d * SQ).toFixed(3);
+    $('uz-fx').textContent = 'x = cos t·(1 + ' + as + '·cos ' + n + 't) + ' + ds + '·sin t·sin ' + n + 't';
+    $('uz-fy').textContent = 'y = sin t·(1 + ' + as + '·cos ' + n + 't) − ' + ds + '·cos t·sin ' + n + 't';
+  }
+  function clearMotion() { prog.setAttribute('d', ''); dot.style.display = 'none'; }
+
+  // ── анимация; вне экрана кадры не считаются ──
+  var raf = null, last = 0, elapsed = 0, visible = false;
+  function frame(now) {
+    raf = null;
+    if (last) elapsed += Math.min(now - last, 100);
+    last = now;
+    var t0 = elapsed, n = S.n, d = S.d, p, t;
+    if (S.anim === 'spin') {
+      gAll.setAttribute('transform', 'rotate(' + ((t0 / 60000) * 360 % 360).toFixed(3) + ')');
+    }
+    if (S.anim === 'breath') {
+      var th = 1 / (n - SQ);
+      d = Math.max(th * 1.05, S.d * (1 + 0.15 * Math.sin(t0 / 1000 * TAU / 6)));
+      renderShape(d);
+    }
+    if (S.anim === 'draw') {
+      var q = Math.min(1, (t0 % 13000) / 12000);
+      t = TAU * q;
+      main.setAttribute('d', q >= 1 ? build(d, n, 0, TAU, true) : build(d, n, 0, Math.max(t, 0.001)));
+      p = P(t, d, n);
+      dot.style.display = ''; dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]);
+    }
+    if (S.anim === 'clock') {
+      t = TAU * ((t0 / 12000) % 1);
+      prog.setAttribute('d', build(d, n, t - TAU / n, t));
+      p = P(t, d, n);
+      dot.style.display = ''; dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]);
+    }
+    loop();
+  }
+  function loop() {
+    if (S.anim !== 'stop' && visible && !raf) raf = requestAnimationFrame(frame);
+  }
+  function halt() { if (raf) cancelAnimationFrame(raf); raf = null; last = 0; }
+
+  var HINT = {
+    stop: ['Форма стоит на месте.', 'The form holds still.'],
+    spin: ['Узор медленно вращается: один оборот за минуту, как секундная стрелка.', 'The pattern turns slowly: one revolution a minute, like a second hand.'],
+    draw: ['Нить рисует себя по кругу за 12 секунд — петля в секунду.', 'The thread draws itself around in 12 seconds — a loop a second.'],
+    clock: ['Точка обходит циферблат: на петлях кружится, на дугах бежит.', 'A dot walks the dial: it circles on the loops and runs on the arcs.'],
+    breath: ['Размах петель мягко дышит вокруг заданного значения.', 'The loop reach gently breathes around the set value.']
+  };
+  function setAnim(v) {
+    S.anim = v;
+    halt(); elapsed = 0;
+    clearMotion();
+    gAll.removeAttribute('transform');
+    renderShape(S.d);
+    var bs = document.querySelectorAll('#uz-anim button');
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-v') === v);
+    $('uz-hint').innerHTML = '<span class="lang-ru">' + HINT[v][0] + '</span><span class="lang-en">' + HINT[v][1] + '</span>';
+    loop();
+  }
+
+  // ── ползунки ──
+  var fmt = { n: function (v) { return v; }, d: function (v) { return (+v).toFixed(3); }, w: function (v) { return (+v).toFixed(1); } };
+  // нижняя граница размаха — там, где петли уже явно сложились
+  function clampD() {
+    var min = Math.ceil((1 / (S.n - SQ) + 0.02) * 1000) / 1000, inp = $('uz-d');
+    inp.min = min;
+    if (S.d < min) S.d = min;
+    inp.value = S.d;
+    $('uz-d-out').textContent = fmt.d(S.d);
+  }
+  function syncInputs() {
+    ['n', 'd', 'w'].forEach(function (k) { $('uz-' + k).value = S[k]; $('uz-' + k + '-out').textContent = fmt[k](S[k]); });
+    clampD();
+  }
+  ['n', 'd', 'w'].forEach(function (k) {
+    $('uz-' + k).addEventListener('input', function (e) {
+      S[k] = k === 'n' ? parseInt(e.target.value, 10) : parseFloat(e.target.value);
+      $('uz-' + k + '-out').textContent = fmt[k](S[k]);
+      clampD();
+      if (S.anim !== 'breath') renderShape(S.d);
+    });
+  });
+  var abs = document.querySelectorAll('#uz-anim button');
+  for (var i = 0; i < abs.length; i++) abs[i].addEventListener('click', function () { setAnim(this.getAttribute('data-v')); });
+
+  // ── раскрытие панели ──
+  var tg = $('uz-toggle'), wrap = $('uz-panel');
+  tg.addEventListener('click', function () {
+    var open = tg.getAttribute('aria-expanded') !== 'true';
+    tg.setAttribute('aria-expanded', open);
+    if (open) {
+      wrap.hidden = false;
+      wrap.offsetHeight;  // зафиксировать закрытое состояние до перехода
+      wrap.classList.add('is-open');
+      // на телефоне подводим экран так, чтобы узор и панель были в кадре
+      // вместе; ждём, пока панель раскроется до полной высоты
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        setTimeout(function () {
+          var top = svg.getBoundingClientRect().top - 24;
+          var bottom = wrap.getBoundingClientRect().bottom + 16;
+          var over = bottom - window.innerHeight;
+          if (over > 0) window.scrollBy({ top: Math.min(over, top), behavior: reduce ? 'auto' : 'smooth' });
+        }, reduce ? 0 : 520);
+      }
+    } else {
+      wrap.classList.remove('is-open');
+      setTimeout(function () { if (tg.getAttribute('aria-expanded') !== 'true') wrap.hidden = true; }, reduce ? 0 : 500);
+    }
+  });
+
+  // ── экспорт ──
+  function status(ru, en) {
+    $('uz-status').innerHTML = '<span class="lang-ru">' + ru + '</span><span class="lang-en">' + en + '</span>';
+    clearTimeout(status.t);
+    status.t = setTimeout(function () { $('uz-status').textContent = ''; }, 3500);
+  }
+  $('uz-copy').addEventListener('click', function () {
+    var clone = svg.cloneNode(true);
+    clone.setAttribute('xmlns', NS);
+    clone.setAttribute('width', '1000'); clone.setAttribute('height', '1000');
+    clone.setAttribute('viewBox', '-1.75 -1.75 3.5 3.5');
+    ['id', 'class', 'aria-hidden'].forEach(function (a) { clone.removeAttribute(a); });
+    clone.insertBefore(el('rect', { x: -1.75, y: -1.75, width: 3.5, height: 3.5, fill: BG }), clone.firstChild);
+    var st = clone.querySelectorAll('[style]');
+    for (var i = 0; i < st.length; i++) { if (st[i].style.display === 'none') st[i].parentNode.removeChild(st[i]); else st[i].removeAttribute('style'); }
+    var txt = new XMLSerializer().serializeToString(clone);
+    function download() {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([txt], { type: 'image/svg+xml' }));
+      a.download = 'ba-uzor.svg';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      status('Буфер недоступен — SVG скачан файлом.', 'Clipboard unavailable — SVG downloaded as a file.');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () {
+        status('SVG скопирован. Можно вставить в Figma или Illustrator.', 'SVG copied. Paste it into Figma or Illustrator.');
+      }, download);
+    } else download();
+  });
+  $('uz-reset').addEventListener('click', function () {
+    S = Object.assign({}, DEF);
+    syncInputs(); setAnim(S.anim);
+  });
+
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (en) {
+      visible = en[0].isIntersecting;
+      if (visible) loop(); else halt();
+    }, { rootMargin: '100px 0px' }).observe(svg);
+  } else visible = true;
+
+  syncInputs();
+  setAnim(S.anim);
+})();
+</script>
 </div> <div id="rec1167986431" class="r t-rec" style=" " data-animationappear="off" data-record-type="396"> <!-- T396 --> <style>#rec1167986431 .t396__artboard {min-height:600px;height:100vh;background-color:#e8e8e8;}#rec1167986431 .t396__filter {min-height:600px;height:100vh;}#rec1167986431 .t396__carrier{min-height:600px;height:100vh;background-position:center center;background-attachment:scroll;background-size:cover;background-repeat:no-repeat;}@media screen and (max-width:1199px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:959px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:400px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:639px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:500px;height:100vh;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}@media screen and (max-width:479px) {#rec1167986431 .t396__artboard,#rec1167986431 .t396__filter,#rec1167986431 .t396__carrier {min-height:410px;}#rec1167986431 .t396__filter {}#rec1167986431 .t396__carrier {background-attachment:scroll;}}#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{z-index:3;top:0px;;left:0px;;width:100%;height:210px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{border-radius:0px 0px 0px 0px;background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;left:0px;;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:134px;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1752699825421"]{display:table;height:165px;}#rec1167986431 .tn-elem[data-elem-id="1752699825421"] .tn-atom{background-image:linear-gradient(0.5turn,rgba(227,227,227,1) 0%,rgba(227,227,227,0) 100%);background-color:transparent;background-size:cover;}}#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{z-index:3;top:calc(50vh - 300px + 150px);;left:calc(50% - 600px + 450px);;width:300px;height:300px;}#rec1167986431 .tn-elem[data-elem-id="1762629436013"] .tn-atom{background-position:center center;border-width:var(--t396-borderwidth,0);border-style:var(--t396-borderstyle,solid);border-color:var(--t396-bordercolor,transparent);transition:background-color var(--t396-speedhover,0s) ease-in-out,color var(--t396-speedhover,0s) ease-in-out,border-color var(--t396-speedhover,0s) ease-in-out,box-shadow var(--t396-shadowshoverspeed,0.2s) ease-in-out;}@media screen and (max-width:1199px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 480px + 330px);;}}@media screen and (max-width:959px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:50px;;left:calc(50% - 320px + 170px);;}}@media screen and (max-width:639px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:100px;;left:calc(50% - 240px + 90px);;}}@media screen and (max-width:479px){#rec1167986431 .tn-elem[data-elem-id="1762629436013"]{display:table;top:55px;;left:calc(50% - 160px + 10px);;}}</style> <div class='t396'> <div class="t396__artboard" data-artboard-recid="1167986431" data-artboard-screens="320,480,640,960,1200" data-artboard-height="600" data-artboard-valign="center" data-artboard-height_vh="100" data-artboard-upscale="grid" data-artboard-height-res-320="410" data-artboard-height-res-480="500" data-artboard-height_vh-res-480="100" data-artboard-height-res-640="400" data-artboard-height-res-960="500"> <div class="t396__carrier" data-artboard-recid="1167986431"></div> <div class="t396__filter" data-artboard-recid="1167986431"></div> <div class='t396__elem tn-elem tn-elem__11679864311752699825421' data-elem-id='1752699825421' data-elem-type='shape' data-field-top-value="0" data-field-left-value="0" data-field-height-value="210" data-field-width-value="100" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="window" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="%" data-field-height-res-320-value="165" data-field-height-res-640-value="134" data-field-left-res-960-value="0"> <div class='tn-atom'> </div> </div> <div class='t396__elem tn-elem tn-elem__11679864311762629436013' data-elem-id='1762629436013' data-elem-type='html' data-field-top-value="150" data-field-left-value="450" data-field-height-value="300" data-field-width-value="300" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-widthmode-value="fixed" data-field-heightmode-value="fixed" data-field-top-res-320-value="55" data-field-left-res-320-value="10" data-field-top-res-480-value="100" data-field-left-res-480-value="90" data-field-top-res-640-value="50" data-field-left-res-640-value="170" data-field-top-res-960-value="100" data-field-left-res-960-value="330"> <div class='tn-atom tn-atom__html'> <!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="position:absolute;left:50%;top:50%;width:600px;height:600px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:visible;pointer-events:none;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div id="lottie" style="flex:none;"></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="media/ba_nevalyashka_floor.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script> </div> </div> </div> </div> <script>t_onReady(function() {t_onFuncLoad('t396_init',function() {t396_init('1167986431');});});</script> <!-- /T396 --> </div> <!--footer--> <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="62628157" data-tilda-page-alias="footer" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">  </div> <!--/allrecords-->  <script>
 (function () {
   if (!window.IntersectionObserver) return;
@@ -1516,7 +2058,7 @@ alt='' imgfield='tn_img_1752706337385'
       e.target.classList.toggle('is-in', e.isIntersecting);
       // круг заодно ведёт свои подписи
       if (e.target.classList.contains('el-circle')) {
-        e.target.parentNode.classList.toggle('is-in', e.isIntersecting);
+        e.target.closest('.el-orn').classList.toggle('is-in', e.isIntersecting);
       }
     });
     // Поля сужают рабочую полосу экрана с обеих сторон. Снизу — чтобы
