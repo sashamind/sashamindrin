@@ -795,12 +795,18 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     height: 220px;
     overflow: visible;
   }
+  /* Кнопка висит под кругом вне потока: так высота средней колонки
+     равна кругу, и подписи по бокам встают ровно по его центру. */
   #rec-ba-elements .el-orn-mid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 26px;
+    position: relative;
     flex: none;
+  }
+  #rec-ba-elements .el-orn-mid .uz-toggle {
+    position: absolute;
+    top: calc(100% + 26px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
   }
   /* По бокам от круга — две короткие подписи о том, откуда он взялся:
      русская резьба и японский энсо. Колонки равной ширины держат круг
@@ -810,7 +816,10 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     align-items: center;
     justify-content: center;
     gap: 72px;
-    margin: 0 auto 34px;
+    /* место под кнопку, вынесенную из потока. Именно padding: поле
+       схлопнулось бы с отступом ряда меню ниже. */
+    margin: 0 auto;
+    padding-bottom: 53px;
   }
   #rec-ba-elements .el-note {
     flex: 0 1 240px;
@@ -986,7 +995,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   #rec-ba-elements .uz-wrap.is-open {
     grid-template-rows: 1fr;
     opacity: 1;
-    margin: 0 auto 34px;
+    margin: 34px auto;
   }
   #rec-ba-elements .uz-panel {
     overflow: hidden;
@@ -1148,7 +1157,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec-ba-elements .el-note-l { order: 1; }
     #rec-ba-elements .el-note-r { order: 2; margin-bottom: 22px; }
     #rec-ba-elements .el-circle { order: 3; }
-    #rec-ba-elements .uz-toggle { order: 4; margin-top: 4px; }
+    #rec-ba-elements .el-orn-mid .uz-toggle { position: static; transform: none; order: 4; margin-top: 4px; }
     #rec-ba-elements .uz-wrap.is-open { margin: 0 auto 20px; }
     /* панель — горизонтальная лента карточек, листается пальцем;
        край следующей карточки подсказывает, что там есть ещё */
