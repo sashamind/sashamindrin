@@ -950,6 +950,63 @@ body.page-texts .pd-header .pd-desc {
   transform: scaleX(1);
 }
 
+/* Имя — Lottie, прописанная линией (main.js → mountNameAnim). Обычный
+   текст стоит, пока анимация не загрузилась, и остаётся, если не вышло.
+   Видна Lottie на языке страницы. */
+.pd-name-anim { display: none; }
+.pd-intro-text.has-anim .pd-name-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+html[lang="ru"] .pd-intro-text.has-anim .pd-name-anim[data-name="ru"],
+html[lang="en"] .pd-intro-text.has-anim .pd-name-anim[data-name="en"] {
+  display: inline-block;
+  vertical-align: -2px;
+}
+.pd-name-anim svg { display: block; }
+.pd-name-anim path { stroke: currentColor; }
+
+/* Заставка на пустой главной: пока имя прописывается, всё остальное
+   скрыто, затем проявляется внахлёст — хвост фразы, подсказка, шапка
+   с тегами, список, подвал. */
+html.intro-play header,
+html.intro-play .hero,
+html.intro-play .panel-list,
+html.intro-play footer,
+html.intro-play .pd-point,
+html.intro-play .pd-intro-rest {
+  opacity: 0;
+  pointer-events: none;
+}
+/* у подсказки своя анимация появления с fill: both — она перебила бы
+   opacity; на заставке её снимаем, и после она сыграет заново сама */
+html.intro-play .pd-point { animation: none; }
+html.intro-reveal header,
+html.intro-reveal .hero,
+html.intro-reveal .panel-list,
+html.intro-reveal footer,
+html.intro-reveal .pd-point,
+html.intro-reveal .pd-intro-rest {
+  transition: opacity 0.9s ease;
+}
+html.intro-reveal .pd-point   { transition-delay: 0.2s; }
+html.intro-reveal header,
+html.intro-reveal .hero       { transition-delay: 0.35s; }
+html.intro-reveal .panel-list { transition-delay: 0.5s; }
+html.intro-reveal footer      { transition-delay: 0.6s; }
+@media (prefers-reduced-motion: reduce) {
+  html.intro-reveal header,
+  html.intro-reveal .hero,
+  html.intro-reveal .panel-list,
+  html.intro-reveal footer,
+  html.intro-reveal .pd-point,
+  html.intro-reveal .pd-intro-rest { transition: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pd-intro-name::after { transition: none; }
 }

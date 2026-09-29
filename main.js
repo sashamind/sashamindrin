@@ -39,6 +39,7 @@ function applyLang(lang) {
 
 langToggle.addEventListener('click', () => {
   applyLang(currentLang === 'en' ? 'ru' : 'en');
+  replayIntro();
 });
 
 
@@ -112,7 +113,7 @@ function renderEmpty() {
   panel.innerHTML = `
     <div class="pd-empty">
       <div class="pd-intro">
-        <p class="pd-intro-text" data-en="<a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer." data-ru="<a class='pd-intro-name' href='about.html'>Саша Миндрин</a>, дизайнер."><a class='pd-intro-name' href='about.html'>Sasha Mindrin</a>, designer.</p>
+        <p class="pd-intro-text"><a class="pd-intro-name" href="about.html"><span class="pd-name-anim" data-name="ru" aria-hidden="true"></span><span class="pd-name-anim" data-name="en" aria-hidden="true"></span><span class="pd-name-text" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</span></a><span class="pd-intro-rest" data-en=", designer." data-ru=", дизайнер.">, designer.</span></p>
       </div>
 
       <div class="pd-point">
@@ -126,6 +127,108 @@ function renderEmpty() {
   `;
   panel.scrollTop = 0;
   startPulse();
+  mountNameAnim(panel.querySelector('.pd-intro-text'));
+}
+
+// ─── Имя, прописанное линией ───
+// Две Lottie (ru/en) в кадре 1920×1080, надпись в нём — узкая полоска
+// у центра. Кадрируем svg по ней через viewBox и масштабируем так, чтобы
+// имя было ростом с текст абзаца. Видна та, что совпадает с языком
+// страницы (css по html[lang]). Пока Lottie не загрузилась, стоит
+// обычный текст — он же остаётся, если загрузка не удалась.
+const NAME_CROP = { ru: [848, 515, 220, 32], en: [831, 510, 237, 30] };
+const NAME_SCALE = 0.42;
+let nameAnims = null;
+let introT = null;  // запасной таймер конца заставки — один на все повторы
+let lottieLib = null;
+function loadLottieLib() {
+  if (window.lottie) return Promise.resolve(window.lottie);
+  if (!lottieLib) {
+    lottieLib = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js';
+      s.onload = () => resolve(window.lottie);
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  return lottieLib;
+}
+
+function endIntro() {
+  const root = document.documentElement;
+  if (!root.classList.contains('intro-play')) return;
+  root.classList.add('intro-reveal');
+  root.classList.remove('intro-play');
+  setTimeout(() => root.classList.remove('intro-reveal'), 2000);
+}
+
+function mountNameAnim(p) {
+  if (nameAnims) nameAnims.forEach(a => a.destroy());
+  nameAnims = null;
+  if (!p) { endIntro(); return; }
+  const intro = document.documentElement.classList.contains('intro-play');
+  // страховка: что бы ни случилось с загрузкой, страница не останется пустой
+  const safety = setTimeout(endIntro, 4000);
+  loadLottieLib().then(lottie => {
+    if (!p.isConnected) return;
+    const anims = [];
+    let ready = 0;
+    p.querySelectorAll('.pd-name-anim').forEach(box => {
+      const lang = box.dataset.name;
+      const [x, y, w, h] = NAME_CROP[lang];
+      box.style.width = (w * NAME_SCALE).toFixed(1) + 'px';
+      box.style.height = (h * NAME_SCALE).toFixed(1) + 'px';
+      const a = lottie.loadAnimation({
+        container: box, renderer: 'svg', loop: false, autoplay: false,
+        path: `assets/lottie/name-${lang}.json`
+      });
+      a.lang = lang;
+      a.addEventListener('DOMLoaded', () => {
+        const svg = box.querySelector('svg');
+        svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        if (++ready < 2) return;
+        p.classList.add('has-anim');
+        // загрузилось — дальше заставку закрывает конец прорисовки;
+        // запасной таймер на случай, если complete не придёт
+        clearTimeout(safety);
+        if (intro) (clearTimeout(introT), introT = setTimeout(endIntro, 3500));
+        anims.forEach(b => {
+          // на заставке играет имя на текущем языке, остальное — сразу целиком
+          if (intro && b.lang === currentLang) b.goToAndPlay(0, true);
+          else b.goToAndStop(b.totalFrames - 1, true);
+        });
+      });
+      a.addEventListener('complete', () => {
+        if (a.lang !== currentLang) return;
+        clearTimeout(safety);
+        endIntro();
+      });
+      a.addEventListener('data_failed', () => { clearTimeout(safety); endIntro(); });
+      anims.push(a);
+    });
+    nameAnims = anims;
+  }).catch(() => { clearTimeout(safety); endIntro(); });
+}
+
+// Заставка заново: всё прячется, имя на текущем языке прописывается,
+// затем остальное проявляется, как при первом открытии. Работает, только
+// пока на панели пустая главная с именем.
+function startIntro() {
+  const root = document.documentElement;
+  root.classList.remove('intro-reveal');
+  root.classList.add('intro-play');
+}
+function replayIntro() {
+  const p = document.querySelector('.pd-intro-text.has-anim');
+  if (!nameAnims || !p || !p.isConnected) return;
+  startIntro();
+  nameAnims.forEach(a => {
+    if (a.lang === currentLang) a.goToAndPlay(0, true);
+    else a.goToAndStop(a.totalFrames - 1, true);
+  });
+  (clearTimeout(introT), introT = setTimeout(endIntro, 3500));  // запасной выход, если complete не придёт
 }
 
 // ─── Появление/исчезновение по скроллу (data-fx="scroll") ───
@@ -248,6 +351,7 @@ function waitForEagerImages(root, timeout = 8000) {
 }
 
 async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) {
+  endIntro(); // кейс открыли во время заставки — показываем всё сразу
   const project = projectsData.find(p => p.id === id);
   if (!project) return;
   activeProjectId = id;
@@ -633,6 +737,7 @@ if (siteHome) {
     e.preventDefault();
     setCaseFull(false);
     history.pushState(null, '', location.pathname + location.search);
+    startIntro();  // имя прописывается заново, остальное — следом
     renderEmpty();
     applyLang(currentLang);
   });
@@ -644,6 +749,7 @@ if (siteHome) {
 // его не нужно, иначе в историю попадёт лишняя запись.
 const initialProject = projectFromHash();
 if (initialProject) {
+  endIntro();
   renderProject(initialProject.id, { updateUrl: false });
   const card = document.querySelector(`.card[data-id="${initialProject.id}"]`);
   if (card) scrollToCard(card); // на мобильном лента карточек длиннее экрана
