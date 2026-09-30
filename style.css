@@ -906,9 +906,66 @@ body.page-texts .pd-header .pd-desc {
 }
 
 .pd-intro {
+  position: relative;  /* top выставляет centerIntro() — центр экрана */
   max-width: 420px;
   text-align: center;
   animation: pdFadeIn 0.6s ease both;
+}
+
+/* Чувачок над именем (main.js → mountGuy). Линии той же толщины, что
+   и прописанное имя (3 в Lottie × 0.42 ≈ 1.26px): при ширине 34px
+   единица viewBox (140) — это 0.243px, отсюда stroke-width 5.2.
+   Толщину задаём в единицах рисунка, а не non-scaling-stroke, иначе
+   ломается прорисовка штрихом (stroke-dash) на заставке. */
+.pd-guy {
+  display: block;
+  width: 34px;
+  height: auto;
+  margin: 0 auto 20px;
+  overflow: visible;
+  color: var(--fg);
+}
+.pd-guy path,
+.pd-guy line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5.2;
+  stroke-linecap: round;
+}
+
+/* Сменяющаяся роль под именем (main.js → mountRole). Ширину места
+   задаёт скрипт по самому длинному слову; новое слово въезжает справа,
+   старое уходит влево и гаснет. */
+.pd-role {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+}
+/* запятая после имени не занимает места — имя остаётся ровно под
+   чувачком (ширина знака в моноширинном шрифте — 1ch + разрядка) */
+.pd-name-comma,
+.pd-role-dot { margin-right: calc(-1ch - 0.06em); }  /* и точка после роли */
+.pd-intro-text { white-space: nowrap; }  /* запятая не переносится от имени */
+
+/* роль — отдельной строкой под именем */
+.pd-intro-rest { display: block; }
+/* невидимая распорка держит высоту и базовую линию строки, а слова
+   лежат поверх неё, каждое по центру места — при смене уходящее и
+   приходящее на одной строке */
+.pd-role-sizer { visibility: hidden; }
+.pd-role-word {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  text-align: center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.45s ease;
+}
+.pd-role-word.is-out { transform: translateX(-1.6em); opacity: 0; }
+.pd-role-word.is-pre { transform: translateX(1.6em); opacity: 0; transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .pd-role-word { transition: none; }
 }
 
 /* одним абзацем, без деления на имя и должность */
@@ -928,6 +985,7 @@ body.page-texts .pd-header .pd-desc {
    а не проявляется целиком, поэтому читается как росчерк. */
 .pd-intro-name {
   position: relative;
+  display: inline-block;  /* чтобы на заставке сдвигаться transform'ом */
   font-weight: 700;
   color: inherit;
   text-decoration: none;
@@ -970,14 +1028,15 @@ html[lang="en"] .pd-intro-text.has-anim .pd-name-anim[data-name="en"] {
 .pd-name-anim svg { display: block; }
 .pd-name-anim path { stroke: currentColor; }
 
-/* Заставка на пустой главной: пока имя прописывается, всё остальное
-   скрыто, затем проявляется внахлёст — хвост фразы, подсказка, шапка
-   с тегами, список, подвал. */
+/* Заставка на пустой главной: прописывается имя, за ним линиями
+   рисуется чувачок (main.js → drawGuyIn), затем внахлёст проявляется
+   остальное — хвост фразы, подсказка, шапка с тегами, список, подвал. */
 html.intro-play header,
 html.intro-play .hero,
 html.intro-play .panel-list,
 html.intro-play footer,
 html.intro-play .pd-point,
+html.intro-play .pd-name-comma,
 html.intro-play .pd-intro-rest {
   opacity: 0;
   pointer-events: none;
@@ -990,6 +1049,7 @@ html.intro-reveal .hero,
 html.intro-reveal .panel-list,
 html.intro-reveal footer,
 html.intro-reveal .pd-point,
+html.intro-reveal .pd-name-comma,
 html.intro-reveal .pd-intro-rest {
   transition: opacity 0.9s ease;
 }
@@ -1013,6 +1073,7 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
 
 /* Стрелка к списку слева — отдельным ярусом, ниже блока «обо мне» */
 .pd-point {
+  position: relative;  /* на десктопе едет вместе с именем (centerIntro) */
   display: flex;
   flex-direction: column;
   align-items: center;

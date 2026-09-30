@@ -39,6 +39,7 @@ function applyLang(lang) {
 
 langToggle.addEventListener('click', () => {
   applyLang(currentLang === 'en' ? 'ru' : 'en');
+  if (roleRestart) roleRestart();  // роли — на новом языке, с «дизайнера»
   replayIntro();
 });
 
@@ -105,6 +106,7 @@ function renderEmpty() {
   setCaseFull(false);
   updateTitle();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
+  if (guyCleanup) { guyCleanup(); guyCleanup = null; }
   dropIframeNav(); // панель очищается — iframe прошлого кейса исчезает
   document.querySelectorAll('.card[data-id]').forEach(c => c.classList.remove('active'));
   const panel = document.getElementById('panelDetail');
@@ -113,7 +115,13 @@ function renderEmpty() {
   panel.innerHTML = `
     <div class="pd-empty">
       <div class="pd-intro">
-        <p class="pd-intro-text"><a class="pd-intro-name" href="about.html"><span class="pd-name-anim" data-name="ru" aria-hidden="true"></span><span class="pd-name-anim" data-name="en" aria-hidden="true"></span><span class="pd-name-text" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</span></a><span class="pd-intro-rest" data-en=", designer." data-ru=", дизайнер.">, designer.</span></p>
+        <svg class="pd-guy" viewBox="-70 -66 140 202" aria-hidden="true">
+          <path class="g-head" />
+          <path class="g-brim" />
+          <path class="g-eye" /><path class="g-eye" />
+          <path class="g-body" />
+        </svg>
+        <p class="pd-intro-text"><a class="pd-intro-name" href="about.html"><span class="pd-name-anim" data-name="ru" aria-hidden="true"></span><span class="pd-name-anim" data-name="en" aria-hidden="true"></span><span class="pd-name-text" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</span></a><span class="pd-name-comma">,</span><span class="pd-intro-rest"><span class="pd-role"><span class="pd-role-sizer" aria-hidden="true">designer.</span><span class="pd-role-word">designer<span class="pd-role-dot">.</span></span></span></span></p>
       </div>
 
       <div class="pd-point">
@@ -128,6 +136,227 @@ function renderEmpty() {
   panel.scrollTop = 0;
   startPulse();
   mountNameAnim(panel.querySelector('.pd-intro-text'));
+  const stopGuy = mountGuy(panel.querySelector('.pd-guy'));
+  const stopRole = mountRole(panel.querySelector('.pd-role'));
+  guyCleanup = () => { if (stopGuy) stopGuy(); if (stopRole) stopRole(); };
+  centerIntro();
+  if (document.documentElement.classList.contains('intro-play')) hideGuy();
+}
+
+// ─── Чувачок с именем — ровно по центру экрана ───
+// Панель начинается под шапкой и тегами, поэтому её середина ниже
+// середины экрана. Считаем, насколько сдвинуть блок, чтобы его центр
+// встал в центр окна (на телефоне — на 60% высоты), и сдвигаем через position: relative; top (transform
+// занят анимацией появления). На десктопе стрелка «выберите проект» стоит
+// под именем и едет вместе с ним; на телефоне она над именем и остаётся
+// на месте.
+function centerIntro() {
+  const intro = document.querySelector('.pd-intro');
+  if (!intro) return;
+  const point = document.querySelector('.pd-point');
+  const narrow = window.matchMedia('(max-width: 768px)').matches;
+  intro.style.top = '';
+  if (point) point.style.top = '';
+  const r = intro.getBoundingClientRect();
+  const panel = document.getElementById('panelDetail');
+  // считаем от положения при нулевой прокрутке панели и страницы
+  const scroll = (panel ? panel.scrollTop : 0) + window.scrollY;
+  // вычесть сдвиг анимации появления (translateY), если она ещё идёт
+  const t = getComputedStyle(intro).transform;
+  const ty = t && t !== 'none' ? new DOMMatrix(t).m42 : 0;
+  // на телефоне чуть ниже середины — сверху там уже лента кейсов и подсказка
+  const target = window.innerHeight * (narrow ? 0.6 : 0.5);
+  const shift = Math.round(target - (r.top - ty + scroll + r.height / 2));
+  intro.style.top = shift + 'px';
+  if (point && !narrow) point.style.top = shift + 'px';
+}
+let centerT = null;
+window.addEventListener('resize', () => { clearTimeout(centerT); centerT = setTimeout(centerIntro, 120); });
+
+// ─── Сменяющееся «кто я» после имени ───
+// «дизайнер» висит 3 с, затем по очереди остальные роли, по 1.8 с, и
+// снова «дизайнер». Роль стоит строкой под именем, по центру. Смена одним
+// движением по горизонтали: новое слово въезжает справа и выталкивает
+// старое влево. Место под слово — по самому длинному. Отсчёт идёт после
+// заставки (endIntro перезапускает его с «дизайнера»).
+const ROLES = {
+  ru: ['дизайнер', 'художник', 'моушн', 'иллюстратор', 'креатор'],
+  en: ['designer', 'artist', 'motion', 'illustrator', 'creator']
+};
+const ROLE_FIRST = 3000, ROLE_NEXT = 1800, ROLE_SWAP = 450;
+let roleRestart = null;
+function mountRole(box) {
+  if (!box) return null;
+  let word = box.querySelector('.pd-role-word');
+  let i = 0, t = null;
+  function fit() {
+    // ширина места — по самому длинному слову текущего языка
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap';
+    box.appendChild(probe);
+    let w = 0;
+    ROLES[currentLang].forEach(r => { probe.textContent = r; w = Math.max(w, probe.offsetWidth); });
+    probe.remove();
+    box.style.width = Math.ceil(w) + 'px';
+  }
+  function show(k, animate) {
+    // точка висит после слова и не участвует в центрировании
+    const text = ROLES[currentLang][k] + '<span class="pd-role-dot">.</span>';
+    box.querySelectorAll('.pd-role-word.is-out').forEach(el => el.remove());
+    if (!animate) { word.innerHTML = text; word.className = 'pd-role-word'; return; }
+    // новое слово кладём поверх старого, чуть выше, и сдвигаем оба разом
+    const next = document.createElement('span');
+    next.className = 'pd-role-word is-pre';
+    next.innerHTML = text;
+    box.appendChild(next);
+    next.offsetWidth;  // зафиксировать положение «сверху» до перехода
+    next.classList.remove('is-pre');
+    word.classList.add('is-out');
+    const old = word;
+    word = next;
+    setTimeout(() => old.remove(), ROLE_SWAP + 30);
+  }
+  function tick() {
+    if (document.documentElement.classList.contains('intro-play')) return;  // перезапустит endIntro
+    i = (i + 1) % ROLES[currentLang].length;
+    show(i, true);
+    t = setTimeout(tick, (i === 0 ? ROLE_FIRST : ROLE_NEXT) + ROLE_SWAP);
+  }
+  function restart() {
+    clearTimeout(t); i = 0; fit(); show(0, false);
+    t = setTimeout(tick, ROLE_FIRST);
+  }
+  roleRestart = restart;
+  restart();
+  return () => { clearTimeout(t); if (roleRestart === restart) roleRestart = null; };
+}
+
+// ─── Чувачок над именем ───
+// Собран из четырёх линий: голова-«С» с разрывом справа, козырёк, глаза-
+// чёрточки, плечи-дуга. Голова считается шаром: поворот на угол yaw
+// сдвигает козырёк в сторону взгляда, а глаза едут по сфере — анфас их
+// два, в полупрофиль дальний уходит за край и остаётся один. Наклон pitch
+// чуть поднимает или опускает козырёк с глазами. Голова поворачивается за
+// курсором; без мыши (телефон) смотрит влево, на список кейсов.
+let guyCleanup = null;
+function mountGuy(svg) {
+  if (!svg) return null;
+  const head = svg.querySelector('.g-head'), brim = svg.querySelector('.g-brim');
+  const eyes = svg.querySelectorAll('.g-eye'), body = svg.querySelector('.g-body');
+  const RX = 42, RY = 54;
+  // Линии не идеально ровные, а будто от руки: каждую строим точками и
+  // сдвигаем поперёк плавной волной (две синусоиды со своими фазами на
+  // каждую линию). Волна привязана к положению на линии, поэтому при
+  // поворотах головы кривизна не дрожит, а едет вместе с рисунком.
+  const wob = (amp, p1, p2) => t => amp * (0.62 * Math.sin(2 * Math.PI * 1.1 * t + p1) + 0.38 * Math.sin(2 * Math.PI * 2.3 * t + p2));
+  function wobbly(fn, n, w) {
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, [x, y] = fn(t);
+      const [xa, ya] = fn(Math.max(0, t - 0.01)), [xb, yb] = fn(Math.min(1, t + 0.01));
+      let nx = -(yb - ya), ny = xb - xa; const L = Math.hypot(nx, ny) || 1; nx /= L; ny /= L;
+      const o = w(t);
+      pts.push([x + nx * o, y + ny * o]);
+    }
+    // сглаживаем: кривые через середины отрезков
+    let d = `M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+      d += ` Q${pts[i][0].toFixed(2)} ${pts[i][1].toFixed(2)} ${mx.toFixed(2)} ${my.toFixed(2)}`;
+    }
+    const e = pts[pts.length - 1];
+    return d + ` L${e[0].toFixed(2)} ${e[1].toFixed(2)}`;
+  }
+  // козырёк — ровный, остальное заметно «от руки»
+  const W = { head: wob(4.2, 0.7, 2.1), brim: wob(0, 0, 0), eye: wob(0.9, 1.2, 3.0), body: wob(4, 4.1, 1.3) };
+  // голова — эллипс без куска справа (от 20° вниз по кругу до −16°)
+  const a0 = 20 * Math.PI / 180, span = 2 * Math.PI - 36 * Math.PI / 180;
+  head.setAttribute('d', wobbly(t => { const a = a0 + span * t; return [RX * Math.cos(a), RY * Math.sin(a)]; }, 36, W.head));
+  const seg = (x1, y1, x2, y2) => t => [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
+  const bez = (p0, p1, p2, p3) => t => { const u = 1 - t; return [0, 1].map(k => u*u*u*p0[k] + 3*u*u*t*p1[k] + 3*u*t*t*p2[k] + t*t*t*p3[k]); };
+  const DEF_YAW = -50, EYE_A = 32, EYE_R = 30;
+  let yaw = DEF_YAW, pitch = 0, tYaw = DEF_YAW, tPitch = 0, raf = null;
+  let blinkUntil = 0, blinkT = null;  // моргание: до этого момента глаза закрыты
+  function draw() {
+    // pitch — наклон в градусах: вверх (−) козырёк и глаза поднимаются, вниз (+) опускаются
+    const f = yaw * Math.PI / 180, sp = Math.sin(pitch * Math.PI / 180);
+    const bx = Math.sin(f) * 24;
+    // в повороте козырёк виден под углом — чуть короче; анфас — полный
+    const bh = 48 * (1 - 0.22 * Math.abs(Math.sin(f)));
+    const brimX = [bx - bh, bx + bh];
+    const by = -12 + sp * 22;
+    brim.setAttribute('d', wobbly(seg(brimX[0], by, brimX[1], by), 10, W.brim));
+    [-EYE_A, EYE_A].forEach((a, i) => {
+      const t = (a * Math.PI / 180) + f, vis = Math.cos(t);
+      const x = EYE_R * Math.sin(t), half = 5 * Math.max(0.35, vis);
+      const e = eyes[i];
+
+      const ey = 7 + sp * 30;
+      e.setAttribute('d', wobbly(seg(x - half, ey, x + half, ey), 4, W.eye));
+      // глаз, ушедший за край головы, гаснет
+      const shut = performance.now() < blinkUntil;
+      e.style.opacity = shut ? 0 : Math.max(0, Math.min(1, (vis - 0.3) / 0.25)).toFixed(3);
+    });
+    const sx = -Math.sin(f) * 4;
+    const L = bez([-62 + sx, 132], [-62 + sx, 92], [-36 + sx, 72], [sx, 72]);
+    const R = bez([sx, 72], [36 + sx, 72], [62 + sx, 92], [62 + sx, 132]);
+    body.setAttribute('d', wobbly(t => t < 0.5 ? L(t * 2) : R(t * 2 - 1), 28, W.body));
+  }
+  function loop() {
+    yaw += (tYaw - yaw) * 0.12; pitch += (tPitch - pitch) * 0.12;
+    draw();
+    raf = (Math.abs(tYaw - yaw) > 0.05 || Math.abs(tPitch - pitch) > 0.05 || performance.now() < blinkUntil + 50) ? requestAnimationFrame(loop) : null;
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  // Моргает сам по себе раз в 2.5–6 с: глаза-чёрточки на миг пропадают,
+  // иногда дважды подряд.
+  function blink(n) {
+    blinkUntil = performance.now() + 110; kick();
+    if (n > 1) { blinkT = setTimeout(() => blink(n - 1), 230); return; }
+    blinkT = setTimeout(() => blink(Math.random() < 0.25 ? 2 : 1), 2500 + Math.random() * 3500);
+  }
+  blinkT = setTimeout(() => blink(1), 3000);
+  function onMove(e) {
+    const r = svg.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height * 0.3;
+    const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * 0.35)));
+    const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.4)));
+    tYaw = nx * 70; tPitch = ny * 24; kick();
+  }
+  function onLeave() { tYaw = DEF_YAW; tPitch = 0; kick(); }
+  draw();
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!fine) {
+    // Телефон: курсора нет — чувачок сам время от времени оглядывается,
+    // а на тап поворачивается к точке касания и какое-то время смотрит туда.
+    const POSES = [-60, -30, 0, 30, 60];
+    let idleT = null;
+    const idle = (delay) => {
+      clearTimeout(idleT);
+      idleT = setTimeout(() => {
+        let next;
+        do { next = POSES[Math.floor(Math.random() * POSES.length)]; } while (Math.abs(next - tYaw) < 20);
+        tYaw = next; tPitch = 0; kick();  // сам по себе — только влево-вправо
+        idle(2500 + Math.random() * 2500);
+      }, delay);
+    };
+    const onTap = e => { onMove(e); idle(4000); };
+    window.addEventListener('pointerdown', onTap, { passive: true });
+    idle(3000);
+    return () => {
+      clearTimeout(idleT); clearTimeout(blinkT);
+      window.removeEventListener('pointerdown', onTap);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }
+  window.addEventListener('pointermove', onMove, { passive: true });
+  document.documentElement.addEventListener('pointerleave', onLeave);
+  return () => {
+    clearTimeout(blinkT);
+    window.removeEventListener('pointermove', onMove);
+    document.documentElement.removeEventListener('pointerleave', onLeave);
+    if (raf) cancelAnimationFrame(raf);
+  };
 }
 
 // ─── Имя, прописанное линией ───
@@ -155,8 +384,42 @@ function loadLottieLib() {
   return lottieLib;
 }
 
+// Чувачок на заставке: линии спрятаны (штрих отмотан на всю длину) и
+// прорисовываются по очереди — голова, козырёк, глаза, плечи.
+function guyEls() { return document.querySelectorAll('.pd-guy path, .pd-guy line'); }
+function hideGuy() {
+  guyEls().forEach(el => {
+    const L = el.getTotalLength() + 2;
+    el.style.transition = 'none';
+    el.style.strokeDasharray = L;
+    el.style.strokeDashoffset = L;
+  });
+}
+function showGuy() {
+  guyEls().forEach(el => { el.style.transition = el.style.strokeDasharray = el.style.strokeDashoffset = ''; });
+}
+function drawGuyIn() {
+  return new Promise(resolve => {
+    const els = [...guyEls()];
+    if (!els.length || !els[0].style.strokeDasharray) { showGuy(); resolve(); return; }
+    const DUR = 0.55, STEP = 0.14;
+    els.forEach((el, i) => {
+      el.getBoundingClientRect();  // зафиксировать исходное состояние
+      el.style.transition = `stroke-dashoffset ${DUR}s ease-in-out ${(i * STEP).toFixed(2)}s`;
+      el.style.strokeDashoffset = 0;
+    });
+    setTimeout(() => { showGuy(); resolve(); }, (DUR + (els.length - 1) * STEP) * 1000 + 60);
+  });
+}
+// Имя прописывается по центру, за ним рисуется чувачок, затем проявляется остальное.
+function afterName() {
+  drawGuyIn().then(endIntro);
+}
+
 function endIntro() {
   const root = document.documentElement;
+  showGuy();
+  if (root.classList.contains('intro-play') && roleRestart) roleRestart();
   if (!root.classList.contains('intro-play')) return;
   root.classList.add('intro-reveal');
   root.classList.remove('intro-play');
@@ -190,10 +453,11 @@ function mountNameAnim(p) {
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         if (++ready < 2) return;
         p.classList.add('has-anim');
+        centerIntro();
         // загрузилось — дальше заставку закрывает конец прорисовки;
         // запасной таймер на случай, если complete не придёт
         clearTimeout(safety);
-        if (intro) (clearTimeout(introT), introT = setTimeout(endIntro, 3500));
+        if (intro) (clearTimeout(introT), introT = setTimeout(endIntro, 5600));
         anims.forEach(b => {
           // на заставке играет имя на текущем языке, остальное — сразу целиком
           if (intro && b.lang === currentLang) b.goToAndPlay(0, true);
@@ -203,7 +467,7 @@ function mountNameAnim(p) {
       a.addEventListener('complete', () => {
         if (a.lang !== currentLang) return;
         clearTimeout(safety);
-        endIntro();
+        afterName();
       });
       a.addEventListener('data_failed', () => { clearTimeout(safety); endIntro(); });
       anims.push(a);
@@ -224,11 +488,12 @@ function replayIntro() {
   const p = document.querySelector('.pd-intro-text.has-anim');
   if (!nameAnims || !p || !p.isConnected) return;
   startIntro();
+  hideGuy();
   nameAnims.forEach(a => {
     if (a.lang === currentLang) a.goToAndPlay(0, true);
     else a.goToAndStop(a.totalFrames - 1, true);
   });
-  (clearTimeout(introT), introT = setTimeout(endIntro, 3500));  // запасной выход, если complete не придёт
+  (clearTimeout(introT), introT = setTimeout(endIntro, 5600));  // запасной выход, если complete не придёт
 }
 
 // ─── Появление/исчезновение по скроллу (data-fx="scroll") ───
@@ -360,6 +625,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   updateTitle();
   stopPulse();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
+  if (guyCleanup) { guyCleanup(); guyCleanup = null; }
   dropIframeNav(); // окно прошлого кейса выгружается вместе с iframe
   showNav(); // при выборе проекта навигация остаётся показанной
 
