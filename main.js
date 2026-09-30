@@ -146,7 +146,7 @@ function renderEmpty() {
 // ─── Чувачок с именем — ровно по центру экрана ───
 // Панель начинается под шапкой и тегами, поэтому её середина ниже
 // середины экрана. Считаем, насколько сдвинуть блок, чтобы его центр
-// встал в центр окна (на телефоне — на 60% высоты), и сдвигаем через position: relative; top (transform
+// встал в центр окна (на телефоне — на 66% высоты), и сдвигаем через position: relative; top (transform
 // занят анимацией появления). На десктопе стрелка «выберите проект» стоит
 // под именем и едет вместе с ним; на телефоне она над именем и остаётся
 // на месте.
@@ -165,7 +165,7 @@ function centerIntro() {
   const t = getComputedStyle(intro).transform;
   const ty = t && t !== 'none' ? new DOMMatrix(t).m42 : 0;
   // на телефоне чуть ниже середины — сверху там уже лента кейсов и подсказка
-  const target = window.innerHeight * (narrow ? 0.6 : 0.5);
+  const target = window.innerHeight * (narrow ? 0.66 : 0.5);
   const shift = Math.round(target - (r.top - ty + scroll + r.height / 2));
   intro.style.top = shift + 'px';
   if (point && !narrow) point.style.top = shift + 'px';
