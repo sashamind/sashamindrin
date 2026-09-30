@@ -423,6 +423,8 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
       margin: 34px auto 26px;
       opacity: 0.32;
     }
+    /* задержки ниже с .is-in — иначе их перебивают десктопные задержки
+       веера (они конкретнее), и текст запаздывает на секунды */
     /* В столбце источники проявляются по одному, когда до них доходит
        прокрутка (класс src-in ставит js): сначала прочерчивается стрелка,
        за ней остриё, знак, название и свойства. Так идёт цепочка
@@ -447,12 +449,12 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec1168059081.fx .sch-source.src-in .sch-source-mark .sch-svg,
     #rec1168059081.fx .sch-source.src-in .sch-source-name,
     #rec1168059081.fx .sch-source.src-in .sch-words li { opacity: 1; transform: none; }
-    #rec1168059081.fx .sch-source.src-in .sch-source-mark .sch-svg { transition-delay: 0.6s; }
-    #rec1168059081.fx .sch-source.src-in .sch-source-name { transition-delay: 0.75s; }
-    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(1) { transition-delay: 0.85s; }
-    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(2) { transition-delay: 0.93s; }
-    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(3) { transition-delay: 1.01s; }
-    #rec1168059081.fx .sch-source.src-in .sch-words li:nth-child(4) { transition-delay: 1.09s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-source-mark .sch-svg { transition-delay: 0.6s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-source-name { transition-delay: 0.75s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-words li:nth-child(1) { transition-delay: 0.85s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-words li:nth-child(2) { transition-delay: 0.93s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-words li:nth-child(3) { transition-delay: 1.01s; }
+    #rec1168059081.fx.is-in .sch-source.src-in .sch-words li:nth-child(4) { transition-delay: 1.09s; }
   }
   @media screen and (max-width: 768px) and (prefers-reduced-motion: reduce) {
     #rec1168059081.fx .sch-down line,
@@ -559,28 +561,17 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   for (var j = 0; j < downs.length; j++) {
     downs[j].style.setProperty('--len', Math.ceil(downs[j].getTotalLength() + 1));
   }
-  // На телефоне каждый источник проявляется сам, когда доходит до него
-  // прокрутка. Если в кадр вошли сразу несколько, они встают в очередь:
-  // следующий стартует, когда предыдущий отыграл стрелку и текст.
-  // На десктопе класс src-in ни на что не влияет.
-  var nextAt = 0, STEP = 1100;
-  var srcIo = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      var f = e.target;
-      clearTimeout(f._srcT);
-      if (e.isIntersecting) {
-        var now = Date.now(), at = Math.max(now, nextAt);
-        nextAt = at + STEP;
-        f._srcT = setTimeout(function () { f.classList.add('src-in'); }, at - now);
-      } else {
-        f.classList.remove('src-in');
-      }
-    });
-  }, { rootMargin: '0px 0px -22% 0px' });
   var srcs = sec.querySelectorAll('.sch-source');
-  for (var k = 0; k < srcs.length; k++) srcIo.observe(srcs[k]);
+  var narrow = window.matchMedia('(max-width: 768px)');
+  var srcTimers = [];
+  function resetSources() {
+    srcTimers.forEach(clearTimeout); srcTimers = [];
+    for (var k = 0; k < srcs.length; k++) srcs[k].classList.remove('src-in');
+  }
 
-  var io = new IntersectionObserver(function (entries) {
+  // Десктоп: вся схема стартует, когда секция вошла в кадр на четверть.
+  new IntersectionObserver(function (entries) {
+    if (narrow.matches) return;
     entries.forEach(function (e) {
       sec.classList.toggle('is-in', e.isIntersecting);
       for (var i = 0; i < strokes.length; i++) {
@@ -591,8 +582,32 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
           : strokes[i].getTotalLength();
       }
     });
-  }, { threshold: 0.25 });
-  io.observe(sec);
+  }, { threshold: 0.25 }).observe(sec);
+
+  // Телефон: столбец длинный, поэтому не ждём каждый этап — едва до
+  // экрана дошла надпись «идея знака», вся цепочка отыгрывается сама:
+  // свойства, знак, затем по очереди стрелка — иконка — текст каждого
+  // источника (класс src-in). Сброс — только когда секция
+  // целиком ушла из кадра, чтобы вернувшись увидеть всё заново.
+  // источник целиком (стрелка → иконка → название → свойства) идёт ~1.65 с;
+  // следующая стрелка — только после него, первая — после главного знака
+  var STEP = 1850, FIRST = 1550;
+  new IntersectionObserver(function (entries) {
+    if (!narrow.matches || !entries[0].isIntersecting) return;
+    if (sec.classList.contains('is-in')) return;
+    sec.classList.add('is-in');
+    resetSources();
+    for (var k = 0; k < srcs.length; k++) {
+      (function (f, at) {
+        srcTimers.push(setTimeout(function () { f.classList.add('src-in'); }, at));
+      })(srcs[k], FIRST + k * STEP);
+    }
+  }, { rootMargin: '0px 0px -22% 0px' }).observe(sec.querySelector('.sch-idea'));
+  new IntersectionObserver(function (entries) {
+    if (!narrow.matches || entries[0].isIntersecting) return;
+    sec.classList.remove('is-in');
+    resetSources();
+  }).observe(sec);
 })();
 </script>
 </div> <div id="rec-ba-uzor" class="r t-rec" style=" " data-animationappear="off">
