@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sashamind.github.io/sashamindrin/</loc>
+    <loc>https://sashamind.com/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sashamind.github.io/sashamindrin/texts.html</loc>
+    <loc>https://sashamind.com/texts.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sashamind.github.io/sashamindrin/about.html</loc>
+    <loc>https://sashamind.com/about.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sashamind.github.io/sashamindrin/contact.html</loc>
+    <loc>https://sashamind.com/contact.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
