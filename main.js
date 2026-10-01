@@ -131,7 +131,7 @@ function renderEmpty() {
         </svg>
         <div class="pd-hint-row">
           <svg class="pd-up" viewBox="0 0 12 24" fill="none" aria-hidden="true"><line x1="6" y1="23" x2="6" y2="2" stroke="currentColor" stroke-width="0.75"/><polyline points="1.5,7 6,1.5 10.5,7" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+          <div class="pd-empty-text" data-en="projects" data-ru="проекты">проекты</div>
           <svg class="pd-up" viewBox="0 0 12 24" fill="none" aria-hidden="true"><line x1="6" y1="23" x2="6" y2="2" stroke="currentColor" stroke-width="0.75"/><polyline points="1.5,7 6,1.5 10.5,7" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
@@ -152,7 +152,7 @@ function renderEmpty() {
 // Панель начинается под шапкой и тегами, поэтому её середина ниже
 // середины экрана. Считаем, насколько сдвинуть блок, чтобы его центр
 // встал в центр окна (на телефоне — на 66% высоты), и сдвигаем через position: relative; top (transform
-// занят анимацией появления). На десктопе стрелка «выберите проект» стоит
+// занят анимацией появления). На десктопе стрелка «проекты» стоит
 // под именем и едет вместе с ним; на телефоне она над именем и остаётся
 // на месте.
 function centerIntro() {
@@ -178,7 +178,7 @@ function centerIntro() {
 let centerT = null;
 window.addEventListener('resize', () => { clearTimeout(centerT); centerT = setTimeout(centerIntro, 120); });
 
-// ─── Подсказка «выберите проект» на телефоне ───
+// ─── Подсказка «проекты» на телефоне ───
 // Через 3 с после того, как подсказка появилась (после заставки, если
 // она идёт), надпись со стрелками один раз загорается белым. Не отдельной
 // вспышкой, а внутри обычного пульса строки (css, только в мобильной
