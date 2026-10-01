@@ -772,6 +772,11 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       // индикатор пропадал бы на пустом месте, до появления содержимого.
       const holder = document.createElement('div');
       holder.innerHTML = html;
+      // <lottie-player> считает src от адреса страницы, а не от <base>, —
+      // на /puppai/ искал бы /puppai/shh-creative/…; даём ему полный адрес
+      holder.querySelectorAll('lottie-player[src]').forEach(el => {
+        el.setAttribute('src', new URL(el.getAttribute('src'), document.baseURI).href);
+      });
       await waitForEagerImages(holder);
       if (activeProjectId !== id) return;
 

@@ -3,8 +3,8 @@
 //
 // Сайт статический (GitHub Pages), а у каждого кейса должен быть свой адрес
 // со своими заголовком и описанием — иначе поисковики видят только главную.
-// Каждая страница — копия index.html: <base href="/"> чинит относительные
-// пути, шапка своя, остальное делает main.js (открывает кейс по адресу).
+// Каждая страница — копия index.html (с её <base href="/">, так что
+// относительные пути работают), шапка своя, остальное делает main.js.
 //
 // Запускать после любой правки index.html или projectsData:
 //   node _tools/build-case-pages.mjs
@@ -72,7 +72,8 @@ for (const p of projects) {
 
   let h = index;
   h = swap(h, /<!DOCTYPE html>\n/, `<!DOCTYPE html>\n<!-- Сгенерировано _tools/build-case-pages.mjs из index.html — руками не править. -->\n`);
-  h = swap(h, /(<meta charset="UTF-8" \/>\n)/, `$1  <base href="/" />\n`);
+  // <base href="/"> уже есть в index.html — относительные пути работают и здесь
+  if (!h.includes('<base href="/" />')) throw new Error('в index.html нет <base href="/">');
   h = swap(h, /<title>.*?<\/title>/, `<title>${esc(title)}</title>`);
   h = swap(h, /(<meta name="description" lang="en" content=")[^"]*/, `$1${esc(d.en)}`);
   h = swap(h, /(<meta name="description" lang="ru" content=")[^"]*/, `$1${esc(d.ru)}`);
