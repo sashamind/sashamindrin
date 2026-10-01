@@ -322,9 +322,11 @@ function mountGuy(svg) {
     // pitch — наклон в градусах: вверх (−) козырёк и глаза поднимаются, вниз (+) опускаются
     const f = yaw * Math.PI / 180, sp = Math.sin(pitch * Math.PI / 180);
     const bx = Math.sin(f) * 24;
-    // в повороте козырёк виден под углом — чуть короче; анфас — полный
-    const bh = 48 * (1 - 0.22 * Math.abs(Math.sin(f)));
-    const brimX = [bx - bh, bx + bh];
+    // в повороте козырёк виден под углом — чуть короче; анфас — полный.
+    // Передний край (в сторону взгляда) в повороте выступает чуть дальше
+    const bh = 54 * (1 - 0.22 * Math.abs(Math.sin(f)));
+    const peak = 8 * Math.sin(f);
+    const brimX = [bx - bh + Math.min(peak, 0), bx + bh + Math.max(peak, 0)];
     const by = -12 + sp * 22;
     brim.setAttribute('d', wobbly(seg(brimX[0], by, brimX[1], by), 10, W.brim));
     [-EYE_A, EYE_A].forEach((a, i) => {
