@@ -1044,6 +1044,9 @@ html.intro-play .pd-intro-rest {
 /* у подсказки своя анимация появления с fill: both — она перебила бы
    opacity; на заставке её снимаем, и после она сыграет заново сама */
 html.intro-play .pd-point { animation: none; }
+/* пока идёт заставка, запасной текст имени не показываем — иначе он
+   мелькает до загрузки Lottie, и имя будто «сбрасывается» */
+html.intro-play .pd-intro-text:not(.has-anim) .pd-name-text { opacity: 0; }
 html.intro-reveal header,
 html.intro-reveal .hero,
 html.intro-reveal .panel-list,
@@ -1106,11 +1109,31 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
   }
 }
 
+/* строка подсказки: на десктопе только текст, на телефоне по бокам —
+   стрелки вверх, к ленте кейсов */
+.pd-hint-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pd-up { display: none; }
+
 .pd-empty-text {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--fg2);
+}
+
+@keyframes upNudge {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50%      { transform: translateY(-4px) scaleY(1.1); }
+}
+@keyframes hintFlash {
+  0%   { opacity: 0.45; }
+  25%  { opacity: 1; color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.55); filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)); }
+  60%  { opacity: 1; color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.55); filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)); }
+  100% { opacity: 0.45; }
 }
 
 /* мигание подсказки на мобильном (сама анимация включается в медиазапросе) */
@@ -1272,6 +1295,25 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
 
   .pd-arrow {
     display: none;
+  }
+
+  /* стрелки вверх по бокам подсказки — тонкие, как десктопная стрелка,
+     и так же слегка подталкивают в свою сторону */
+  .pd-up {
+    display: block;
+    width: 10px;
+    height: 20px;
+    color: var(--fg);
+    opacity: 0.45;
+    transform-origin: center bottom;
+    animation: upNudge 2.8s ease-in-out 0.9s infinite;
+  }
+
+  /* через 3 с после появления — одна яркая вспышка (класс is-flash
+     ставит main.js), затем обратно к обычному пульсу */
+  .pd-point.is-flash .pd-empty-text,
+  .pd-point.is-flash .pd-up {
+    animation: hintFlash 1.2s ease-in-out;
   }
 
   /* вместо стрелки подсказка слегка пульсирует — тем же приёмом, что и

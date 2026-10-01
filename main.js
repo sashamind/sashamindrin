@@ -129,12 +129,17 @@ function renderEmpty() {
           <line x1="87" y1="12" x2="7" y2="12" stroke="currentColor" stroke-width="0.75"/>
           <polyline points="17,3.5 6.5,12 17,20.5" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+        <div class="pd-hint-row">
+          <svg class="pd-up" viewBox="0 0 12 24" fill="none" aria-hidden="true"><line x1="6" y1="23" x2="6" y2="2" stroke="currentColor" stroke-width="0.75"/><polyline points="1.5,7 6,1.5 10.5,7" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="pd-empty-text" data-en="select a project" data-ru="выберите проект">выберите проект</div>
+          <svg class="pd-up" viewBox="0 0 12 24" fill="none" aria-hidden="true"><line x1="6" y1="23" x2="6" y2="2" stroke="currentColor" stroke-width="0.75"/><polyline points="1.5,7 6,1.5 10.5,7" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
       </div>
     </div>
   `;
   panel.scrollTop = 0;
   startPulse();
+  scheduleHintFlash(panel.querySelector('.pd-point'));
   mountNameAnim(panel.querySelector('.pd-intro-text'));
   const stopGuy = mountGuy(panel.querySelector('.pd-guy'));
   const stopRole = mountRole(panel.querySelector('.pd-role'));
@@ -172,6 +177,26 @@ function centerIntro() {
 }
 let centerT = null;
 window.addEventListener('resize', () => { clearTimeout(centerT); centerT = setTimeout(centerIntro, 120); });
+
+// ─── Подсказка «выберите проект» на телефоне ───
+// Через 3 с после того, как подсказка появилась (после заставки, если
+// она идёт), надпись со стрелками один раз ярко вспыхивает и возвращается
+// к обычному пульсу. Сама вспышка — css, только в мобильной вёрстке.
+let hintFlashT = null;
+function scheduleHintFlash(point) {
+  clearTimeout(hintFlashT);
+  if (!point) return;
+  const wait = () => {
+    if (!point.isConnected) return;
+    if (document.documentElement.classList.contains('intro-play')) { hintFlashT = setTimeout(wait, 250); return; }
+    hintFlashT = setTimeout(() => {
+      if (!point.isConnected) return;
+      point.classList.add('is-flash');
+      setTimeout(() => point.classList.remove('is-flash'), 1300);
+    }, 3000);
+  };
+  wait();
+}
 
 // ─── Сменяющееся «кто я» после имени ───
 // «дизайнер» висит 3 с, затем по очереди остальные роли, по 1.8 с, и
@@ -430,9 +455,12 @@ function mountNameAnim(p) {
   if (nameAnims) nameAnims.forEach(a => a.destroy());
   nameAnims = null;
   if (!p) { endIntro(); return; }
-  const intro = document.documentElement.classList.contains('intro-play');
   // страховка: что бы ни случилось с загрузкой, страница не останется пустой
-  const safety = setTimeout(endIntro, 4000);
+  // При первом открытии (пустой кэш) библиотека и файлы имени грузятся
+  // долго; запас — 7 с. Если страховка всё же сработала, страница уже
+  // показана, и догрузившееся имя не проигрывается заново, а сразу встаёт
+  // в последний кадр (см. DOMLoaded ниже).
+  const safety = setTimeout(endIntro, 7000);
   loadLottieLib().then(lottie => {
     if (!p.isConnected) return;
     const anims = [];
@@ -457,6 +485,8 @@ function mountNameAnim(p) {
         // загрузилось — дальше заставку закрывает конец прорисовки;
         // запасной таймер на случай, если complete не придёт
         clearTimeout(safety);
+        // заставка ещё идёт? (проверяем сейчас, а не при запуске)
+        const intro = document.documentElement.classList.contains('intro-play');
         if (intro) (clearTimeout(introT), introT = setTimeout(endIntro, 5600));
         anims.forEach(b => {
           // на заставке играет имя на текущем языке, остальное — сразу целиком

@@ -23,11 +23,14 @@
   <meta name="twitter:image" content="https://sashamind.com/og-image.png" />
 
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="style.css?v=20260930-12" />
+  <link rel="stylesheet" href="style.css?v=20261001-2" />
   <!-- Заставка: на пустой главной имя прописывается линией, остальное
        ждёт. Класс ставим до первой отрисовки, иначе страница мелькнёт.
        Если по ссылке сразу открывается кейс, main.js класс снимет. -->
   <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" />
+  <!-- файлы прописанного имени — сразу, параллельно со скриптом анимации -->
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/lottie/name-ru.json" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/lottie/name-en.json" />
   <script>if (!location.hash.replace(/^#\/?/, '')) document.documentElement.classList.add('intro-play');</script>
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
@@ -351,6 +354,6 @@
     <span class="footer-copy">© 2026 Sasha Mindrin</span>
   </footer>
 
-  <script src="main.js?v=20260930-23"></script>
+  <script src="main.js?v=20261001-2"></script>
 </body>
 </html>
