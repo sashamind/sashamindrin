@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!-- Сгенерировано _tools/build-case-pages.mjs из index.html — руками не править. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punk Delicious / Панк делишс — Sasha Mindrin</title>
+  <meta name="description" lang="en" content="Logo and identity concept for a restaurant. Logo and identity by Sasha Mindrin, 2025." />
+  <meta name="description" lang="ru" content="Концепция логотипа и айдентики для ресторана. Логотип и айдентика, Саша Миндрин, 2025." />
+  <meta name="author" content="Sasha Mindrin" />
+  <link rel="canonical" href="https://sashamind.com/punk-delicious/" />
+
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ru_RU" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://sashamind.com/punk-delicious/" />
+  <meta property="og:title" content="Punk Delicious / Панк делишс — Sasha Mindrin" />
+  <meta property="og:description" content="Logo and identity concept for a restaurant. Logo and identity by Sasha Mindrin, 2025." />
+  <meta property="og:image" content="https://sashamind.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Sasha Mindrin" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Punk Delicious / Панк делишс — Sasha Mindrin" />
+  <meta name="twitter:description" content="Logo and identity concept for a restaurant. Logo and identity by Sasha Mindrin, 2025." />
+  <meta name="twitter:image" content="https://sashamind.com/og-image.png" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css?v=20261001-3" />
+  <!-- Заставка: на пустой главной имя прописывается линией, остальное
+       ждёт. Класс ставим до первой отрисовки, иначе страница мелькнёт.
+       Если по ссылке сразу открывается кейс, main.js класс снимет. -->
+  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js" />
+  <!-- файлы прописанного имени — сразу, параллельно со скриптом анимации -->
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/lottie/name-ru.json" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="assets/lottie/name-en.json" />
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://sashamind.com/#person",
+    "name": "Sasha Mindrin",
+    "alternateName": ["Alexander Mindrin", "Саша Миндрин", "Александр Миндрин"],
+    "givenName": "Alexander",
+    "familyName": "Mindrin",
+    "jobTitle": "Identity and Motion Designer",
+    "description": "Identity and motion designer from Tula. Marks, logotypes, brand identity, motion graphics and interactive systems.",
+    "url": "https://sashamind.com/",
+    "image": "https://sashamind.com/og-image.png",
+    "email": "mindrin.sasha@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tula",
+      "addressCountry": "RU"
+    },
+    "sameAs": [
+      "https://t.me/sash_mind",
+      "https://instagram.com/sasha_mind"
+    ],
+    "knowsAbout": ["brand identity", "logotype design", "motion graphics", "illustration", "typography", "art direction"]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sasha Mindrin",
+    "alternateName": ["Alexander Mindrin", "Саша Миндрин", "Александр Миндрин"],
+    "url": "https://sashamind.com/",
+    "inLanguage": ["en", "ru"],
+    "author": { "@id": "https://sashamind.com/#person" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "Punk Delicious",
+    "alternateName": "Панк делишс",
+    "url": "https://sashamind.com/punk-delicious/",
+    "dateCreated": "2025",
+    "description": "Logo and identity concept for a restaurant. Logo and identity by Sasha Mindrin, 2025.",
+    "keywords": "logo, identity",
+    "creator": {
+      "@id": "https://sashamind.com/#person"
+    },
+    "image": "https://sashamind.com/og-image.png"
+  }
+  </script>
+</head>
+<body class="dark page-split">
+
+  <header>
+    <a class="site-name" href="index.html" id="siteHome">Sasha Mindrin</a>
+    <div class="header-right">
+      <button class="lang-btn" id="langToggle">RU</button>
+      <button class="burger-btn" id="burgerBtn">menu</button>
+    </div>
+  </header>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-menu" id="navMenu">
+    <!-- <a href="texts.html" data-en="texts" data-ru="тексты">texts</a> -->
+    <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+    <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+  </nav>
+
+  <section class="hero">
+    <div class="sub tags-row">
+      <button class="tag-btn tag-all active" data-tag="all" data-en="all" data-ru="все">all</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="logos"        data-en="logos"       data-ru="логотипы">logos</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="branding"     data-en="branding"    data-ru="айдентика">branding</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="motion"       data-en="motion"      data-ru="моушн">motion</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="web"          data-en="web"         data-ru="веб">web</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="interactive"  data-en="interactive" data-ru="интерактив">interactive</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="art"          data-en="art"         data-ru="арт">art</button>
+      <span class="tag-sep">·</span>
+      <button class="tag-btn" data-tag="illustration" data-en="illustration" data-ru="иллюстрация">illustration</button>
+    </div>
+  </section>
+
+  <div class="layout">
+
+    <aside class="panel-list">
+      <div class="cards-grid">
+
+        <a class="card" data-id="project-1" href="ba/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="32" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="48" cy="40" r="18" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Ba" data-ru="Ба">Ba</span>
+        </a>
+
+        <a class="card" data-id="project-6" href="nitka/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="56" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="24" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="40" r="3" fill="currentColor"/>
+              <circle cx="56" cy="40" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="24" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="40" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+              <circle cx="56" cy="56" r="2" fill="currentColor" opacity="0.5"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Nitka" data-ru="Нитка">Nitka</span>
+        </a>
+
+        <a class="card" data-id="project-2" href="tula-marathon/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="40" y="14" width="37" height="37" rx="0.5" transform="rotate(45 40 14)" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Marathon" data-ru="Тульский марафон">Tula Marathon</span>
+        </a>
+
+        <a class="card" data-id="project-3" href="tula-running-club/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="16" y="16" width="48" height="48" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="24" y="24" width="32" height="32" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="32" y="32" width="16" height="16" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Running Club" data-ru="Тульский беговой клуб">Tula Running Club</span>
+        </a>
+
+        <a class="card" data-id="project-4" href="punk-delicious/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polygon points="40,14 66,62 14,62" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Punk Delicious" data-ru="Панк делишс">Punk Delicious</span>
+        </a>
+
+        <a class="card" data-id="project-21" href="puppai/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="40" cy="40" r="8" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="20" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="60" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="20" cy="40" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="60" cy="40" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="32" x2="40" y2="24" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="48" x2="40" y2="56" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="32" y1="40" x2="24" y2="40" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="48" y1="40" x2="56" y2="40" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="PuppAI" data-ru="PuppAI">PuppAI</span>
+        </a>
+
+        <a class="card" data-id="project-5" href="coffee-cult/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="20" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Coffee Cult" data-ru="Кофе культ">Coffee Cult</span>
+        </a>
+
+        <a class="card" data-id="project-7" href="volna/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M20 40 A20 20 0 0 1 60 40" stroke="currentColor" stroke-width="0.75"/>
+              <path d="M14 40 A26 26 0 0 1 66 40" stroke="currentColor" stroke-width="0.75"/>
+              <path d="M8 40 A32 32 0 0 1 72 40" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Volna" data-ru="Волна">Volna</span>
+        </a>
+
+        <a class="card" data-id="project-8" href="tula-region/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="22" y1="22" x2="58" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="58" y1="22" x2="22" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="22" y="22" width="36" height="36" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Tula Region" data-ru="Тульский регион">Tula Region</span>
+        </a>
+
+        <a class="card" data-id="project-9" href="rassvet/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <rect x="18" y="28" width="28" height="28" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="34" y="22" width="28" height="28" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Rassvet" data-ru="Рассвет">Rassvet</span>
+        </a>
+
+        <a class="card" data-id="project-10" href="azaza/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="40" cy="40" r="6" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="14" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="40" cy="40" r="22" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Azaza" data-ru="Азаза">Azaza</span>
+        </a>
+
+        <a class="card" data-id="project-11" href="zernovaya/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polygon points="40,16 57,26 57,54 40,64 23,54 23,26" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Zernovaya" data-ru="Зерновая">Zernovaya</span>
+        </a>
+
+        <a class="card" data-id="project-12" href="soyuz/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="20" y1="20" x2="60" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="30" y1="20" x2="70" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="10" y1="20" x2="50" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="20" x2="80" y2="60" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="0" y1="20" x2="40" y2="60" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Soyuz" data-ru="Союз">Soyuz</span>
+        </a>
+
+        <a class="card" data-id="project-13" href="strana-sveta/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="33" y1="18" x2="47" y2="18" stroke="currentColor" stroke-width="0.75"/>
+              <path d="M40 18L35 30M40 18L45 30" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="13" y="30" width="54" height="27" rx="3" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="17" y="35" width="9" height="9" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="29" y="35" width="9" height="9" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="41" y="35" width="9" height="9" stroke="currentColor" stroke-width="0.75"/>
+              <rect x="53" y="35" width="9" height="9" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="13" y1="50" x2="67" y2="50" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="26" cy="61" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="54" cy="61" r="4" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="8" y1="66" x2="72" y2="66" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Strana Sveta" data-ru="Страна света">Strana Sveta</span>
+        </a>
+
+        <a class="card" data-id="project-19" href="justtalk/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <circle cx="34" cy="38" r="16" stroke="currentColor" stroke-width="0.75"/>
+              <circle cx="46" cy="44" r="10" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Justtalk" data-ru="Джасттолк">Justtalk</span>
+        </a>
+
+
+        <a class="card" data-id="project-14" href="russian-tea-house/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <polyline points="28,24 52,40 28,56" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+              <polyline points="16,24 40,40 16,56" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Russian Tea House" data-ru="Дом русского чаепития">Russian Tea House</span>
+        </a>
+
+        <a class="card" data-id="project-15" href="mumble-podcast/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="40" y1="16" x2="40" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="40" x2="64" y2="40" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="22" y1="22" x2="58" y2="58" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="58" y1="22" x2="22" y2="58" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Mumble Podcast" data-ru="Мамбл подкаст">Mumble Podcast</span>
+        </a>
+
+        <a class="card" data-id="project-16" href="volunteer-71/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M14 34 Q22 26 30 34 Q38 42 46 34 Q54 26 62 34 Q70 42 78 34" stroke="currentColor" stroke-width="0.75" fill="none"/>
+              <path d="M14 46 Q22 38 30 46 Q38 54 46 46 Q54 38 62 46 Q70 54 78 46" stroke="currentColor" stroke-width="0.75" fill="none"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Volunteer 71" data-ru="Волонтер 71">Volunteer 71</span>
+        </a>
+
+        <a class="card" data-id="project-17" href="212f/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M58 24 A26 26 0 1 1 22 24" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="40" y1="14" x2="40" y2="40" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="212F" data-ru="212F">212F</span>
+        </a>
+
+        <a class="card" data-id="project-18" href="terpsichore/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <line x1="28" y1="16" x2="28" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="52" y1="16" x2="52" y2="64" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="28" x2="64" y2="28" stroke="currentColor" stroke-width="0.75"/>
+              <line x1="16" y1="52" x2="64" y2="52" stroke="currentColor" stroke-width="0.75"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Terpsichore" data-ru="Терпсихора">Terpsichore</span>
+        </a>
+
+        <a class="card" data-id="project-20" href="soroka/">
+          <div class="card-inner">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="card-icon">
+              <path d="M20 52 L40 20 L60 52" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+              <path d="M28 52 L40 32 L52 52" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="card-label" data-en="Soroka" data-ru="Сорока">Soroka</span>
+        </a>
+
+      </div>
+    </aside>
+
+    <div class="panel-detail" id="panelDetail"><div class="sr-only"><h1>Punk Delicious (Панк делишс)</h1><p>Logo and identity concept for a restaurant.</p><p>Концепция логотипа и айдентики для ресторана. Логотип и айдентика, Саша Миндрин, 2025.</p></div></div>
+
+    <button class="case-expand" id="caseExpand" data-en="expand" data-ru="развернуть" hidden>развернуть</button>
+
+  </div>
+
+  <footer>
+    <a class="footer-email" href="mailto:mindrin.sasha@gmail.com">mindrin.sasha@gmail.com</a>
+    <span class="footer-copy">© 2026 Sasha Mindrin</span>
+  </footer>
+
+  <script src="main.js?v=20261001-3"></script>
+</body>
+</html>

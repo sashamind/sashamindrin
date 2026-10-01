@@ -565,25 +565,39 @@ function initScrollFx(root) {
 }
 
 // ─── Ссылки на проекты ───
-// Адрес вида #/coffee-cult — слаг совпадает с папкой кейса, поэтому ссылка
-// читается глазами. Именно хеш, а не путь: сайт статический и лежит на
-// GitHub Pages, про /coffee-cult сервер ничего не знает и отдал бы 404.
-const BASE_TITLE = document.title;
+// У каждого кейса свой адрес: sashamind.com/coffee-cult/. Слаг совпадает с
+// папкой кейса. Сервер статический, поэтому под каждый адрес лежит готовая
+// страница <слаг>/index.html — копия главной со своими заголовком и
+// описанием для поисковиков (собирает _tools/build-case-pages.mjs).
+// Старые ссылки вида #/coffee-cult тоже открываются и переписываются в новый вид.
+const SITE_TITLE = 'Sasha Mindrin — Identity & Motion Designer';
+// корень сайта: на страницах кейсов задан <base href="/">, на главной — её папка
+const SITE_ROOT = new URL('./', document.baseURI).pathname;
 
-function projectFromHash() {
-  let raw = (location.hash || '').replace(/^#\/?/, '').replace(/\/+$/, '').trim();
+function slugFromLocation() {
+  const path = location.pathname.startsWith(SITE_ROOT) ? location.pathname.slice(SITE_ROOT.length) : '';
+  let raw = path.replace(/(^|\/)index\.html$/, '').replace(/\/+$/, '');
+  if (!raw) raw = (location.hash || '').replace(/^#\/?/, '').replace(/\/+$/, '');
   try { raw = decodeURIComponent(raw); } catch (_) { /* битый percent-encoding */ }
-  const slug = raw.toLowerCase();
+  return raw.trim().toLowerCase();
+}
+
+function projectFromLocation() {
+  const slug = slugFromLocation();
   if (!slug) return null;
   return projectsData.find(p => p.folder === slug) || null;
 }
 
-// pushState/replaceState, а не location.hash: они не вызывают hashchange,
-// так что собственный переход не приводит к повторной отрисовке.
-function writeHash(project, replace) {
-  const target = project ? `#/${project.folder}` : '';
-  if ((location.hash || '') === target) return;
-  const url = target || location.pathname + location.search;
+function projectUrl(project) {
+  return project ? `${SITE_ROOT}${project.folder}/` : SITE_ROOT;
+}
+
+// pushState/replaceState: они не перезагружают страницу и не вызывают
+// popstate, так что собственный переход не приводит к повторной отрисовке.
+function writeUrl(project, replace) {
+  const target = projectUrl(project);
+  if (location.pathname === target && !location.hash) return;
+  const url = target + location.search;
   if (replace) history.replaceState(null, '', url);
   else history.pushState(null, '', url);
 }
@@ -591,21 +605,22 @@ function writeHash(project, replace) {
 function updateTitle() {
   const project = projectsData.find(p => p.id === activeProjectId);
   const name = project ? (currentLang === 'en' ? project.titleEn : project.titleRu) : null;
-  document.title = name ? `${name} — Sasha Mindrin` : BASE_TITLE;
+  document.title = name ? `${name} — Sasha Mindrin` : SITE_TITLE;
 }
 
 // Адрес изменился снаружи: кнопка «назад», вставленная ссылка, правка строки.
-function syncFromHash() {
-  const project = projectFromHash();
+function syncFromLocation() {
+  const project = projectFromLocation();
   if (project) {
     if (project.id !== activeProjectId) renderProject(project.id, { updateUrl: false });
+    if (location.hash) writeUrl(project, true); // старая ссылка с # — к новому виду
   } else if (activeProjectId !== null) {
     renderEmpty();
   }
 }
 
-window.addEventListener('popstate', syncFromHash);
-window.addEventListener('hashchange', syncFromHash);
+window.addEventListener('popstate', syncFromLocation);
+window.addEventListener('hashchange', syncFromLocation);
 
 // ─── Загрузка проекта ───
 // Разметка индикатора одна на оба вида кейсов: инлайновый показывает его
@@ -651,7 +666,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   if (!project) return;
   activeProjectId = id;
   if (caseExpand) caseExpand.hidden = false;
-  if (updateUrl) writeHash(project, replaceUrl);
+  if (updateUrl) writeUrl(project, replaceUrl);
   updateTitle();
   stopPulse();
   if (scrollFxCleanup) { scrollFxCleanup(); scrollFxCleanup = null; }
@@ -671,9 +686,9 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   panel.innerHTML = `
     <div class="project-detail">
       <div class="pd-header">
-        <h2 class="pd-title" data-en="${project.titleEn}" data-ru="${project.titleRu}">
+        <h1 class="pd-title" data-en="${project.titleEn}" data-ru="${project.titleRu}">
           ${t === 'en' ? project.titleEn : project.titleRu}
-        </h2>
+        </h1>
         <div class="pd-meta">
           <div class="pd-meta-item">
             <span class="pd-meta-key" data-en="year" data-ru="год">${t === 'en' ? 'year' : 'год'}</span>
@@ -777,7 +792,11 @@ function scrollToCard(card) {
 }
 
 document.querySelectorAll('.card[data-id]').forEach(card => {
-  card.addEventListener('click', () => {
+  card.addEventListener('click', e => {
+    // карточка — ссылка на страницу кейса: с Cmd/Ctrl/Shift пусть открывается
+    // в новой вкладке, обычный клик — переход без перезагрузки
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
     renderProject(card.dataset.id);
     scrollToCard(card);
   });
@@ -1032,7 +1051,7 @@ if (siteHome) {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
     setCaseFull(false);
-    history.pushState(null, '', location.pathname + location.search);
+    history.pushState(null, '', SITE_ROOT + location.search);
     startIntro();  // имя прописывается заново, остальное — следом
     renderEmpty();
     applyLang(currentLang);
@@ -1041,12 +1060,13 @@ if (siteHome) {
 
 
 // ─── Init ───
-// Пришли по ссылке на кейс — открываем его, адрес уже верный и трогать
+// Пришли по ссылке на кейс — открываем его. Адрес уже верный и трогать
 // его не нужно, иначе в историю попадёт лишняя запись.
-const initialProject = projectFromHash();
+const initialProject = projectFromLocation();
 if (initialProject) {
   endIntro();
-  renderProject(initialProject.id, { updateUrl: false });
+  // старая ссылка с # — подменяем адрес на новый, без лишней записи в истории
+  renderProject(initialProject.id, { updateUrl: !!location.hash, replaceUrl: true });
   const card = document.querySelector(`.card[data-id="${initialProject.id}"]`);
   if (card) scrollToCard(card); // на мобильном лента карточек длиннее экрана
 } else {

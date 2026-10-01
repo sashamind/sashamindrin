@@ -1545,3 +1545,13 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
     padding-bottom: 8px;
   }
 }
+/* Текст только для поисковиков и экранных дикторов: на страницах кейсов
+   до отрисовки кейса там лежат название и описание (см. _tools/build-case-pages.mjs). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

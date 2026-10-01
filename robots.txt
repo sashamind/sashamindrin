@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /project.html
+Disallow: /supabase/
+Disallow: /shh-creative/files/
+Disallow: /README
 
 Sitemap: https://sashamind.com/sitemap.xml
