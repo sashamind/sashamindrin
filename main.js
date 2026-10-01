@@ -180,20 +180,36 @@ window.addEventListener('resize', () => { clearTimeout(centerT); centerT = setTi
 
 // ─── Подсказка «выберите проект» на телефоне ───
 // Через 3 с после того, как подсказка появилась (после заставки, если
-// она идёт), надпись со стрелками один раз ярко вспыхивает и возвращается
-// к обычному пульсу. Сама вспышка — css, только в мобильной вёрстке.
+// она идёт), надпись со стрелками один раз загорается белым. Не отдельной
+// вспышкой, а внутри обычного пульса строки (css, только в мобильной
+// вёрстке): со следующего цикла цвет к пику яркости плавно уходит в белый и
+// так же плавно возвращается. Цвет привязан к тому же таймлайну, что и
+// пульс, поэтому идёт с ним кадр в кадр.
 let hintFlashT = null;
+function flashHint(point) {
+  const row = point.querySelector('.pd-hint-row');
+  const pulse = row && row.getAnimations().find(a => a.animationName === 'hintPulse');
+  if (!pulse || pulse.startTime == null) return; // десктоп или движение отключено
+  const period = pulse.effect.getTiming().duration;
+  const now = document.timeline.currentTime;
+  const start = pulse.startTime + Math.ceil((now - pulse.startTime) / period) * period;
+  row.querySelectorAll('.pd-empty-text, .pd-up').forEach(el => {
+    const base = getComputedStyle(el).color;
+    const flash = el.animate([
+      { color: base, easing: 'ease-in-out' },
+      { color: '#fff', offset: 0.5, easing: 'ease-in-out' },
+      { color: base },
+    ], { duration: period });
+    flash.startTime = start;
+  });
+}
 function scheduleHintFlash(point) {
   clearTimeout(hintFlashT);
   if (!point) return;
   const wait = () => {
     if (!point.isConnected) return;
     if (document.documentElement.classList.contains('intro-play')) { hintFlashT = setTimeout(wait, 250); return; }
-    hintFlashT = setTimeout(() => {
-      if (!point.isConnected) return;
-      point.classList.add('is-flash');
-      setTimeout(() => point.classList.remove('is-flash'), 1300);
-    }, 3000);
+    hintFlashT = setTimeout(() => { if (point.isConnected) flashHint(point); }, 3000);
   };
   wait();
 }

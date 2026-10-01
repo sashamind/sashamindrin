@@ -996,7 +996,9 @@ body.page-texts .pd-header .pd-desc {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -3px;
+  /* рамка ссылки — строка с межстрочным 1.9, буквы в её середине; линия
+     поднята внутрь рамки, чтобы шла сразу под буквами */
+  bottom: 4px;
   height: 0.5px;
   background-color: currentColor;
   transform: scaleX(0);
@@ -1129,13 +1131,6 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
   0%, 100% { transform: translateY(0) scaleY(1); }
   50%      { transform: translateY(-4px) scaleY(1.1); }
 }
-@keyframes hintFlash {
-  0%   { opacity: 0.45; }
-  25%  { opacity: 1; color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.55); filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)); }
-  60%  { opacity: 1; color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.55); filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)); }
-  100% { opacity: 0.45; }
-}
-
 /* мигание подсказки на мобильном (сама анимация включается в медиазапросе) */
 @keyframes hintPulse {
   0%, 100% { opacity: 0.4; }
@@ -1143,7 +1138,7 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pd-empty-text { animation: none; }
+  .pd-hint-row, .pd-up { animation: none !important; }
 }
 
 .post-img-placeholder {
@@ -1303,24 +1298,21 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
     display: block;
     width: 10px;
     height: 20px;
-    color: var(--fg);
-    opacity: 0.45;
+    color: var(--fg2);
     transform-origin: center bottom;
-    animation: upNudge 2.8s ease-in-out 0.9s infinite;
-  }
-
-  /* через 3 с после появления — одна яркая вспышка (класс is-flash
-     ставит main.js), затем обратно к обычному пульсу */
-  .pd-point.is-flash .pd-empty-text,
-  .pd-point.is-flash .pd-up {
-    animation: hintFlash 1.2s ease-in-out;
+    animation: upNudge 2.8s ease-in-out infinite;
   }
 
   /* вместо стрелки подсказка слегка пульсирует — тем же приёмом, что и
-     плитки кейсов, поэтому читается как приглашение нажать */
-  .pd-empty-text {
+     плитки кейсов, поэтому читается как приглашение нажать. Пульс на всей
+     строке, так что надпись и стрелки мигают синхронно; стрелки толкаются
+     вверх с тем же периодом, на пике яркости */
+  .pd-hint-row {
     animation: hintPulse 2.8s ease-in-out infinite;
   }
+
+  /* через 3 с после появления надпись и стрелки один раз загораются
+     белым на пике пульса — это делает main.js (flashHint) */
 
   /* имя центрируется в том, что осталось под подсказкой, — то есть садится
      чуть ниже середины панели */
