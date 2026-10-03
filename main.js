@@ -116,6 +116,7 @@ function renderEmpty() {
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
   panel.classList.remove('panel-iframe');
+  panel.style.minHeight = '';
   panel.innerHTML = `
     <div class="pd-empty">
       <div class="pd-intro">
@@ -737,6 +738,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   const panel = document.getElementById('panelDetail');
   if (!panel) return;
   panel.classList.remove('panel-iframe');
+  panel.style.minHeight = '';
 
   // Пока кейс грузится — только индикатор. Название и описание из
   // projectsData не показываем заранее: у кейсов в iframe своя шапка, и
@@ -759,6 +761,7 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       // годом и описанием — панель её не дублирует.
       panel.classList.add('panel-iframe');
       panel.innerHTML = html;
+      fitCaseIframe();
 
       // Панель отдана странице целиком, поэтому индикатор кладём поверх неё
       // и снимаем, когда iframe отрапортует load: до этого там пустота.
@@ -1074,6 +1077,38 @@ function hookIframeNav(iframe) {
       { passive: true });
   } catch (e) { /* другой origin — пропускаем */ }
 }
+
+// ─── Подгонка кейса-iframe под ширину поля ───
+// Страницы кейсов собраны в Tilda, и рабочие у них только две вёрстки:
+// десктопная (сетка 1200) и мобильная (до 480). Промежуточные Tilda-вёрстки
+// недоделаны — на ноутбуке, где поле кейса ~1000 px, текст вылезал, а блоки
+// обрезались. Поэтому промежуточные ширины не отдаём Tilda: страница
+// рисуется в рабочей ширине и пропорционально масштабируется под поле —
+//   уже 480 — как есть (мобильная);  480–800 — мобильная 479 px, крупнее;
+//   800–1200 — десктопная 1200 px, мельче;  1200 и шире — как есть.
+function fitCaseIframe() {
+  const panel = document.getElementById('panelDetail');
+  const ifr = panel && panel.classList.contains('panel-iframe') && panel.querySelector('iframe.project-iframe');
+  if (!ifr) return;
+  ifr.style.cssText = '';                                  // сначала — естественный размер
+  const r = ifr.getBoundingClientRect(), w = r.width, h = r.height;
+  let base = 0;
+  if (w >= 480 && w < 800) base = 479;
+  else if (w >= 800 && w < 1200) base = 1200;
+  if (!base || !w || !h) return;
+  const k = w / base;
+  ifr.style.cssText = `position:absolute;left:0;top:0;width:${base}px;height:${(h / k).toFixed(1)}px;` +
+    `transform:scale(${k.toFixed(5)});transform-origin:0 0;`;
+  if (getComputedStyle(panel).position === 'static') panel.style.position = 'relative';
+  // на телефонной раскладке панель в потоке: держим ей высоту, раз iframe вынут
+  panel.style.minHeight = h + 'px';
+}
+if ('ResizeObserver' in window) {
+  const pd = document.getElementById('panelDetail');
+  let fitT = 0;
+  if (pd) new ResizeObserver(() => { cancelAnimationFrame(fitT); fitT = requestAnimationFrame(fitCaseIframe); }).observe(pd);
+}
+window.addEventListener('resize', () => requestAnimationFrame(fitCaseIframe));
 
 // прошлый кейс выгружен — его окно больше не читаем, иначе мёртвый источник
 // висит в navAllAtTop()
