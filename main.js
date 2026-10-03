@@ -149,7 +149,7 @@ function renderEmpty() {
   const stopRole = mountRole(panel.querySelector('.pd-role'));
   guyCleanup = () => { if (stopGuy) stopGuy(); if (stopRole) stopRole(); };
   centerIntro();
-  if (document.documentElement.classList.contains('intro-play')) hideGuy();
+  if (document.documentElement.classList.contains('intro-play')) drawGuyFirst();
 }
 
 // ─── Чувачок с именем — ровно по центру экрана ───
@@ -282,7 +282,7 @@ function mountRole(box) {
 // сдвигает козырёк в сторону взгляда, а глаза едут по сфере — анфас их
 // два, в полупрофиль дальний уходит за край и остаётся один. Наклон pitch
 // чуть поднимает или опускает козырёк с глазами. Голова поворачивается за
-// курсором; без мыши (телефон) смотрит влево, на список кейсов.
+// курсором или к тапу; появившись и заскучав, оглядывается сам.
 let guyCleanup = null;
 function mountGuy(svg) {
   if (!svg) return null;
@@ -363,45 +363,61 @@ function mountGuy(svg) {
     blinkT = setTimeout(() => blink(Math.random() < 0.25 ? 2 : 1), 2500 + Math.random() * 3500);
   }
   blinkT = setTimeout(() => blink(1), 3000);
-  function onMove(e) {
+  // Куда смотреть по точке указателя: центр — примерно на уровне глаз
+  function lookAt(e) {
     const r = svg.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height * 0.3;
     const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * 0.35)));
     const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.4)));
     tYaw = nx * 70; tPitch = ny * 24; kick();
   }
-  function onLeave() { tYaw = DEF_YAW; tPitch = 0; kick(); }
+  // Поведение одно для мыши и тача. Как только чувачок дорисован, он сам
+  // оглядывается (влево, вправо, обратно) и в это время на указатель не
+  // реагирует. Потом следит за курсором / поворачивается к тапу. Если 3 с
+  // нет ни движения, ни тапа — снова сам вертит головой, пока не позовут.
+  const LOOK_IN = [[-20, -4], [40, 2], [DEF_YAW, 0]];  // [yaw, pitch] первого огляда
+  const LOOK_STEP = 800, IDLE_AFTER = 3000;
+  let lockUntil = Infinity;  // до конца первого огляда указатель не слушаем
+  let lastActive = 0, idleT = null, introT2 = null;
+  function idleStep() {
+    clearTimeout(idleT);
+    const now = performance.now();
+    if (now >= lockUntil && now - lastActive < IDLE_AFTER) {
+      // зовут — ждём, когда указатель затихнет
+      idleT = setTimeout(idleStep, IDLE_AFTER - (now - lastActive) + 20);
+      return;
+    }
+    let next;
+    do { next = -60 + Math.random() * 120; } while (Math.abs(next - tYaw) < 25);
+    tYaw = next; tPitch = -6 + Math.random() * 12; kick();
+    idleT = setTimeout(idleStep, 1600 + Math.random() * 1000);
+  }
+  function lookAround() {
+    clearTimeout(idleT); clearTimeout(introT2);
+    lockUntil = performance.now() + LOOK_IN.length * LOOK_STEP;
+    lastActive = 0;
+    LOOK_IN.forEach(([y, p], i) => {
+      introT2 = setTimeout(() => { tYaw = y; tPitch = p; kick(); }, i * LOOK_STEP);
+    });
+    idleT = setTimeout(idleStep, LOOK_IN.length * LOOK_STEP + 1200);
+  }
+  function onPointer(e) {
+    if (performance.now() < lockUntil) return;
+    lastActive = performance.now();
+    lookAt(e);
+  }
   draw();
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (!fine) {
-    // Телефон: курсора нет — чувачок сам время от времени оглядывается,
-    // а на тап поворачивается к точке касания и какое-то время смотрит туда.
-    const POSES = [-60, -30, 0, 30, 60];
-    let idleT = null;
-    const idle = (delay) => {
-      clearTimeout(idleT);
-      idleT = setTimeout(() => {
-        let next;
-        do { next = POSES[Math.floor(Math.random() * POSES.length)]; } while (Math.abs(next - tYaw) < 20);
-        tYaw = next; tPitch = 0; kick();  // сам по себе — только влево-вправо
-        idle(2500 + Math.random() * 2500);
-      }, delay);
-    };
-    const onTap = e => { onMove(e); idle(4000); };
-    window.addEventListener('pointerdown', onTap, { passive: true });
-    idle(3000);
-    return () => {
-      clearTimeout(idleT); clearTimeout(blinkT);
-      window.removeEventListener('pointerdown', onTap);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }
-  window.addEventListener('pointermove', onMove, { passive: true });
-  document.documentElement.addEventListener('pointerleave', onLeave);
+  const ev = fine ? 'pointermove' : 'pointerdown';
+  window.addEventListener(ev, onPointer, { passive: true });
+  // огляд — после прорисовки (на заставке её запускает drawGuyFirst),
+  // без заставки — сразу
+  guyOnDrawn = lookAround;
+  if (!document.documentElement.classList.contains('intro-play')) lookAround();
   return () => {
-    clearTimeout(blinkT);
-    window.removeEventListener('pointermove', onMove);
-    document.documentElement.removeEventListener('pointerleave', onLeave);
+    clearTimeout(idleT); clearTimeout(introT2); clearTimeout(blinkT);
+    if (guyOnDrawn === lookAround) guyOnDrawn = null;
+    window.removeEventListener(ev, onPointer);
     if (raf) cancelAnimationFrame(raf);
   };
 }
@@ -458,9 +474,28 @@ function drawGuyIn() {
     setTimeout(() => { showGuy(); resolve(); }, (DUR + (els.length - 1) * STEP) * 1000 + 60);
   });
 }
-// Имя прописывается по центру, за ним рисуется чувачок, затем проявляется остальное.
-function afterName() {
-  drawGuyIn().then(endIntro);
+// Заставка: сначала прорисовывается чувачок, за ним прописывается имя,
+// затем проявляется остальное. guyDrawn — обещание «чувачок дорисован»
+// для текущего захода заставки; имя ждёт его, сколько бы ни грузилась Lottie.
+let guyDrawn = Promise.resolve();
+let introRun = 0;  // номер захода: устаревшие ожидания не запускают имя
+let guyOnDrawn = null;  // ставит mountGuy: «дорисован — начинай оглядываться»
+function drawGuyFirst() {
+  hideGuy();
+  guyDrawn = drawGuyIn();
+  const run = ++introRun;
+  guyDrawn.then(() => { if (run === introRun && guyOnDrawn) guyOnDrawn(); });
+  return run;
+}
+function playNameAfterGuy(a, run) {
+  a.goToAndStop(0, true);
+  guyDrawn.then(() => {
+    if (run !== introRun || !document.documentElement.classList.contains('intro-play')) return;
+    a.goToAndPlay(0, true);
+    // запасной выход, если complete не придёт: длина имени + запас
+    clearTimeout(introT);
+    introT = setTimeout(endIntro, a.getDuration() * 1000 + 1500);
+  });
 }
 
 function endIntro() {
@@ -504,22 +539,21 @@ function mountNameAnim(p) {
         if (++ready < 2) return;
         p.classList.add('has-anim');
         centerIntro();
-        // загрузилось — дальше заставку закрывает конец прорисовки;
-        // запасной таймер на случай, если complete не придёт
+        // загрузилось — дальше заставку закрывает конец прорисовки имени
         clearTimeout(safety);
         // заставка ещё идёт? (проверяем сейчас, а не при запуске)
         const intro = document.documentElement.classList.contains('intro-play');
-        if (intro) (clearTimeout(introT), introT = setTimeout(endIntro, 5600));
         anims.forEach(b => {
-          // на заставке играет имя на текущем языке, остальное — сразу целиком
-          if (intro && b.lang === currentLang) b.goToAndPlay(0, true);
+          // на заставке имя на текущем языке прописывается, когда дорисован
+          // чувачок; второе сразу стоит целиком
+          if (intro && b.lang === currentLang) playNameAfterGuy(b, introRun);
           else b.goToAndStop(b.totalFrames - 1, true);
         });
       });
       a.addEventListener('complete', () => {
         if (a.lang !== currentLang) return;
         clearTimeout(safety);
-        afterName();
+        endIntro();
       });
       a.addEventListener('data_failed', () => { clearTimeout(safety); endIntro(); });
       anims.push(a);
@@ -528,8 +562,8 @@ function mountNameAnim(p) {
   }).catch(() => { clearTimeout(safety); endIntro(); });
 }
 
-// Заставка заново: всё прячется, имя на текущем языке прописывается,
-// затем остальное проявляется, как при первом открытии. Работает, только
+// Заставка заново: всё прячется, чувачок рисуется, за ним прописывается
+// имя на текущем языке, затем остальное проявляется, как при первом открытии. Работает, только
 // пока на панели пустая главная с именем.
 function startIntro() {
   const root = document.documentElement;
@@ -540,12 +574,12 @@ function replayIntro() {
   const p = document.querySelector('.pd-intro-text.has-anim');
   if (!nameAnims || !p || !p.isConnected) return;
   startIntro();
-  hideGuy();
+  const run = drawGuyFirst();
   nameAnims.forEach(a => {
-    if (a.lang === currentLang) a.goToAndPlay(0, true);
+    if (a.lang === currentLang) playNameAfterGuy(a, run);
     else a.goToAndStop(a.totalFrames - 1, true);
   });
-  (clearTimeout(introT), introT = setTimeout(endIntro, 5600));  // запасной выход, если complete не придёт
+  (clearTimeout(introT), introT = setTimeout(endIntro, 8000));  // запасной выход, если имя не доиграет
 }
 
 // ─── Появление/исчезновение по скроллу (data-fx="scroll") ───
@@ -704,31 +738,10 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   if (!panel) return;
   panel.classList.remove('panel-iframe');
 
-  const t = currentLang;
-  panel.innerHTML = `
-    <div class="project-detail">
-      <div class="pd-header">
-        <h1 class="pd-title" data-en="${project.titleEn}" data-ru="${project.titleRu}">
-          ${t === 'en' ? project.titleEn : project.titleRu}
-        </h1>
-        <div class="pd-meta">
-          <div class="pd-meta-item">
-            <span class="pd-meta-key" data-en="year" data-ru="год">${t === 'en' ? 'year' : 'год'}</span>
-            <span class="pd-meta-val">${project.year}</span>
-          </div>
-        </div>
-      </div>
-      <div class="pd-desc">
-        <div data-en="${project.descEn}" data-ru="${project.descRu}">
-          ${t === 'en' ? project.descEn : project.descRu}
-        </div>
-      </div>
-      <div class="pd-body" id="projectBody">
-        ${loadingMarkup(t)}
-      </div>
-    </div>
-  `;
-
+  // Пока кейс грузится — только индикатор. Название и описание из
+  // projectsData не показываем заранее: у кейсов в iframe своя шапка, и
+  // промелькнувшая «заглушка» перед ними только сбивала с толку.
+  panel.innerHTML = loadingMarkup(currentLang);
   panel.scrollTop = 0;
 
   try {
@@ -784,19 +797,44 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       await waitForEagerImages(holder);
       if (activeProjectId !== id) return;
 
+      // шапка из projectsData и содержимое кейса появляются вместе
+      panel.innerHTML = projectHeaderMarkup(project, currentLang);
       const body = document.getElementById('projectBody');
-      if (body) {
-        body.innerHTML = '';
-        while (holder.firstChild) body.appendChild(holder.firstChild);
-        applyLangSections(body, currentLang);
-        scrollFxCleanup = initScrollFx(body);
-      }
+      while (holder.firstChild) body.appendChild(holder.firstChild);
+      applyLangSections(body, currentLang);
+      scrollFxCleanup = initScrollFx(body);
     }
   } catch {
+    // кейс не загрузился — хотя бы название и описание, а не пустая панель
     if (activeProjectId !== id) return;
-    const body = document.getElementById('projectBody');
-    if (body) body.innerHTML = '';
+    panel.innerHTML = projectHeaderMarkup(project, currentLang);
   }
+}
+
+// Шапка встроенного кейса: название, год, описание и пустое тело, куда
+// кладётся сам кейс. У кейсов в iframe шапка своя, внутри страницы.
+function projectHeaderMarkup(project, t) {
+  return `
+    <div class="project-detail">
+      <div class="pd-header">
+        <h1 class="pd-title" data-en="${project.titleEn}" data-ru="${project.titleRu}">
+          ${t === 'en' ? project.titleEn : project.titleRu}
+        </h1>
+        <div class="pd-meta">
+          <div class="pd-meta-item">
+            <span class="pd-meta-key" data-en="year" data-ru="год">${t === 'en' ? 'year' : 'год'}</span>
+            <span class="pd-meta-val">${project.year}</span>
+          </div>
+        </div>
+      </div>
+      <div class="pd-desc">
+        <div data-en="${project.descEn}" data-ru="${project.descRu}">
+          ${t === 'en' ? project.descEn : project.descRu}
+        </div>
+      </div>
+      <div class="pd-body" id="projectBody"></div>
+    </div>
+  `;
 }
 
 const tryLoad = src => new Promise((res, rej) => {
