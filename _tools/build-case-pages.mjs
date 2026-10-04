@@ -84,6 +84,10 @@ for (const p of projects) {
   h = swap(h, /(<meta property="og:description" content=")[^"]*/, `$1${esc(d.en)}`);
   h = swap(h, /(<meta name="twitter:title" content=")[^"]*/, `$1${esc(title)}`);
   h = swap(h, /(<meta name="twitter:description" content=")[^"]*/, `$1${esc(d.en)}`);
+  // превью для соцсетей и мессенджеров — своё у каждого кейса (assets/projects/<слаг>/og.jpg)
+  const og = fs.existsSync(path.join(ROOT, 'assets/projects', p.folder, 'og.jpg')) ? `${SITE}assets/projects/${p.folder}/og.jpg` : `${SITE}og-image.png`;
+  h = swap(h, /(<meta property="og:image" content=")[^"]*/, `$1${og}`);
+  h = swap(h, /(<meta name="twitter:image" content=")[^"]*/, `$1${og}`);
   // заставка с именем — только на главной
   h = swap(h, /  <script>if \(!location\.hash[^\n]*<\/script>\n/, '');
 
@@ -97,7 +101,7 @@ for (const p of projects) {
     description: d.en,
     keywords: p.tags.map(t => KIND[t]?.[0]).filter(Boolean).join(', '),
     creator: { '@id': `${SITE}#person` },
-    image: `${SITE}og-image.png`,
+    image: og,
   };
   h = swap(h, /(\n<\/head>)/, `\n  <script type="application/ld+json">\n  ${JSON.stringify(work, null, 2).replace(/\n/g, '\n  ')}\n  </script>$1`);
 

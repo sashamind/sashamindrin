@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- GitHub Pages отдаёт эту страницу по любому несуществующему адресу,
+       в том числе вложенному (/a/b/c) — base держит пути от корня сайта. -->
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>404 — Sasha Mindrin</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css?v=20261001-6" />
+  <style>
+    .nf {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .nf .pd-guy { width: 52px; margin-bottom: 28px; }
+    .nf-code {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: clamp(72px, 14vw, 160px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--fg);
+    }
+    .nf-text {
+      margin-top: 18px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--fg2);
+    }
+    .nf-link {
+      margin-top: 36px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: var(--fg);
+      text-decoration: none;
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 4px;
+      transition: border-color 0.2s ease;
+    }
+    .nf-link:hover { border-bottom-color: var(--fg); }
+  </style>
+</head>
+<body class="dark">
+
+  <header>
+    <a class="site-name" href="index.html">Sasha Mindrin</a>
+    <div class="header-right">
+      <button class="lang-btn" id="langToggle">RU</button>
+      <button class="burger-btn" id="burgerBtn">menu</button>
+    </div>
+  </header>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-menu" id="navMenu">
+    <a href="index.html" data-en="work" data-ru="работы">work</a>
+    <a href="about.html" data-en="about" data-ru="обо мне">about</a>
+    <a href="contact.html" data-en="contact" data-ru="контакт">contact</a>
+  </nav>
+
+  <main class="nf">
+    <svg class="pd-guy" viewBox="-70 -66 140 202" aria-hidden="true">
+      <path class="g-head" />
+      <path class="g-brim" />
+      <path class="g-eye" /><path class="g-eye" />
+      <path class="g-body" />
+    </svg>
+    <div class="nf-code">404</div>
+    <p class="nf-text" data-en="There’s no such page. Maybe it moved — or never existed." data-ru="Такой страницы нет. Может, переехала, а может, её и не было.">There’s no such page. Maybe it moved — or never existed.</p>
+    <a class="nf-link" href="index.html" data-en="← to projects" data-ru="← к проектам">← to projects</a>
+  </main>
+
+  <footer>
+    <a class="footer-email" href="mailto:mindrin.sasha@gmail.com">mindrin.sasha@gmail.com</a>
+    <span class="footer-copy">© 2026 Sasha Mindrin</span>
+  </footer>
+
+  <script src="main.js?v=20261003-4"></script>
+  <script>
+    // чувачок с главной: оглядывается, ищет потерявшуюся страницу,
+    // потом следит за курсором
+    if (typeof mountGuy === 'function') mountGuy(document.querySelector('.nf .pd-guy'));
+  </script>
+</body>
+</html>
