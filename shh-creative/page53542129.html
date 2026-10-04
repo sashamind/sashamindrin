@@ -373,6 +373,15 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
 .ig-note-tula { display: none; }
 .ig.is-tula .ig-note-cursor { display: none; }
 .ig.is-tula .ig-note-tula { display: inline; }
+.ig-note-slide { display: none; }
+.ig.is-slide .ig-note-cursor { display: none; }
+.ig.is-slide .ig-note-slide { display: inline; }
+/* «Пятнашки»: часть прыжков — акцентным цветом (фигура и её эхо), остальные — своим */
+.ig-circle.is-moving { background: var(--ig-acc); }
+.ig-tri.is-moving { border-bottom-color: var(--ig-acc); }
+.ig-ghost { position: absolute; pointer-events: none; transition: opacity 0.5s ease; }
+.ig-ghost.is-acc.ig-circle { background: var(--ig-acc); }
+.ig-ghost.is-acc.ig-tri { border-bottom-color: var(--ig-acc); }
 /* «Тула»: буквы — красным, остальное белое */
 .ig-sep { opacity: 0.4; }
 .ig-mode { background: none; border: 0; padding: 6px 0; color: inherit; font: inherit; cursor: pointer; }
@@ -398,10 +407,11 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
   <div class="ig-controls">
     <p class="ig-note">
       <span class="ig-note-cursor"><span class="lang-ru">Фигуры следят за&nbsp;указателем и&nbsp;загораются рядом с&nbsp;ним, клик или тап пускает волну. Так айдентика откликается на&nbsp;действия человека&nbsp;— на&nbsp;сайте или в&nbsp;приложении.</span><span class="lang-en">The shapes follow the pointer and light up near it; a&nbsp;click or tap sends out a&nbsp;wave. This is how the identity responds to&nbsp;a&nbsp;person&rsquo;s actions on&nbsp;a&nbsp;website or in&nbsp;an&nbsp;app.</span></span>
+      <span class="ig-note-slide"><span class="lang-ru">Пятнашки: фигуры перескакивают на&nbsp;свободные места сетки и&nbsp;оставляют эхо-след. Так айдентика живёт в&nbsp;движении: на&nbsp;экранах, в&nbsp;заставках, в&nbsp;соцсетях.</span><span class="lang-en">Slide: shapes hop into free cells of&nbsp;the grid, leaving an&nbsp;echo trail. This is how the identity lives in&nbsp;motion: on&nbsp;screens, in&nbsp;intros, on&nbsp;social media.</span></span>
       <span class="ig-note-tula"><span class="lang-ru">Слово «Тула» из&nbsp;элементов системы: фигуры окрашиваются по&nbsp;форме букв акцидентного шрифта. Так айдентика собирает надписи из&nbsp;своих же&nbsp;частей&nbsp;— для вывесок, экранов, мерча. Клик собирает слово заново.</span><span class="lang-en">The word &laquo;Tula&raquo; built from the system&rsquo;s own elements: shapes are coloured following the letters of&nbsp;the display typeface. This is how the identity assembles lettering from its parts&nbsp;— for signage, screens, merch. Click to&nbsp;assemble it again.</span></span>
       <span class="ig-note-walker"><span class="lang-ru">По&nbsp;полю идёт человек, и&nbsp;фигуры, которые он заслоняет, загораются, как тень. Так система может работать на&nbsp;уличном экране с&nbsp;камерой&nbsp;— откликаться на&nbsp;тех, кто проходит мимо.</span><span class="lang-en">A&nbsp;person walks across the field, and the shapes they cover light up like a&nbsp;shadow. This is how the system could work on&nbsp;a&nbsp;street screen with a&nbsp;camera&nbsp;— responding to&nbsp;people passing by.</span></span>
     </p>
-    <span class="ig-modes"><button type="button" class="ig-mode" data-mode="cursor" aria-pressed="true"><span class="lang-en">cursor</span><span class="lang-ru">курсор</span></button><span class="ig-sep">/</span><button type="button" class="ig-mode" data-mode="walker" aria-pressed="false"><span class="lang-en">passer-by</span><span class="lang-ru">прохожий</span></button><span class="ig-sep">/</span><button type="button" class="ig-mode" data-mode="tula" aria-pressed="false"><span class="lang-en">Tula</span><span class="lang-ru">Тула</span></button></span>
+    <span class="ig-modes"><button type="button" class="ig-mode" data-mode="cursor" aria-pressed="true"><span class="lang-en">cursor</span><span class="lang-ru">курсор</span></button><span class="ig-sep">/</span><button type="button" class="ig-mode" data-mode="walker" aria-pressed="false"><span class="lang-en">passer-by</span><span class="lang-ru">прохожий</span></button><span class="ig-sep">/</span><button type="button" class="ig-mode" data-mode="tula" aria-pressed="false"><span class="lang-en">Tula</span><span class="lang-ru">Тула</span></button><span class="ig-sep">/</span><button type="button" class="ig-mode" data-mode="slide" aria-pressed="false"><span class="lang-en">slide</span><span class="lang-ru">пятнашки</span></button></span>
     <span class="ig-schemes"><button type="button" class="ig-sw" data-bg="#0a0a0a" data-fg="#FFFFFF" data-acc="#EF4136" aria-pressed="true" title="тёмная" aria-label="тёмная" style="background:#0a0a0a;--dot:#EF4136"></button><button type="button" class="ig-sw" data-bg="#FFFFFF" data-fg="#43403E" data-acc="#EF4136" aria-pressed="false" title="белая" aria-label="белая" style="background:#FFFFFF;--dot:#EF4136"></button><button type="button" class="ig-sw" data-bg="#FDBA12" data-fg="#FFFFFF" data-acc="#EF4136" aria-pressed="false" title="жёлтая" aria-label="жёлтая" style="background:#FDBA12;--dot:#EF4136"></button><button type="button" class="ig-sw" data-bg="#EF4136" data-fg="#FDBA12" data-acc="#FFFFFF" aria-pressed="false" title="красная" aria-label="красная" style="background:#EF4136;--dot:#FFFFFF"></button><button type="button" class="ig-sw" data-bg="#43403E" data-fg="#FFFFFF" data-acc="#FDBA12" aria-pressed="false" title="угольная" aria-label="угольная" style="background:#43403E;--dot:#FDBA12"></button></span>
     <button type="button" class="ig-toggle" aria-pressed="true"><span class="ig-box"></span><span class="lang-en">grid</span><span class="lang-ru">сетка</span></button>
     <label class="ig-scale"><span class="lang-en">scale</span><span class="lang-ru">масштаб</span><input class="ig-range" type="range" min="0.4" max="1.8" step="0.01" value="1" /></label>
@@ -444,7 +454,7 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
       var x = cx + j * P - S / 2, y = cy + i * P - S / 2, tri = Math.abs(i + j) % 2 === 1;
       if (!tri) html += '<div class="ig-item ig-circle" style="left:' + x + 'px;top:' + y + 'px;width:' + S + 'px;height:' + S + 'px"></div>';
       else html += '<div class="ig-item ig-tri" style="left:' + x + 'px;top:' + (y + S / 4) + 'px;border-width:0 ' + S / 2 + 'px ' + S / 2 + 'px"></div>';
-      list.push({ tri: tri, x: x + S / 2, y: y + S / 2, near: false });
+      list.push({ tri: tri, x: x + S / 2, y: y + S / 2, gi: i, gj: j, near: false });
     }
     box.innerHTML = html;
     var nodes = box.children;
@@ -452,6 +462,7 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
     items = list;
     if (mode === 'walker') { resetItems(); return; }
     if (mode === 'tula') { resetItems(); tulaShow(false); return; }
+    if (mode === 'slide') { clearTimeout(slideT); cancelAnimationFrame(slideRaf); slideT = slideRaf = 0; box.querySelectorAll('.ig-ghost').forEach(function (g) { g.remove(); }); resetItems(); slideStart(); return; }
     update();
   }
 
@@ -738,6 +749,125 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
     }
     if (visible) breathRaf = requestAnimationFrame(breathe);
   }
+  // ── Режим «пятнашки» ──
+  // Часть мест в сетке свободна; фигуры перескакивают на соседнее свободное
+  // место (по горизонтали или вертикали), как плашки в пятнашках, — много
+  // сразу и быстро. Часть прыжков акцентным цветом, часть — своим; большинство
+  // летящих фигур тянет эхо — копии, отстающие по пути и тающие к хвосту,
+  // как полосы на ткани с паттерном. Треугольники в прыжке поворачиваются
+  // по ходу движения, а стоящие — время от времени разворачиваются сами.
+  var slideRaf = 0, slideT = 0, grid = null, moving = [], turning = [];
+  var GHOSTS = 12, LAG = 0.015, FLY = 0.32;        // копий эха (часто — сливаются в сплошной след), отставание каждой (с), время прыжка (с)
+  var FREE = 0.2, ACC_SHARE = 0.35, ECHO_SHARE = 0.65; // доля свободных мест, «акцентных» прыжков и прыжков с эхом
+  function key(i, j) { return i + ',' + j; }
+  function tf(it, dx, dy) {
+    var t = (dx || dy ? 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)' : '') + (it.tri && it.rot ? ' rotate(' + it.rot.toFixed(1) + 'deg)' : '');
+    it.el.style.transform = t;
+  }
+  function turnTo(it, deg) {                          // поворот кратчайшим путём
+    var d = ((deg - it.rotT) % 360 + 540) % 360 - 180;
+    it.rotT += d; if (turning.indexOf(it) < 0) turning.push(it);
+  }
+  function slideInit() {
+    grid = {};
+    items.forEach(function (it) { it.ci = it.gi; it.cj = it.gj; it.busy = false; it.rot = it.rotT = 0; it.dx = it.dy = 0; grid[key(it.gi, it.gj)] = it; });
+    var pool = items.filter(function (it) { return it.gi || it.gj; });   // центральный круг всегда на месте
+    var free = Math.max(3, Math.round(items.length * FREE));
+    for (var n = 0; n < free && pool.length; n++) {
+      var it = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      grid[key(it.gi, it.gj)] = null; it.gone = true; it.el.style.opacity = '0';
+    }
+    moving = []; turning = [];
+  }
+  function slideClear() {
+    clearTimeout(slideT); cancelAnimationFrame(slideRaf); slideT = slideRaf = 0;
+    box.querySelectorAll('.ig-ghost').forEach(function (g) { g.remove(); });
+    moving = []; turning = []; grid = null;
+    items.forEach(function (it) {
+      it.gone = false; it.busy = false; it.rot = it.rotT = 0; it.el.style.opacity = ''; it.el.classList.remove('is-moving');
+      if (it.home) { it.el.style.left = it.home[0]; it.el.style.top = it.home[1]; it.x = it.home[2]; it.y = it.home[3]; }
+    });
+  }
+  function startMove() {
+    if (!grid) return false;
+    var P = 2 * S, empties = Object.keys(grid).filter(function (k) { return grid[k] === null; });
+    for (var tries = 0; tries < 10 && empties.length; tries++) {
+      var e = empties[Math.floor(Math.random() * empties.length)].split(',').map(Number);
+      var nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(function (d) { return grid[key(e[0] + d[0], e[1] + d[1])]; })
+        .filter(function (it) { return it && !it.busy; });
+      if (!nb.length) continue;
+      var it = nb[Math.floor(Math.random() * nb.length)];
+      var di = e[0] - it.ci, dj = e[1] - it.cj;
+      grid[key(e[0], e[1])] = it; grid[key(it.ci, it.cj)] = undefined;   // освободится после посадки
+      var acc = Math.random() < ACC_SHARE;
+      it.busy = true; it.el.classList.toggle('is-moving', acc);
+      if (it.tri) turnTo(it, dj > 0 ? 90 : dj < 0 ? -90 : di > 0 ? 180 : 0);   // остриём по ходу
+      var ghosts = [], nG = Math.random() < ECHO_SHARE ? GHOSTS : 0;   // часть прыжков — без эха
+      for (var g = 0; g < nG; g++) {
+        var c = it.el.cloneNode(false);
+        c.className = it.el.className.replace('is-moving', '') + ' ig-ghost' + (acc ? ' is-acc' : '');
+        c.style.opacity = (0.42 * (1 - g / GHOSTS)).toFixed(2);
+        box.insertBefore(c, box.firstChild); ghosts.push(c);
+      }
+      moving.push({ it: it, from: [it.ci, it.cj], dx: dj * P, dy: di * P, t0: performance.now(), ghosts: ghosts });
+      it.ci = e[0]; it.cj = e[1];
+      return true;
+    }
+    return false;
+  }
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function slideFrame(now) {
+    slideRaf = 0;
+    if (mode !== 'slide') return;
+    // повороты треугольников (и летящих, и стоящих)
+    turning = turning.filter(function (it) {
+      it.rot += (it.rotT - it.rot) * 0.2;
+      if (Math.abs(it.rotT - it.rot) < 0.5) it.rot = it.rotT;
+      if (!it.busy) tf(it, 0, 0);
+      return it.rot !== it.rotT;
+    });
+    moving = moving.filter(function (m) {
+      var t = (now - m.t0) / 1000, it = m.it;
+      var at = function (tt) { var e = ease(Math.max(0, Math.min(1, tt / FLY))); return [m.dx * e, m.dy * e]; };
+      var p = at(t);
+      tf(it, p[0], p[1]);
+      m.ghosts.forEach(function (g, k) {
+        var q = at(t - (k + 1) * LAG);
+        g.style.transform = 'translate(' + q[0].toFixed(1) + 'px,' + q[1].toFixed(1) + 'px)' + (it.tri && it.rot ? ' rotate(' + it.rot.toFixed(1) + 'deg)' : '');
+      });
+      if (t < FLY + m.ghosts.length * LAG) return true;
+      // посадка: фигура встаёт на новое место, эхо тает, старое место свободно
+      var el = it.el;
+      el.style.left = (parseFloat(el.style.left) + m.dx) + 'px'; el.style.top = (parseFloat(el.style.top) + m.dy) + 'px';
+      it.x += m.dx; it.y += m.dy; it.busy = false; el.classList.remove('is-moving'); tf(it, 0, 0);
+      if (grid && grid[key(m.from[0], m.from[1])] === undefined) grid[key(m.from[0], m.from[1])] = null;
+      m.ghosts.forEach(function (g) { g.style.opacity = '0'; setTimeout(function () { g.remove(); }, 520); });
+      return false;
+    });
+    if (visible) slideRaf = requestAnimationFrame(slideFrame);
+  }
+  function slideTick() {
+    if (mode !== 'slide') return;
+    if (visible) {
+      var maxMoving = Math.max(3, Math.round(items.length / 10));
+      for (var n = 0; n < 3 && moving.length < maxMoving; n++) startMove();
+      // стоящие треугольники сами разворачиваются
+      if (Math.random() < 0.6) {
+        var tris = items.filter(function (it) { return it.tri && !it.busy && !it.gone; });
+        for (var r = 0; r < Math.max(1, Math.round(tris.length / 60)); r++) {
+          var tr = tris[Math.floor(Math.random() * tris.length)];
+          if (tr) turnTo(tr, tr.rotT + [90, -90, 180][Math.floor(Math.random() * 3)]);
+        }
+      }
+      if (!slideRaf) slideRaf = requestAnimationFrame(slideFrame);
+    }
+    slideT = setTimeout(slideTick, 50 + Math.random() * 70);
+  }
+  function slideStart() {
+    items.forEach(function (it) { it.home = [it.el.style.left, it.el.style.top, it.x, it.y]; });
+    slideInit(); slideTick();
+    if (!slideRaf) slideRaf = requestAnimationFrame(slideFrame);
+  }
   function resetItems() {
     for (var k = 0; k < items.length; k++) {
       var it = items[k]; it.near = false; it.lv = 0;
@@ -749,12 +879,15 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
     mode = m;
     root.classList.toggle('is-walk', m === 'walker');
     root.classList.toggle('is-tula', m === 'tula');
+    root.classList.toggle('is-slide', m === 'slide');
     root.querySelectorAll('.ig-mode').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mode === m); });
+    if (grid) slideClear();
     resetItems();
     cancelAnimationFrame(walkRaf); walkRaf = 0;
     cancelAnimationFrame(breathRaf); breathRaf = 0;
     if (m === 'walker') { walkT0 = performance.now(); walkRaf = requestAnimationFrame(walkFrame); }
     else if (m === 'tula') tulaShow(true);
+    else if (m === 'slide') slideStart();
     else queue();
   }
   root.querySelectorAll('.ig-mode').forEach(function (b) {
@@ -765,6 +898,7 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
     visible = en[0].isIntersecting;
     if (visible && mode === 'walker' && !walkRaf) walkRaf = requestAnimationFrame(walkFrame);
     if (visible && mode === 'tula' && !breathRaf) breathRaf = requestAnimationFrame(breathe);
+    if (visible && mode === 'slide' && !slideRaf) slideRaf = requestAnimationFrame(slideFrame);
   }).observe(stage);
 
   document.addEventListener('pointermove', function (e) {
