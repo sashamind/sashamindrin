@@ -88,6 +88,11 @@ const CAPTURE = String.raw`(async () => {
     };
   }
   const pick = (cs, props) => Object.fromEntries(props.map(p => [p, cs.getPropertyValue(p)]));
+  // нейтральное состояние: наши интерактивы (палитра, сетка, подсветка)
+  // меняют прозрачность элементов — снимаем раскладку без них
+  document.querySelectorAll('[data-pal]').forEach(e => e.removeAttribute('data-pal'));
+  document.querySelectorAll('.gf-on, .is-lit').forEach(e => e.classList.remove('gf-on', 'is-lit'));
+  await new Promise(r => setTimeout(r, 1200));
   const out = [];
   for (const ab of document.querySelectorAll('.t396__artboard')) {
     const rec = ab.getAttribute('data-artboard-recid');
@@ -111,17 +116,22 @@ const CAPTURE = String.raw`(async () => {
       const acs = atom ? getComputedStyle(atom) : null;
       const srcEl = src.querySelector('.tn-elem__' + rec + id) || src.querySelector('[data-elem-id="' + id + '"]');
       const srcAtom = srcEl && srcEl.querySelector('.tn-atom');
+      // Тильда растягивает раскладку через CSS zoom (upscale=window): рамки
+      // элементов браузер отдаёт уже растянутыми, а кегль — нет; домножаем
+      let zoom = 1;
+      for (let p = el; p && p !== ab.parentElement; p = p.parentElement) zoom *= parseFloat(getComputedStyle(p).zoom) || 1;
       const e = {
-        id, type,
+        id, type, zoom,
         x: r.left - abr.left, y: r.top - abr.top, w: r.width, h: r.height,
         z: parseInt(cs.zIndex, 10) || 0,
         // свои классы элемента (не Тильды) — на них завязаны наши стили и
         // скрипты, например pf-reveal (проявление при прокрутке)
         cls: [...el.classList].filter(c => !/^(t396__|tn-elem|tn-|t-)/.test(c)).join(' '),
-        // прозрачность самого элемента учитываем, только если она не временная
-        // (anim-hidden Тильда держит, пока не запустит анимации) и ею не
-        // управляют наши классы
-        opacity: String((acs ? +acs.opacity : 1) * (el.classList.contains('t396__elem--anim-hidden') || [...el.classList].some(c => !/^(t396__|tn-elem|tn-|t-)/.test(c)) ? 1 : +cs.opacity)),
+        // прозрачность — только та, что задаёт сама Тильда (на атоме). Прозрачность
+        // самого элемента — это либо временное anim-hidden, либо наши стили
+        // (палитра, алфавит, pf-reveal…), а они переносятся во фрагмент и
+        // сработают там сами; снятая со страницы применилась бы дважды
+        opacity: String(acs ? +acs.opacity : 1),
         blend: cs.mixBlendMode !== 'normal' ? cs.mixBlendMode : (acs && acs.mixBlendMode !== 'normal' ? acs.mixBlendMode : ''),
         rotate: acs && acs.transform !== 'none' ? acs.transform : '',
         href: atom && atom.tagName === 'A' ? atom.getAttribute('href') : '',
@@ -141,7 +151,7 @@ const CAPTURE = String.raw`(async () => {
       } else if (type === 'text') {
         e.html = srcAtom ? srcAtom.innerHTML.trim() : (atom ? atom.innerHTML : '');
         e.tag = atom ? atom.tagName.toLowerCase() : 'div';
-        e.font = pick(acs, ['font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'color', 'text-align', 'text-transform', 'text-decoration-line']);
+        e.font = pick(acs, ['font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'color', 'text-align', 'text-transform', 'text-decoration-line', 'white-space']);
       } else if (type === 'shape') {
         e.box = pick(acs, ['background-color', 'background-image', 'background-size', 'background-position', 'background-repeat', 'border-radius', 'border-top-width', 'border-style', 'border-color', 'box-shadow']);
       } else if (type === 'video') {
@@ -196,11 +206,33 @@ function scaleInlinePx(html, base) {
   return html.replace(/(font-size|line-height|letter-spacing)\s*:\s*(-?[\d.]+)px/g, (_, p, v) => `${p}:${cq(+v, base)}`);
 }
 
+// Наши старые стили писались под разметку Тильды и местами двигали сами
+// элементы (.tn-elem[data-elem-id=…] { top / left / width … }). Положения
+// уже сняты с живой страницы, поэтому из правил для самого элемента
+// убираем геометрию, а всё остальное (цвет, прозрачность, переходы) — оставляем.
+const GEOMETRY = /^(top|left|right|bottom|width|height|min-width|min-height|max-width|max-height|display|position|margin|margin-top|margin-bottom|margin-left|margin-right|z-index)$/i;
+function sanitizeCss(css) {
+  return css.replace(/([^{}]+)\{([^{}]*)\}/g, (m, sel, body) => {
+    if (/^\s*@/.test(sel)) return m;
+    const sels = sel.split(',');
+    const onElem = sels.every(x => {
+      const last = x.trim().split(/[\s>+~]+/).pop() || '';
+      return /tn-elem|t396__elem|\[data-elem-id/.test(last);
+    });
+    if (!onElem) return m;
+    const kept = body.split(';').filter(d => {
+      const prop = d.split(':')[0].trim();
+      return prop && !GEOMETRY.test(prop);
+    });
+    return kept.length ? `${sel}{${kept.join(';')}}` : '';
+  });
+}
+
 // ссылки на файлы экспорта — от корня сайта, раз фрагмент живёт в портфолио;
 // vw в стилях — от ширины кейса (cqw), как было во фрейме
 function fixPaths(s) {
   return s.replace(/(["'(=])(images|media|files)\//g, '$1shh-creative/$2/')
-    .replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (m, a, css) => `<style${a}>${css.replace(/(\d*\.?\d+)vw\b/g, '$1cqw')}</style>`);
+    .replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (m, a, css) => `<style${a}>${sanitizeCss(css.replace(/(\d*\.?\d+)vw\b/g, '$1cqw'))}</style>`);
 }
 
 // Скрипты кейсов слушали прокрутку окна. В портфолио на десктопе
@@ -216,13 +248,14 @@ function fixScripts(html) {
   });
 }
 
-function fontDecl(f, base) {
-  const px = v => (v && v.endsWith('px') ? cq(parseFloat(v), base) : v);
+function fontDecl(f, base, zoom = 1) {
+  const px = v => (v && v.endsWith('px') ? cq(parseFloat(v) * zoom, base) : v);
   let s = `font-family:${f['font-family']};font-size:${px(f['font-size'])};font-weight:${f['font-weight']};` +
     `line-height:${px(f['line-height'])};color:${f['color']};text-align:${f['text-align']};`;
   if (f['font-style'] && f['font-style'] !== 'normal') s += `font-style:${f['font-style']};`;
   if (f['letter-spacing'] && f['letter-spacing'] !== 'normal' && f['letter-spacing'] !== '0px') s += `letter-spacing:${px(f['letter-spacing'])};`;
   if (f['text-transform'] && f['text-transform'] !== 'none') s += `text-transform:${f['text-transform']};`;
+  if (f['white-space'] && f['white-space'] !== 'normal') s += `white-space:${f['white-space']};`;
   return s;
 }
 
@@ -256,7 +289,7 @@ function elementCss(sel, e, base) {
     if (e.blend) ist.push(`mix-blend-mode:${e.blend}`);
     if (ist.length) r.push(`${sel} img{${ist.join(';')}}`);
   }
-  if (e.type === 'text') r.push(`${sel} .tz-txt{${fontDecl(e.font, base)}}`);
+  if (e.type === 'text') r.push(`${sel} .tz-txt{${fontDecl(e.font, base, e.zoom || 1)}}`);
   if (e.type === 'shape') r.push(`${sel} .tz-shape{${shapeDecl(e.box)}}`);
   if (e.type === 'video' && e.radius && e.radius !== '0px') r.push(`${sel} video{border-radius:${e.radius}}`);
   return r.join('\n');
@@ -264,7 +297,12 @@ function elementCss(sel, e, base) {
 
 function elementBody(e) {
   switch (e.type) {
-    case 'image': return `<img src="${fixPaths('"' + e.src).slice(1)}" alt="" loading="lazy" decoding="async" />${e.extra || ''}`;
+    case 'image': {
+      const src = fixPaths('"' + e.src).slice(1);
+      // data-original — как у Тильды: по нему наши скрипты узнают картинку
+      // (например, подменяют логотип по языку)
+      return `<img src="${src}" data-original="${src}" alt="" loading="lazy" decoding="async" />${e.extra || ''}`;
+    }
     case 'text': return `<div class="tz-txt">${fixPaths(e.html)}</div>`;
     case 'shape': return `<div class="tz-shape"></div>`;
     case 'video': return `<video src="${fixPaths('"' + e.mp4).slice(1)}" muted loop playsinline preload="none"></video>`;
@@ -307,7 +345,11 @@ function buildArtboard(rec, cap, warn) {
     // написанные под разметку Тильды (#recNNN .tn-elem.pf-reveal и т.п.),
     // находили элементы и здесь; стилей Тильды во фрагменте нет
     const cls = ['tz-el', `tz-${e.type}`, `tz-e-${rec}-${id}`, 'tn-elem', `tn-elem__${rec}${id}`, e.cls].filter(Boolean).join(' ');
-    html.push(`  <div class="${cls}" data-id="${id}"${data.length ? ' ' + data.join(' ') : ''}><div class="tz-w tn-atom">${elementBody(e)}</div></div>`);
+    // у анимированных элементов обёртка ещё и под именем обёртки анимации
+    // Тильды: наши правила и скрипты обращаются к ней (например, подпись в
+    // шапке Тульского региона читает её прозрачность и красит текст)
+    const wcls = (v.d && v.d.anim) || (v.m && v.m.anim) ? 'tz-w tn-atom tn-atom__sbs-anim-wrapper' : 'tz-w tn-atom';
+    html.push(`  <div class="${cls}" data-id="${id}" data-elem-id="${id}" data-elem-type="${e.type}"${data.length ? ' ' + data.join(' ') : ''}><div class="${wcls}">${elementBody(e)}</div></div>`);
   }
   html.push('</div>');
   const cssOut = LAYOUTS.map(L => `${QUERY[L.key]} {\n${css[L.key].join('\n')}\n}`).join('\n');
@@ -323,12 +365,18 @@ function sourceRecords(srcHtml) {
     const a = m.index, b = i + 1 < starts.length ? starts[i + 1].index : endAll;
     let seg = srcHtml.slice(a, b);
     const isZero = /data-record-type="396"/.test(seg.slice(0, 400));
-    if (!isZero) {
-      // лишние закрывающие div в хвосте последнего блока — от обёрток страницы
-      let bal = (seg.match(/<div\b/g) || []).length - (seg.match(/<\/div>/g) || []).length;
-      while (bal < 0) { seg = seg.replace(/<\/div>\s*$/, ''); bal++; }
+    // где закрывается сам блок; всё, что после него и до следующего, — наши
+    // вставки между блоками (секции, вставленные прямо в страницу)
+    let depth = 0, close = seg.length;
+    for (const t of seg.matchAll(/<div\b|<\/div>/g)) {
+      depth += t[0] === '<div' ? 1 : -1;
+      if (depth === 0) { close = t.index + t[0].length; break; }
     }
-    return { id: m[1], isZero, rec: m[1].replace(/^rec/, ''), html: seg };
+    let after = seg.slice(close);
+    // лишние закрывающие div в хвосте последнего блока — от обёрток страницы
+    let bal = (after.match(/<div\b/g) || []).length - (after.match(/<\/div>/g) || []).length;
+    while (bal < 0) { after = after.replace(/<\/div>\s*$/, ''); bal++; }
+    return { id: m[1], isZero, rec: m[1].replace(/^rec/, ''), html: seg.slice(0, close), after: after.trim() };
   });
 }
 
@@ -337,10 +385,10 @@ function sourceRecords(srcHtml) {
 function headCss(srcHtml) {
   const head = srcHtml.slice(0, srcHtml.indexOf('<body'));
   const blocks = [...head.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m => m[1]);
-  return blocks.map(css => css
+  return fixPaths(blocks.map(css => sanitizeCss(css
     .replace(/::-webkit-scrollbar[^{]*\{[^}]*\}/g, '')
     .replace(/(^|\})\s*\*\s*\{[^}]*\}/g, '$1')
-  ).join('\n').trim();
+  )).join('\n').trim().replace(/(\d*\.?\d+)vw\b/g, '$1cqw'));
 }
 
 // внешние библиотеки из <head>, кроме скриптов Тильды (они лежат в js/),
@@ -354,18 +402,25 @@ function headLibs(srcHtml) {
     .map(m => `<script src="${LOCAL[m[1]] || m[1]}"></script>`).join('\n');
 }
 
-// свои скрипты после <!--/allrecords--> (не Тильды)
+// свои стили и скрипты после <!--/allrecords--> (не Тильды). Наши стили
+// там всегда с комментариями, минифицированные стили Тильды — без них.
 function tailScripts(srcHtml) {
   const tail = srcHtml.slice(srcHtml.indexOf('<!--/allrecords-->'));
-  return [...tail.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+  const styles = [...tail.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)]
+    .filter(m => /\/\*/.test(m[2]))
+    .map(m => fixPaths(m[0]));
+  const scripts = [...tail.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)]
     .filter(m => !/\bsrc=/.test(m[1] || '') && !/t_onReady|tilda|t396|dataLayer|lazyload/i.test(m[2]))
-    .map(m => fixScripts(m[0])).join('\n');
+    .map(m => fixScripts(fixPaths(m[0])));
+  return styles.concat(scripts).join('\n');
 }
 
 // Шрифты текстов: у портфолио свои, поэтому нужные подключаем во фрагменте.
 const FONT_LINKS = {
   Montserrat: '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" />',
   'PT Sans': '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" />',
+  // своя локальная копия (assets/fonts), её же подключала страница Тильды
+  Mulish: '<link rel="stylesheet" href="shh-creative/css/fonts-mulish.css" />',
 };
 // Raleway кейсы подключают сами (@import в своих стилях) — ровно тем набором
 // начертаний, под который свёрстаны; более полный набор менял бы курсив
@@ -399,6 +454,7 @@ for (const r of sourceRecords(srcHtml)) {
   } else {
     body.push(fixScripts(fixPaths(r.html)));
   }
+  if (r.after) body.push(fixScripts(fixPaths(r.after)));
 }
 const extra = headCss(srcHtml);
 const tail = tailScripts(srcHtml);

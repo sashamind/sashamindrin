@@ -1305,7 +1305,8 @@ html[lang="en"] .pf-tz .lang-ru { display: none !important; }
   height: 100%;
   object-fit: cover;
 }
-.pf-tz .tz-txt { overflow-wrap: break-word; }
+/* слово длиннее рамки текста выходит за неё, а не рвётся — как в Тильде */
+.pf-tz .tz-txt { overflow-wrap: normal; }
 .pf-tz .tz-txt a { color: inherit; }
 @media (max-width: 768px) {
   .pf-tz { margin: 24px -20px -60px; }

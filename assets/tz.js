@@ -241,9 +241,16 @@
     // меняется не только с окном (разворот на весь экран) — следим за ней
     let rt = 0, lastW = 0;
     const onResize = () => { clearTimeout(rt); rt = setTimeout(setup, 150); };
+    // Скрипты кейсов (интерактив, лента и т.п.) пересчитываются по resize
+    // окна — во фрейме ширина кейса и была окном. Здесь ширина кейса меняется
+    // и без окна (разворот на весь экран), поэтому сообщаем им сами.
     const ro = 'ResizeObserver' in window ? new ResizeObserver(() => {
       const w = tz.getBoundingClientRect().width;
-      if (Math.abs(w - lastW) > 0.5) { lastW = w; onResize(); }
+      if (Math.abs(w - lastW) > 0.5) {
+        const first = !lastW;
+        lastW = w; onResize();
+        if (!first) window.dispatchEvent(new Event('resize'));
+      }
     }) : null;
     document.addEventListener('scroll', onScroll, { passive: true, capture: true });
     window.addEventListener('resize', onResize);
