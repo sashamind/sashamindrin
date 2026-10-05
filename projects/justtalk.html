@@ -1,1 +1,42 @@
-<iframe src="shh-creative/page61314195.html" class="project-iframe" frameborder="0"></iframe>
+<style>
+  /* Кейс перенесён из Тильды. Сверху анимация знака, под ней вся
+     айдентика — одна длинная картинка (своя для телефона). Светлое полотно идёт
+     от края до края панели: отрицательные поля гасят её padding. */
+  .pf-jt {
+    margin: 40px -56px -48px;
+    background: #fafafa;
+    overflow: hidden;
+  }
+  .pf-jt img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+  /* знак по центру над картинкой; размер — доля ширины, как в макете
+     (310 из 1200) */
+  .pf-jt .jt-lottie {
+    display: block;
+    width: 25.8%;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    padding: 8% 0;
+    box-sizing: content-box;
+  }
+  @media (max-width: 768px) {
+    .pf-jt { margin: 24px -20px -60px; }
+    /* мобильная картинка в макете шире экрана на 10% и сдвинута влево
+       на 16px — края обрезаны так же */
+    .pf-jt img { width: 110%; max-width: none; margin-left: -16px; }
+    .pf-jt .jt-lottie { width: 60%; padding: 12% 0 8%; }
+  }
+</style>
+
+<div class="pf-jt">
+  <lottie-player class="jt-lottie" src="assets/justtalk/lottie.json"
+    background="transparent" speed="1" loop autoplay></lottie-player>
+  <picture>
+    <source media="(max-width: 768px)" srcset="assets/justtalk/identity-mobile.svg" />
+    <img src="assets/justtalk/identity.svg" alt="JustTalk: логотип, знак и айдентика" width="2500" height="4979" />
+  </picture>
+</div>

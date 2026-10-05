@@ -765,6 +765,16 @@ body.case-full .layout {
   margin-bottom: 32px;
 }
 
+/* ссылка в описании (например, на сайт клиента) — тонкое подчёркивание */
+.pd-desc a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s ease;
+}
+.pd-desc a:hover { opacity: 0.6; }
+
 .pd-desc p, .pd-desc div {
   font-size: 12px;
   line-height: 1.8;
