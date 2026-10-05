@@ -73,7 +73,7 @@ window.addEventListener('scroll', () => {
 // карточку обратно в сетку.
 const projectsData = [
   { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2026', tags: ['logos', 'branding', 'motion', 'interactive'],               descEn: '«Ba» is a restaurant built on the model of a Japanese ramen shop — but with Russian soul.<br><br>Task: Create a logo concept for a restaurant:<br><br>shchi in five varieties instead of ramen<br>fermented vegetables instead of tsukemono<br>salted fish instead of sashimi<br>salo instead of wagyu<br>vodka instead of sake', descRu: '«Ба» — ресторан по модели японского рамен-шопа, но с русской душой.<br><br>Задача: Создать концепцию логотипа для заведения:<br><br>вместо рамена — щи (5 видов)<br>вместо цукэмоно — квашения<br>вместо сашими — солёная рыба<br>вместо вагю — сало<br>вместо саке — водка' },
-  { id: 'project-6',  folder: 'nitka',            color: '#1abc9c', titleEn: 'Nitka',             titleRu: 'Нитка',                 year: '2020', tags: ['logos', 'branding', 'motion'],               descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
+  { id: 'project-6',  folder: 'nitka',            color: '#1abc9c', titleEn: 'Nitka',             titleRu: 'Нитка',                 year: '2020', tags: ['logos', 'branding', 'motion'],               descEn: 'Nitka is an author’s project and a big dream about the revival of the Russian tea tradition.<br><br>Task: Create the identity for a tea brand — from the mark and packaging to illustrations and promo animation.', descRu: 'Нитка — авторский проект и большая мечта о возрождении русской чайной традиции.<br><br>Задача: Создать айдентику чайного бренда — от знака и упаковки до иллюстраций и промо-анимации.' },
   { id: 'project-2',  folder: 'tula-marathon', hidden: true,    color: '#e67e22', titleEn: 'Tula Marathon',     titleRu: 'Тульский марафон',      year: '2026', tags: ['logos', 'motion'],                 descEn: 'Logo redesign concept and identity for the Tula Marathon.', descRu: 'Концепция редизайна логотипа и айдентика Тульского марафона.' },
   { id: 'project-3',  folder: 'tula-running-club', hidden: true,color: '#f1c40f', titleEn: 'Tula Running Club', titleRu: 'Тульский беговой клуб', year: '2025', tags: ['logos', 'branding', 'illustration'],descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
   { id: 'project-21', folder: 'puppai',            color: '#7c5cbf', titleEn: 'PuppAI',            titleRu: 'PuppAI',                year: '2026', tags: ['logos', 'branding', 'motion'],     descEn: 'Logo concept for a pet behaviour and health monitoring service.', descRu: 'Концепция логотипа для сервиса мониторинга поведения и здоровья домашних питомцев.' },
@@ -805,7 +805,10 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       const body = document.getElementById('projectBody');
       while (holder.firstChild) body.appendChild(holder.firstChild);
       applyLangSections(body, currentLang);
-      scrollFxCleanup = initScrollFx(body);
+      // кейсы, перенесённые из Тильды, несут свои анимации — их ведёт assets/tz.js
+      const fxOff = initScrollFx(body);
+      const tzOff = window.tzMount ? window.tzMount(body) : null;
+      scrollFxCleanup = (fxOff || tzOff) ? () => { if (fxOff) fxOff(); if (tzOff) tzOff(); } : null;
     }
   } catch {
     // кейс не загрузился — хотя бы название и описание, а не пустая панель
