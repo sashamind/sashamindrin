@@ -416,6 +416,11 @@ ${extra ? '/* свои стили страницы Тильды */\n' + extra : 
 ${body.filter(Boolean).join('\n')}
 </div>
 ${tail}
+
+<!-- Для Go Live (VS Code Live Server): он вставляет свой скрипт перед закрывающим body,
+     а без него — перед каждым закрывающим svg, и тогда обрезает конец файла. Тег ниже
+     принимает вставку: содержимое template браузер не показывает и не выполняет. -->
+<template data-live-server></body></template>
 `;
 if (DRY) console.log(out.slice(0, 3000));
 else fs.writeFileSync(path.join(ROOT, 'projects', `${slug}.html`), out);
