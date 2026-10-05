@@ -13,7 +13,7 @@
 (function () {
   'use strict';
 
-  const BASE = { d: 1200, m: 320 };
+  const BASE = { d: 1200, m: 390 };
 
   // Шаги Тильды → её внутренний вид: задержки (dd/dt) превращаются в
   // отдельные шаги-паузы, сдвиги и поворот — в приращения к прошлому шагу.
@@ -97,7 +97,6 @@
     let scroller = window;
     const offs = [];         // снятие обработчиков
 
-    function layoutOf(el) { return el.closest('.tz-l').classList.contains('tz-d') ? 'd' : 'm'; }
 
     function setup() {
       offs.splice(0).forEach(f => f());
@@ -106,14 +105,20 @@
       scroller = scrollParent(tz);
       // скролл-контейнер тоже мог смениться (десктоп ↔ телефон)
       const width = tz.getBoundingClientRect().width;
-      tz.querySelectorAll('.tz-el[data-sbs], .tz-el[data-fix]').forEach(el => {
-        if (!el.offsetParent) return; // раскладка скрыта
+      // раскладка — по ширине кейса, как в контейнерных запросах стилей
+      const key = width >= 800 ? 'd' : 'm';
+      const K = key.toUpperCase();
+      tz.querySelectorAll('.tz-el').forEach(el => {
         const w = el.querySelector('.tz-w');
-        const k = width / BASE[layoutOf(el)];
+        w.style.opacity = ''; w.style.transform = '';
+        const sbsData = el.dataset['sbs' + K], fixData = el.dataset['fix' + K];
+        if (!sbsData && !fixData) return;
+        if (!el.offsetParent) return; // в этой раскладке элемента нет
+        const k = width / BASE[key];
         const it = { el, w, k };
-        if (el.dataset.fix) it.fix = JSON.parse(el.dataset.fix);
-        if (el.dataset.sbs) {
-          const sbs = JSON.parse(el.dataset.sbs);
+        if (fixData) it.fix = JSON.parse(fixData);
+        if (sbsData) {
+          const sbs = JSON.parse(sbsData);
           it.kind = sbs.event;
           it.sbs = sbs;
           it.steps = parseSteps(sbs.opts, sbs.event);
@@ -270,5 +275,34 @@
     };
   }
 
-  window.tzMount = tzMount;
+  // Скрипты кейсов, написанные под прокрутку окна, конвертер переводит на
+  // эти помощники: на десктопе прокручивается панель, на телефоне — окно.
+  // Подписки снимаются вместе с кейсом (tzMount → очистка).
+  let scrollSubs = [];
+  function caseScroller() {
+    const p = document.getElementById('panelDetail');
+    if (p) {
+      const oy = getComputedStyle(p).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
+    }
+    return null;
+  }
+  window.tzScrollY = function () {
+    const p = caseScroller();
+    return p ? p.scrollTop : (window.scrollY || 0);
+  };
+  window.tzOnScroll = function (fn, opts) {
+    const wrapped = e => fn(e);
+    document.addEventListener('scroll', wrapped, { passive: true, capture: true });
+    scrollSubs.push(wrapped);
+  };
+  function dropScrollSubs() {
+    scrollSubs.forEach(f => document.removeEventListener('scroll', f, { capture: true }));
+    scrollSubs = [];
+  }
+
+  window.tzMount = function (root) {
+    const off = tzMount(root);
+    return () => { if (off) off(); dropScrollSubs(); };
+  };
 })();

@@ -885,7 +885,7 @@ body.page-texts .pd-header .pd-desc {
   animation: pdFadeIn 0.5s ease 0.6s both;
 }
 
-.pd-body p {
+.pd-body p:not(.pf-tz *) {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
   font-size: 15px;
@@ -895,7 +895,7 @@ body.page-texts .pd-header .pd-desc {
   max-width: 560px;
 }
 
-.pd-body p.pd-subhead {
+.pd-body p.pd-subhead:not(.pf-tz *) {
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.8;
@@ -1250,32 +1250,45 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
   color: var(--fg2);
 }
 
-.pd-body img {
+.pd-body img:not(.pf-tz *) {
   width: 100%;
   height: auto;
   display: block;
   margin: 32px 0;
 }
 
-.pd-body lottie-player {
+.pd-body lottie-player:not(.pf-tz *) {
   width: 100%;
   margin: 32px 0;
 }
 
 /* ─── Кейсы, перенесённые из Тильды (_tools/tilda-to-native.mjs) ───
-   Раскладка снята в двух ширинах макета — 1200 и 320 — и задана в cqw,
-   поэтому масштабируется под ширину поля. Какая из двух видна, решает
+   Раскладка снята в двух ширинах — 1200 и 390 (телефон) — и задана в cqw,
+   поэтому масштабируется под ширину поля. Какая из двух действует, решает
    ширина самого кейса: от 800 px — десктопная, уже — мобильная (как было
    и у фрейма). Полотно идёт от края до края панели. */
 .pf-tz {
   container: tz / inline-size;
+  /* как у страниц Тильды: без этого светлый текст на тёмном жирнее */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* элементы, выходящие за края (капля в шапке Ба — 2000 px), раньше
+     обрезал фрейм; clip режет только по горизонтали и не делает блок
+     прокручиваемым */
+  overflow-x: clip;
   margin: 40px -56px -48px;
 }
-.pf-tz .tz-l { display: none; }
-@container tz (min-width: 800px) { .pf-tz .tz-d { display: block; } }
-@container tz (max-width: 799.98px) { .pf-tz .tz-m { display: block; } }
 .pf-tz .tz-ab { position: relative; overflow: hidden; }
-.pf-tz .tz-el { position: absolute; }
+/* Общие правила портфолио для картинок (растянуть и обрезать) и текста
+   кейса сюда не относятся: у перенесённых страниц своя типографика.
+   :where — нулевая специфичность, любые правила самих кейсов сильнее. */
+:where(.pf-tz) img { width: auto; height: auto; object-fit: fill; display: inline; }
+/* Язык — общим правилом, как было в Тильде: скрипты кейсов дописывают
+   двуязычный текст и после того, как портфолио расставило языки */
+html[lang="ru"] .pf-tz .lang-en,
+html[lang="en"] .pf-tz .lang-ru { display: none !important; }
+/* где стоит элемент в каждой раскладке, задают правила во фрагменте */
+.pf-tz .tz-el { position: absolute; display: none; }
 .pf-tz .tz-w { width: 100%; height: 100%; }
 .pf-tz .tz-el img {
   display: block;

@@ -20,6 +20,9 @@ function applyLang(lang) {
   if (iframeEl) {
     try { iframeEl.contentWindow.postMessage({ lang }, '*'); } catch (_) {}
   }
+  // кейсы, перенесённые из Тильды, живут прямо на странице, но их скрипты
+  // по-прежнему ждут смену языка сообщением — шлём его и себе
+  if (document.querySelector('.panel-detail [data-tz]')) window.postMessage({ lang }, location.origin);
 
   document.querySelectorAll('[data-en]').forEach(el => {
     const text = lang === 'en' ? el.dataset.en : el.dataset.ru;
@@ -72,7 +75,7 @@ window.addEventListener('scroll', () => {
 // по-прежнему открывается. Вернуть в список — снять флаг и перенести
 // карточку обратно в сетку.
 const projectsData = [
-  { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2026', tags: ['logos', 'branding', 'motion', 'interactive'],               descEn: '«Ba» is a restaurant built on the model of a Japanese ramen shop — but with Russian soul.<br><br>Task: Create a logo concept for a restaurant:<br><br>shchi in five varieties instead of ramen<br>fermented vegetables instead of tsukemono<br>salted fish instead of sashimi<br>salo instead of wagyu<br>vodka instead of sake', descRu: '«Ба» — ресторан по модели японского рамен-шопа, но с русской душой.<br><br>Задача: Создать концепцию логотипа для заведения:<br><br>вместо рамена — щи (5 видов)<br>вместо цукэмоно — квашения<br>вместо сашими — солёная рыба<br>вместо вагю — сало<br>вместо саке — водка' },
+  { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2026', tags: ['logos', 'branding', 'motion', 'interactive'],               descEn: '«Ba» is a restaurant built on the model of a Japanese ramen shop — but with Russian soul.<br><br>Task: Create a logo concept for a restaurant.', descRu: '«Ба» — ресторан по модели японского рамен-шопа, но с русской душой.<br><br>Задача: Создать концепцию логотипа для заведения.' },
   { id: 'project-6',  folder: 'nitka',            color: '#1abc9c', titleEn: 'Nitka',             titleRu: 'Нитка',                 year: '2020', tags: ['logos', 'branding', 'motion'],               descEn: 'Nitka is an author’s project and a big dream about the revival of the Russian tea tradition.<br><br>Task: Create the identity for a tea brand — from the mark and packaging to illustrations and promo animation.', descRu: 'Нитка — авторский проект и большая мечта о возрождении русской чайной традиции.<br><br>Задача: Создать айдентику чайного бренда — от знака и упаковки до иллюстраций и промо-анимации.' },
   { id: 'project-2',  folder: 'tula-marathon', hidden: true,    color: '#e67e22', titleEn: 'Tula Marathon',     titleRu: 'Тульский марафон',      year: '2026', tags: ['logos', 'motion'],                 descEn: 'Logo redesign concept and identity for the Tula Marathon.', descRu: 'Концепция редизайна логотипа и айдентика Тульского марафона.' },
   { id: 'project-3',  folder: 'tula-running-club', hidden: true,color: '#f1c40f', titleEn: 'Tula Running Club', titleRu: 'Тульский беговой клуб', year: '2025', tags: ['logos', 'branding', 'illustration'],descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
@@ -745,6 +748,11 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
   // промелькнувшая «заглушка» перед ними только сбивала с толку.
   panel.innerHTML = loadingMarkup(currentLang);
   panel.scrollTop = 0;
+  // Lottie прошлого кейса (у перенесённых из Тильды их много, часть по
+  // кругу) продолжали бы крутиться в памяти — гасим те, чьё место исчезло
+  if (window.lottie && lottie.getRegisteredAnimations) {
+    lottie.getRegisteredAnimations().forEach(a => { if (a.wrapper && !a.wrapper.isConnected) a.destroy(); });
+  }
 
   try {
     // no-cache: браузер обязан перепроверить свежесть у сервера, иначе
@@ -805,6 +813,8 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       const body = document.getElementById('projectBody');
       while (holder.firstChild) body.appendChild(holder.firstChild);
       applyLangSections(body, currentLang);
+      await runCaseScripts(body);
+      if (activeProjectId !== id) return;
       // кейсы, перенесённые из Тильды, несут свои анимации — их ведёт assets/tz.js
       const fxOff = initScrollFx(body);
       const tzOff = window.tzMount ? window.tzMount(body) : null;
@@ -814,6 +824,31 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
     // кейс не загрузился — хотя бы название и описание, а не пустая панель
     if (activeProjectId !== id) return;
     panel.innerHTML = projectHeaderMarkup(project, currentLang);
+  }
+}
+
+// Скрипты, вставленные через innerHTML, браузер не выполняет. Кейсы,
+// перенесённые из Тильды, несут свои (Lottie, интерактив), поэтому
+// пересоздаём их по порядку: внешний ждём до загрузки — следующие на него
+// опираются.
+async function runCaseScripts(root) {
+  for (const old of Array.from(root.querySelectorAll('script'))) {
+    const s = document.createElement('script');
+    for (const a of old.attributes) s.setAttribute(a.name, a.value);
+    if (old.src) {
+      // ждём сколько нужно: следующие скрипты без него упадут; потолок —
+      // только на случай, если запрос повиснет совсем
+      await new Promise(res => {
+        s.onload = s.onerror = res;
+        setTimeout(res, 30000);
+        old.replaceWith(s);
+      });
+    } else {
+      // в блоке: const/let верхнего уровня не столкнутся с прошлым запуском,
+      // когда кейс открывают второй раз
+      s.textContent = `{\n${old.textContent}\n}`;
+      old.replaceWith(s);
+    }
   }
 }
 
