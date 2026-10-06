@@ -906,12 +906,39 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
     resetItems();
     cancelAnimationFrame(walkRaf); walkRaf = 0;
     cancelAnimationFrame(breathRaf); breathRaf = 0;
-    if (m === 'walker') { walkT0 = performance.now(); walkRaf = requestAnimationFrame(walkFrame); }
-    else if (m === 'tula') {   // слово собирается из мелких фигур — масштаб на минимум
-      range.value = range.min; scale = parseFloat(range.value); build(); tulaShow(true);
+    // Масштаб у каждого режима свой: «прохожий» и «Тула» — на мелких
+    // фигурах (минимум), «курсор» и «пятнашки» — обычный. Переходит плавно.
+    if (m === 'walker') {
+      tweenScale(range.min);
+      walkT0 = performance.now(); walkRaf = requestAnimationFrame(walkFrame);
     }
-    else if (m === 'slide') slideStart();
-    else queue();
+    else if (m === 'tula') tweenScale(range.min, function () { if (mode === 'tula') tulaShow(true); });
+    else if (m === 'slide') tweenScale(SCALE_DEFAULT, function (moved) { if (mode === 'slide' && !moved) slideStart(); });
+    else tweenScale(SCALE_DEFAULT, function () { if (mode === 'cursor') queue(); });
+  }
+  // Плавная смена масштаба: тот же путь, что при перетаскивании ползунка —
+  // на каждом кадре новое значение и пересборка поля. done(moved) зовётся в
+  // конце; moved = false, если масштаб уже был нужный и ничего не менялось.
+  var SCALE_DEFAULT = parseFloat(range.defaultValue) || 1, tweenRaf = 0;
+  function tweenScale(to, done) {
+    cancelAnimationFrame(tweenRaf); tweenRaf = 0;
+    var from = parseFloat(range.value); to = parseFloat(to);
+    if (Math.abs(from - to) < 0.001 || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var moved = Math.abs(from - to) >= 0.001;
+      if (moved) { range.value = to; scale = to; build(); }
+      if (done) done(moved);
+      return;
+    }
+    var t0 = performance.now(), D = 600;
+    (function step(now) {
+      var k = Math.min(1, (now - t0) / D);
+      var e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      scale = from + (to - from) * e;
+      range.value = scale;
+      build();
+      if (k < 1) tweenRaf = requestAnimationFrame(step);
+      else { tweenRaf = 0; if (done) done(true); }
+    })(t0);
   }
   root.querySelectorAll('.ig-mode').forEach(function (b) {
     b.addEventListener('click', function () { if (b.dataset.mode !== mode) setMode(b.dataset.mode); });
@@ -952,6 +979,7 @@ class='tn-atom__videoiframe' data-mp4video="media/line_2.mp4" data-video-control
   });
   var rebuildT = 0;
   range.addEventListener('input', function () {
+    cancelAnimationFrame(tweenRaf); tweenRaf = 0;   // ползунок взяли рукой — плавный переход уступает
     scale = parseFloat(range.value);
     if (!rebuildT) rebuildT = requestAnimationFrame(function () { rebuildT = 0; build(); });
   });
@@ -1205,8 +1233,11 @@ alt='' imgfield='tn_img_1728024536533'
   .pl-logo svg, .pl-logo img { display: block; width: 100%; height: auto; }
   .pl-row { display: flex; align-items: center; justify-content: center; font-size: clamp(18px, 2.4vw, 34px); line-height: 1.3; letter-spacing: -0.01em; }
   .pl-lead { white-space: nowrap; padding-right: 0.3em; }
-  .pl-words { position: relative; height: 9.1em; margin: -3.9em 0; width: 6.4em; cursor: ns-resize; touch-action: none; }
-  .pl-w { position: absolute; left: 0; top: 3.9em; white-space: nowrap; transition: transform 0.7s cubic-bezier(.45,0,.2,1), opacity 0.7s ease, color 0.7s ease; }
+  /* Слова — барабан, как в таймере iPhone: стоят на цилиндре, центральное
+     смотрит прямо, к краям поворачиваются и уходят вглубь. Положение каждого
+     кадра считает скрипт, поэтому переходов на transform/opacity нет. */
+  .pl-words { position: relative; height: 9.1em; margin: -3.9em 0; width: 6.4em; cursor: ns-resize; touch-action: none; perspective: 22em; perspective-origin: 0 50%; }
+  .pl-w { position: absolute; left: 0; top: 3.9em; white-space: nowrap; transform-origin: 0 50%; backface-visibility: hidden; will-change: transform, opacity; transition: color 0.35s ease; }
   .pl-w.is-on { color: #EF4136; }
   @media (max-width: 640px) {
     .pl-logo { margin: 0 auto 170px; }
@@ -1231,63 +1262,92 @@ alt='' imgfield='tn_img_1728024536533'
   var sec = document.getElementById('pf-place');
   if (!sec) return;
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var LH = 1.3;   // шаг строк в em
+  var LH = 1.3;   // шаг строк у центра, em
+  var ANG = 22;   // шаг барабана, градусов на слово
+  var R = LH / Math.sin(ANG * Math.PI / 180);   // радиус цилиндра, em
+  // Повторный запуск (кейс открыли заново, скрипт отработал дважды) не должен
+  // удваивать список: прошлые слова убираем, прошлый запуск сам остановится
+  var runId = (sec._plRun = (sec._plRun || 0) + 1);
   var lists = [].map.call(sec.querySelectorAll('[data-words]'), function (box) {
+    box.querySelectorAll('.pl-w').forEach(function (w) { w.remove(); });
     var els = box.dataset.words.split('|').map(function (w) {
       var s = document.createElement('span'); s.className = 'pl-w'; s.textContent = w; box.appendChild(s); return s;
     });
-    return { els: els, d: els.map(function () { return 0; }) };
+    return { els: els };
   });
-  var cur = 3;   // начинаем с середины списка, как на эскизе
-  function op(a) { return a === 0 ? 1 : Math.max(0, 0.42 - (a - 1) * 0.13); }
-  function place(first) {
+  var pos = 3, target = 3;   // положение барабана в словах; начинаем с середины
+  var LIM = Math.cos(3.45 * ANG * Math.PI / 180);   // у края круга слово уже погасло
+  function render() {
     lists.forEach(function (L) {
       var n = L.els.length;
       L.els.forEach(function (el, i) {
-        var d = ((i - cur) % n + n + Math.floor(n / 2)) % n - Math.floor(n / 2);   // −3…3
-        if (!first && Math.abs(d - L.d[i]) > 1) {   // слово перескакивает через край — без анимации, из прозрачного
-          el.style.transition = 'none';
-          el.style.opacity = 0; el.style.transform = 'translateY(' + (d + (d > 0 ? 1 : -1)) * LH + 'em)';
-          el.offsetWidth; el.style.transition = '';
-        }
-        L.d[i] = d;
-        el.style.transform = 'translateY(' + d * LH + 'em)';
-        el.style.opacity = op(Math.abs(d));
-        el.classList.toggle('is-on', d === 0);
+        var d = ((i - pos) % n + n) % n; if (d > n / 2) d -= n;   // −n/2…n/2
+        var th = d * ANG, rad = th * Math.PI / 180, c = Math.cos(rad);
+        var vis = Math.abs(th) < 90 ? Math.max(0, (c - LIM) / (1 - LIM)) : 0;
+        el.style.transform = 'translateY(' + (R * Math.sin(rad)).toFixed(4) + 'em) translateZ(' + (R * (c - 1)).toFixed(4) + 'em) rotateX(' + (-th).toFixed(3) + 'deg)';
+        el.style.opacity = (vis * (Math.abs(d) < 0.5 ? 1 : 0.55)).toFixed(3);
+        el.classList.toggle('is-on', Math.abs(d) < 0.5);
       });
     });
   }
-  place(true);
+  // плавный доезд к цели: экспоненциальное сближение, кадр за кадром
+  var raf = 0, lastT = 0, dragging = false;
+  function frame(t) {
+    raf = 0;
+    if (sec._plRun !== runId || !sec.isConnected) return;
+    var dt = lastT ? Math.min(64, t - lastT) : 16; lastT = t;
+    if (!dragging) pos += (target - pos) * (1 - Math.exp(-dt / 140));
+    render();
+    if (dragging || Math.abs(target - pos) > 0.0005) raf = requestAnimationFrame(frame);
+    else { pos = target; render(); lastT = 0; }
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+  sec._plState = function () { return { pos: pos, target: target, dragging: dragging, run: runId, cur: sec._plRun }; };
+  render();
   var timer = 0, seen = false, held = false, resumeT = 0;
-  function tick() { cur++; place(false); }
+  function tick() {
+    if (sec._plRun !== runId || !sec.isConnected) { clearInterval(timer); timer = 0; return; }
+    target = Math.round(target) + 1; kick();
+  }
   function run() {
     var on = seen && !held && !still;
     if (on && !timer) timer = setInterval(tick, 1800);
     if (!on && timer) { clearInterval(timer); timer = 0; }
   }
   new IntersectionObserver(function (es) { seen = es[0].isIntersecting; run(); }).observe(sec);
-  // навели на слова — смена останавливается, слова листаются колесом / пальцем
-  function step(dir) { cur += dir; place(false); }
   function hold(on) { clearTimeout(resumeT); held = on; run(); }
   sec.querySelectorAll('.pl-words').forEach(function (box) {
-    var acc = 0, last = 0;
+    var snapT = 0;
     box.addEventListener('mouseenter', function () { hold(true); });
     box.addEventListener('mouseleave', function () { hold(false); });
+    // колесо и трекпад крутят барабан напрямую (≈60px на слово), а когда
+    // прокрутка стихнет — он доезжает до ближайшего слова
     box.addEventListener('wheel', function (e) {
       e.preventDefault();
-      acc += e.deltaY;
-      var now = performance.now();
-      if (Math.abs(acc) >= 40 && now - last > 160) { step(acc > 0 ? 1 : -1); acc = 0; last = now; }
+      var dy = e.deltaMode === 1 ? e.deltaY * 20 : e.deltaY;
+      target += dy / 60; pos += (target - pos) * 0.5; kick();
+      clearTimeout(snapT);
+      snapT = setTimeout(function () { target = Math.round(target); kick(); }, 120);
     }, { passive: false });
-    var ty = null;
-    box.addEventListener('touchstart', function (e) { hold(true); ty = e.touches[0].clientY; }, { passive: true });
+    // палец: барабан идёт за пальцем, после отпускания — по инерции и встаёт на слово
+    var ty = 0, p0 = 0, v = 0, lt = 0, ly = 0;
+    function lineH() { return parseFloat(getComputedStyle(box).fontSize) * LH; }
+    box.addEventListener('touchstart', function (e) {
+      hold(true); dragging = true; ty = ly = e.touches[0].clientY; p0 = pos; v = 0; lt = performance.now(); kick();
+    }, { passive: true });
     box.addEventListener('touchmove', function (e) {
-      if (ty === null) return;
+      if (!dragging) return;
       e.preventDefault();
-      var dy = ty - e.touches[0].clientY, h = parseFloat(getComputedStyle(box).fontSize) * LH;
-      if (Math.abs(dy) >= h) { step(dy > 0 ? 1 : -1); ty = e.touches[0].clientY; }
+      var y = e.touches[0].clientY, now = performance.now(), h = lineH();
+      pos = target = p0 + (ty - y) / h;
+      if (now > lt) v = 0.8 * ((ly - y) / h / (now - lt)) + 0.2 * v;   // слов в мс
+      ly = y; lt = now; kick();
     }, { passive: false });
-    box.addEventListener('touchend', function () { ty = null; resumeT = setTimeout(function () { hold(false); }, 3000); });
+    box.addEventListener('touchend', function () {
+      dragging = false;
+      target = Math.round(pos + v * 220); kick();
+      resumeT = setTimeout(function () { hold(false); }, 3000);
+    });
   });
   // как в «Паттернах»: блок плавно проявляется на подходе и гаснет на уходе
   function smooth(a, b, x) { x = Math.max(0, Math.min(1, (x - a) / (b - a))); return x * x * (3 - 2 * x); }

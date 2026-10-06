@@ -833,6 +833,10 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
 // опираются.
 async function runCaseScripts(root) {
   for (const old of Array.from(root.querySelectorAll('script'))) {
+    // пока ждали внешний скрипт, кейс могли сменить: тогда остальные не
+    // запускаем — иначе они отработали бы второй раз на разметке нового
+    // кейса (скрипты ищут элементы по id во всём документе)
+    if (!root.isConnected) return;
     const s = document.createElement('script');
     for (const a of old.attributes) s.setAttribute(a.name, a.value);
     if (old.src) {

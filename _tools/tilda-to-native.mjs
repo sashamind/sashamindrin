@@ -127,6 +127,9 @@ const CAPTURE = String.raw`(async () => {
         // свои классы элемента (не Тильды) — на них завязаны наши стили и
         // скрипты, например pf-reveal (проявление при прокрутке)
         cls: [...el.classList].filter(c => !/^(t396__|tn-elem|tn-|t-)/.test(c)).join(' '),
+        // свои data-атрибуты (например, data-letter у букв алфавита — по нему
+        // скрипт показывает города); служебные атрибуты Тильды не нужны
+        attrs: [...el.attributes].filter(a => /^data-/.test(a.name) && !/^data-(field|animate|elem-|record|tilda|sbs)/.test(a.name)).map(a => [a.name, a.value]),
         // прозрачность — только та, что задаёт сама Тильда (на атоме). Прозрачность
         // самого элемента — это либо временное anim-hidden, либо наши стили
         // (палитра, алфавит, pf-reveal…), а они переносятся во фрагмент и
@@ -213,8 +216,11 @@ function scaleInlinePx(html, base) {
 const GEOMETRY = /^(top|left|right|bottom|width|height|min-width|min-height|max-width|max-height|display|position|margin|margin-top|margin-bottom|margin-left|margin-right|z-index)$/i;
 function sanitizeCss(css) {
   return css.replace(/([^{}]+)\{([^{}]*)\}/g, (m, sel, body) => {
-    if (/^\s*@/.test(sel)) return m;
-    const sels = sel.split(',');
+    // комментарий перед правилом попадает в «селектор» — не учитываем его
+    // (в нём бывают запятые, и проверка селекторов ломалась)
+    const bare = sel.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+    if (!bare || /^@/.test(bare)) return m;
+    const sels = bare.split(',');
     const onElem = sels.every(x => {
       const last = x.trim().split(/[\s>+~]+/).pop() || '';
       return /tn-elem|t396__elem|\[data-elem-id/.test(last);
@@ -277,15 +283,25 @@ function elementCss(sel, e, base) {
   st.push(`z-index:${e.z || 'auto'}`);
   st.push(`mix-blend-mode:${e.blend || 'normal'}`);
   r.push(`${sel}{${st.join(';')}}`);
-  const inner = [];
-  if (e.opacity !== '1') inner.push(`opacity:${e.opacity}`);
-  if (e.rotate) inner.push(`transform:${e.rotate}`);
-  if (inner.length) r.push(`${sel}>.tz-w{${inner.join(';')}}`);
+  // Постоянные поворот и прозрачность атома — на содержимое, а не на
+  // обёртку .tz-w: обёрткой управляет анимация (tz.js пишет ей transform и
+  // opacity) и затирала бы их — так у Тильды атом и обёртка анимации раздельны
+  // Прозрачность: у анимированных — на содержимом (обёртку ведёт tz.js), у
+  // остальных — на обёртке, но с нулевым весом (:where), чтобы наши же
+  // правила для .tn-atom (подпись городов прячется и включается классом)
+  // её перебивали, а не наоборот
+  if (e.opacity !== '1') {
+    if (e.anim) r.push(`${sel}>.tz-w>*{opacity:${e.opacity}}`);
+    else r.push(`:where(${sel}>.tz-w){opacity:${e.opacity}}`);
+  }
+  if (e.rotate && e.type !== 'image') r.push(`${sel}>.tz-w>*{transform:${e.rotate}}`);
   if (e.type === 'image') {
     const ist = [];
     if (e.radius && e.radius !== '0px') ist.push(`border-radius:${e.radius}`);
     if (e.filter && e.filter !== 'none') ist.push(`filter:${e.filter}`);
-    if (e.imgTransform) ist.push(`transform:${e.imgTransform}`);
+    // поворот атома и собственная трансформация картинки — одной цепочкой
+    const tr = [e.rotate, e.imgTransform].filter(Boolean).join(' ');
+    if (tr) ist.push(`transform:${tr}`);
     if (e.blend) ist.push(`mix-blend-mode:${e.blend}`);
     if (ist.length) r.push(`${sel} img{${ist.join(';')}}`);
   }
@@ -349,7 +365,8 @@ function buildArtboard(rec, cap, warn) {
     // Тильды: наши правила и скрипты обращаются к ней (например, подпись в
     // шапке Тульского региона читает её прозрачность и красит текст)
     const wcls = (v.d && v.d.anim) || (v.m && v.m.anim) ? 'tz-w tn-atom tn-atom__sbs-anim-wrapper' : 'tz-w tn-atom';
-    html.push(`  <div class="${cls}" data-id="${id}" data-elem-id="${id}" data-elem-type="${e.type}"${data.length ? ' ' + data.join(' ') : ''}><div class="${wcls}">${elementBody(e)}</div></div>`);
+    const own = (e.attrs || []).map(([n, v]) => ` ${n}="${String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`).join('');
+    html.push(`  <div class="${cls}" data-id="${id}" data-elem-id="${id}" data-elem-type="${e.type}"${own}${data.length ? ' ' + data.join(' ') : ''}><div class="${wcls}">${elementBody(e)}</div></div>`);
   }
   html.push('</div>');
   const cssOut = LAYOUTS.map(L => `${QUERY[L.key]} {\n${css[L.key].join('\n')}\n}`).join('\n');
@@ -399,6 +416,9 @@ function headLibs(srcHtml) {
   // успевали запуститься раньше библиотеки и падали
   const LOCAL = { 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js': 'assets/vendor/lottie-5.12.2.min.js' };
   return [...head.matchAll(/<script[^>]*\bsrc="(https?:[^"]+)"[^>]*><\/script>/g)]
+    // служебные скрипты Тильды с её CDN (fallback и т.п.) не нужны, а их
+    // загрузку портфолио ждало бы перед запуском наших скриптов
+    .filter(m => !/tildacdn|tilda\.(ws|cc)/i.test(m[1]))
     .map(m => `<script src="${LOCAL[m[1]] || m[1]}"></script>`).join('\n');
 }
 
