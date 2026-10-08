@@ -11,6 +11,13 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="style.css?v=20261008-1" />
   <style>
+    /* тонкое начертание только для цифр 404 — в основном Inter его нет */
+    @font-face {
+      font-family: 'Inter Thin404';
+      src: url('assets/fonts/Inter-ExtraLight-latin.woff2') format('woff2');
+      font-weight: 200;
+      font-display: swap;
+    }
     .nf {
       min-height: calc(100vh - 160px);
       display: flex;
@@ -20,10 +27,10 @@
       text-align: center;
       padding: 40px 20px;
     }
-    .nf .pd-guy { width: 52px; margin-bottom: 28px; }
+    .nf .pd-guy { width: 42px; margin-bottom: 28px; }
     .nf-code {
-      font-family: 'Inter', sans-serif;
-      font-weight: 300;
+      font-family: 'Inter Thin404', 'Inter', sans-serif;
+      font-weight: 200;
       font-size: clamp(72px, 14vw, 160px);
       line-height: 1;
       letter-spacing: -0.04em;
@@ -76,7 +83,7 @@
       <path class="g-eye" /><path class="g-eye" />
       <path class="g-body" />
     </svg>
-    <div class="nf-code">404</div>
+    <div class="nf-code">4<span class="nf-zero">0</span>4</div>
     <p class="nf-text" data-en="There’s no such page. Maybe it moved — or never existed." data-ru="Такой страницы нет. Может, переехала, а может, её и не было.">There’s no such page. Maybe it moved — or never existed.</p>
     <a class="nf-link" href="index.html" data-en="← to projects" data-ru="← к проектам">← to projects</a>
   </main>
@@ -91,6 +98,21 @@
     // чувачок с главной: оглядывается, ищет потерявшуюся страницу,
     // потом следит за курсором
     if (typeof mountGuy === 'function') mountGuy(document.querySelector('.nf .pd-guy'));
+    // чувачок стоит ровно над нулём: центр его тела — по центру «0»
+    (function () {
+      var guy = document.querySelector('.nf .pd-guy'), zero = document.querySelector('.nf-zero');
+      var body = guy && guy.querySelector('.g-body');
+      if (!guy || !zero || !body) return;
+      function place() {
+        guy.style.transform = '';
+        var z = zero.getBoundingClientRect(), b = body.getBoundingClientRect();
+        if (!b.width) return;
+        guy.style.transform = 'translateX(' + ((z.left + z.width / 2) - (b.left + b.width / 2)).toFixed(1) + 'px)';
+      }
+      place();
+      window.addEventListener('resize', place);
+      if (document.fonts) document.fonts.ready.then(place);
+    })();
   </script>
 </body>
 </html>
