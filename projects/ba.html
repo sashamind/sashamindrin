@@ -2614,7 +2614,26 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 })();
 </script>
 </div> 
+<style>
+  /* ссылка на брендбук — в правом нижнем углу финального серого блока */
+  .pf-tz .ba-book {
+    position: absolute; right: 40px; bottom: 32px; z-index: 5;
+    font-family: 'Raleway', sans-serif; font-size: 12px; letter-spacing: 0.06em;
+    color: #111111; text-decoration: none;
+  }
+  .pf-tz .ba-book-in {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding-bottom: 5px; border-bottom: 1px solid rgba(17, 17, 17, 0.25);
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .pf-tz .ba-book:hover .ba-book-in { color: #e42322; border-color: #e42322; }
+  .pf-tz .ba-book-arrow { width: 11px; height: 13px; flex: none; }
+  .pf-tz .ba-book-arrow path { stroke: currentColor; stroke-width: 1.2; fill: none; vector-effect: non-scaling-stroke; }
+  .pf-tz .ba-book-meta { opacity: 0.5; }
+  @media (max-width: 768px) { .pf-tz .ba-book { right: 20px; bottom: 24px; } }
+</style>
 <div class="tz-ab" id="rec1167986431" data-ab="1167986431">
+  <!-- ссылка на брендбук — в правом нижнем углу финального серого блока --><a class="ba-book" href="assets/projects/ba/Ba_Brandbook.pdf" download="Ba_Brandbook.pdf"><span class="ba-book-in"><svg class="ba-book-arrow" viewBox="0 0 12 14" aria-hidden="true"><path d="M6 1v11M1.5 7.5 6 12l4.5-4.5"/></svg><span class="lang-ru">Скачать брендбук</span><span class="lang-en">Download the brand book</span> <span class="ba-book-meta"><span class="lang-ru">PDF, 2,4 МБ</span><span class="lang-en">PDF, 2.4 MB</span></span></span></a>
   <div class="tz-el tz-shape tz-e-1167986431-1752699825421 tn-elem tn-elem__11679864311752699825421" data-id="1752699825421"><div class="tz-w tn-atom"><div class="tz-shape"></div></div></div>
   <div class="tz-el tz-html tz-e-1167986431-1762629436013 tn-elem tn-elem__11679864311762629436013" data-id="1762629436013"><div class="tz-w tn-atom"><!-- Lottie for Tilda Zero Block: вставьте этот HTML в HTML-блок --> <div id="lottie-container" style="position:absolute;left:50%;top:50%;width:600px;height:600px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:visible;pointer-events:none;"> <!-- Контейнер анимации. Меняйте размеры контейнера при необходимости --> <div style="position:relative;flex:none;"><div id="lottie"></div><!-- финальная фраза под неваляшкой: вне потока, чтобы не сдвигать саму неваляшку с центра --><p class="ba-thanks ba-fx" style="position:absolute;top:100%;left:-200px;right:-200px;margin:14px 0 0;text-align:center;font-family:'Raleway',sans-serif;font-size:13px;font-weight:400;letter-spacing:0.06em;line-height:1.5;color:#111111;"><span class="lang-ru">Спасибо за&nbsp;просмотр!</span><span class="lang-en">Thanks for&nbsp;watching!</span></p></div> </div> <!-- Подключаем lottie-web (CDN) -->  <script>(function() {var lottiePath="shh-creative/media/ba_nevalyashka_floor.json";function initLottie() {var container=document.getElementById('lottie');if(!container) return;var anim=lottie.loadAnimation({container:container,renderer:'svg',loop:true,autoplay:true,path:lottiePath});};if(document.readyState==='loading') {document.addEventListener('DOMContentLoaded',initLottie);} else {initLottie();}})();</script></div></div>
 </div>
