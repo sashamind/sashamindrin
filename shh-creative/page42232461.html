@@ -31,6 +31,18 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><style
   @media screen and (max-width: 479px) {
     #rec682672897 .tn-elem[data-elem-type="text"] .tn-atom { font-size: 11px !important; }
   }
+  /* Нижний градиент закреплён у края экрана, но при быстрой прокрутке
+     отстаёт на кадр-другой (и ещё округление), и под ним проскакивает
+     картинка. Под градиентом — сплошная подложка цвета фона высотой в экран:
+     пока градиент закреплён, она ниже края панели и не видна, а отставание
+     закрывает. Лишнее обрезает артборд. */
+  #rec682672897 [data-elem-id="1702889601881"] .tn-atom,
+  #rec682672897 [data-id="1702889601881"] .tz-shape { position: relative; overflow: visible; }
+  #rec682672897 [data-elem-id="1702889601881"] .tn-atom::after,
+  #rec682672897 [data-id="1702889601881"] .tz-shape::after {
+    content: ''; position: absolute; left: 0; right: 0; top: calc(100% - 1px); height: 100vh;
+    background: #0a0a0a; pointer-events: none;
+  }
 </style>
 </head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="2370207" data-tilda-page-id="42232461" data-tilda-page-alias="nitka_project" data-tilda-formskey="c206df1d80c51cb51cf7830b32ea34b0" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU">
 <style id="pf-video-blend">

@@ -185,6 +185,18 @@
   @media screen and (max-width: 479px) {
     #rec682672897 .tn-elem[data-elem-type="text"] .tn-atom { font-size: 11px !important; }
   }
+  /* Нижний градиент закреплён у края экрана, но при быстрой прокрутке
+     отстаёт на кадр-другой (и ещё округление), и под ним проскакивает
+     картинка. Под градиентом — сплошная подложка цвета фона высотой в экран:
+     пока градиент закреплён, она ниже края панели и не видна, а отставание
+     закрывает. Лишнее обрезает артборд. */
+  #rec682672897 [data-elem-id="1702889601881"] .tn-atom,
+  #rec682672897 [data-id="1702889601881"] .tz-shape { position: relative; overflow: visible; }
+  #rec682672897 [data-elem-id="1702889601881"] .tn-atom::after,
+  #rec682672897 [data-id="1702889601881"] .tz-shape::after {
+    content: ''; position: absolute; left: 0; right: 0; top: calc(100% - 1px); height: 100vh;
+    background: #0a0a0a; pointer-events: none;
+  }
 </style>
 <div class="pf-tz" data-tz>
 <div class="tz-ab" id="rec682672897" data-ab="682672897">
