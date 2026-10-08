@@ -94,6 +94,7 @@
     const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     const canHover = window.matchMedia && matchMedia('(hover: hover)').matches;
     let items = [];          // элементы видимой раскладки с анимацией
+    let followers = [];      // элементы, повторяющие прозрачность другого
     let scroller = window;
     const offs = [];         // снятие обработчиков
 
@@ -108,9 +109,19 @@
       // раскладка — по ширине кейса, как в контейнерных запросах стилей
       const key = width >= 800 ? 'd' : 'm';
       const K = key.toUpperCase();
+      followers = [];
       tz.querySelectorAll('.tz-el').forEach(el => {
         const w = el.querySelector('.tz-w');
         w.style.opacity = ''; w.style.transform = '';
+        // data-tz-follow-d / -m="<id>": элемент проявляется и гаснет ровно
+        // вместе с другим (например, подпись под анимацией), а не по своей
+        // высоте на странице — собственная анимация в этой раскладке не нужна
+        const lead = el.dataset['tzFollow' + K];
+        if (lead && el.offsetParent && !reduce) {
+          const leader = el.closest('.tz-ab').querySelector(`.tz-el[data-id="${lead}"] > .tz-w`);
+          // своя прозрачность элемента (например, приглушённый слой) сохраняется
+          if (leader) { followers.push({ w, leader, base: parseFloat(getComputedStyle(w).opacity) || 0 }); return; }
+        }
         const sbsData = el.dataset['sbs' + K], fixData = el.dataset['fix' + K];
         if (!sbsData && !fixData) return;
         if (!el.offsetParent) return; // в этой раскладке элемента нет
@@ -122,6 +133,9 @@
           it.kind = sbs.event;
           it.sbs = sbs;
           it.steps = parseSteps(sbs.opts, sbs.event);
+          // z — растяжение раскладки Тильдой (upscale=window): сдвиги и
+          // длины шагов заданы в её исходных пикселях и растягиваются вместе с ней
+          it.k = k * (sbs.z || 1);
         }
         if (reduce) { w.style.opacity = ''; w.style.transform = ''; return; }
         if (it.kind === 'hover') setupHover(it);
@@ -196,6 +210,10 @@
         }
         if (it.kind === 'scroll') scrollStep(it, st, vh, ty);
         else if (it.fix) it.w.style.transform = ty ? `translateY(${ty.toFixed(2)}px)` : '';
+      });
+      followers.forEach(f => {
+        const o = f.leader.style.opacity;
+        f.w.style.opacity = o === '' ? '' : String(f.base * parseFloat(o));
       });
     }
 

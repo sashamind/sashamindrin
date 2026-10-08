@@ -78,13 +78,18 @@ const CAPTURE = String.raw`(async () => {
       opts = opts || el.getAttribute('data-animate-sbs-opts');
     }
     if (!opts) return null;
+    // мобильная раскладка может переопределять и остальные поля (старт и т.п.)
+    const field = k => {
+      if (res !== 1200) for (const r of [320, 480, 640, 960]) { const v = el.getAttribute('data-animate-sbs-' + k + '-res-' + r); if (v != null) return v; }
+      return el.getAttribute('data-animate-sbs-' + k);
+    };
     return {
       event: ev,
       opts: JSON.parse(opts.replace(/'/g, '"')),
-      trg: parseFloat(el.getAttribute('data-animate-sbs-trg')),
-      trgofst: parseInt(el.getAttribute('data-animate-sbs-trgofst'), 10) || 0,
-      trgels: el.getAttribute('data-animate-sbs-trgels') || '',
-      loop: el.getAttribute('data-animate-sbs-loop') || '',
+      trg: parseFloat(field('trg')),
+      trgofst: parseInt(field('trgofst'), 10) || 0,
+      trgels: field('trgels') || '',
+      loop: field('loop') || '',
     };
   }
   const pick = (cs, props) => Object.fromEntries(props.map(p => [p, cs.getPropertyValue(p)]));
@@ -138,7 +143,7 @@ const CAPTURE = String.raw`(async () => {
         blend: cs.mixBlendMode !== 'normal' ? cs.mixBlendMode : (acs && acs.mixBlendMode !== 'normal' ? acs.mixBlendMode : ''),
         rotate: acs && acs.transform !== 'none' ? acs.transform : '',
         href: atom && atom.tagName === 'A' ? atom.getAttribute('href') : '',
-        anim: animOpts(el),
+        anim: (a => (a && zoom !== 1 ? Object.assign(a, { z: +zoom.toFixed(4) }) : a))(animOpts(el)),
         fix: el.getAttribute('data-animate-fix') ? { trg: parseFloat(el.getAttribute('data-animate-fix')) || 0, dist: parseInt(el.getAttribute('data-animate-fix-dist'), 10) || 0, trgofst: parseInt(el.getAttribute('data-animate-fix-trgofst'), 10) || 0 } : null,
       };
       if (el.getAttribute('data-animate-style')) abInfo.warn.push('appear-анимация у ' + id + ': ' + el.getAttribute('data-animate-style'));
