@@ -27,7 +27,7 @@
       text-align: center;
       padding: 40px 20px;
     }
-    .nf .pd-guy { width: 42px; margin-bottom: 28px; }
+    .nf .pd-guy { width: 38px; margin-bottom: 28px; }
     .nf-code {
       font-family: 'Inter Thin404', 'Inter', sans-serif;
       font-weight: 200;
@@ -36,6 +36,15 @@
       letter-spacing: -0.04em;
       color: var(--fg);
     }
+    /* наведение на 404: цифры чуть хаотично сдвигаются и поворачиваются */
+    .nf-code { cursor: default; -webkit-tap-highlight-color: transparent; }
+    .nf-d {
+      display: inline-block;
+      transition: transform 0.45s cubic-bezier(.34, 1.56, .64, 1);
+    }
+    @media (prefers-reduced-motion: reduce) { .nf-d { transition: none; } }
+    /* на телефоне 404 крупнее — почти во всю ширину */
+    @media (max-width: 600px) { .nf-code { font-size: 42vw; } }
     .nf-text {
       margin-top: 18px;
       font-family: 'Inter', sans-serif;
@@ -83,7 +92,7 @@
       <path class="g-eye" /><path class="g-eye" />
       <path class="g-body" />
     </svg>
-    <div class="nf-code">4<span class="nf-zero">0</span>4</div>
+    <div class="nf-code"><span class="nf-d">4</span><span class="nf-d nf-zero">0</span><span class="nf-d">4</span></div>
     <p class="nf-text" data-en="There’s no such page. Maybe it moved — or never existed." data-ru="Такой страницы нет. Может, переехала, а может, её и не было.">There’s no such page. Maybe it moved — or never existed.</p>
     <a class="nf-link" href="index.html" data-en="← to projects" data-ru="← к проектам">← to projects</a>
   </main>
@@ -98,6 +107,31 @@
     // чувачок с главной: оглядывается, ищет потерявшуюся страницу,
     // потом следит за курсором
     if (typeof mountGuy === 'function') mountGuy(document.querySelector('.nf .pd-guy'));
+    // 404 «разбегается» под курсором: каждая цифра — случайный сдвиг и
+    // поворот; пока курсор двигается по цифрам, раз в ~0.3 с новый разброс.
+    // На тач-экране тап встряхивает цифры, через секунду они встают на место.
+    (function () {
+      var code = document.querySelector('.nf-code');
+      if (!code || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var digits = code.querySelectorAll('.nf-d'), last = 0, backT = 0;
+      function rnd(a) { return (Math.random() * 2 - 1) * a; }
+      function shake() {
+        var em = parseFloat(getComputedStyle(code).fontSize);
+        digits.forEach(function (d) {
+          d.style.transform = 'translate(' + rnd(em * 0.05).toFixed(1) + 'px,' + rnd(em * 0.07).toFixed(1) + 'px) rotate(' + rnd(9).toFixed(1) + 'deg)';
+        });
+        last = performance.now();
+      }
+      function reset() { digits.forEach(function (d) { d.style.transform = ''; }); }
+      code.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') shake(); });
+      code.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' && performance.now() - last > 300) shake(); });
+      code.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') reset(); });
+      code.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'mouse') return;
+        shake(); clearTimeout(backT); backT = setTimeout(reset, 1000);
+      });
+    })();
+
     // чувачок стоит ровно над нулём: центр его тела — по центру «0»
     (function () {
       var guy = document.querySelector('.nf .pd-guy'), zero = document.querySelector('.nf-zero');
@@ -105,7 +139,10 @@
       if (!guy || !zero || !body) return;
       function place() {
         guy.style.transform = '';
+        // положение нуля без его сдвига от «разбегания»
+        var zt = zero.style.transform; zero.style.transform = '';
         var z = zero.getBoundingClientRect(), b = body.getBoundingClientRect();
+        zero.style.transform = zt;
         if (!b.width) return;
         guy.style.transform = 'translateX(' + ((z.left + z.width / 2) - (b.left + b.width / 2)).toFixed(1) + 'px)';
       }
