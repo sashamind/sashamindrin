@@ -20,7 +20,7 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="style.css?v=20261012-3" />
+  <link rel="stylesheet" href="style.css?v=20261012-5" />
   <style>
     .about-wrap {
       max-width: 640px;
@@ -102,8 +102,48 @@
       padding-bottom: 4px;
       transition: border-color 0.2s ease;
     }
-    .about-cta a:hover { border-bottom-color: var(--fg); }
+    .about-cta a { position: relative; }
+    /* яркая линия не проявляется, а рисуется слева направо поверх тусклой */
+    .about-cta a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.5px;
+      height: 0.5px;
+      background-color: var(--fg);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.35s ease;
+    }
+    .about-cta a:hover::after { transform: scaleX(1); }
     html[lang="ru"] .about-cta .cta-tg { order: -1; }
+
+    /* призыв написать — с воздухом сверху и снизу */
+    .about-wrap .about-lead { margin: 64px 0 32px; }
+    .about-wrap .about-cta { margin-bottom: 64px; }
+
+    /* навыки и инструменты свёрнуты: раскрываются по клику на строку */
+    .about-more summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg2);
+      transition: color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .about-more summary::-webkit-details-marker { display: none; }
+    .about-more summary::after { content: '+'; font-size: 14px; letter-spacing: 0; }
+    .about-more[open] summary::after { content: '−'; }
+    .about-more summary:hover { color: var(--fg); }
+    .about-more[open] summary { margin-bottom: 32px; }
+    .about-wrap .about-more-gap { margin-top: 32px; }
   </style>
 </head>
 <body class="dark">
@@ -155,6 +195,8 @@
 
       <hr class="about-divider" />
 
+      <details class="about-more">
+      <summary data-en="skills and tools" data-ru="навыки и инструменты">skills and tools</summary>
       <p class="section-label" data-en="skills" data-ru="навыки">skills</p>
       <ul class="skills-list">
         <li data-en="brand identity" data-ru="айдентика">brand identity</li>
@@ -169,9 +211,7 @@
         <li data-en="art direction" data-ru="арт-дирекшн">art direction</li>
       </ul>
 
-      <hr class="about-divider" />
-
-      <p class="section-label" data-en="tools" data-ru="инструменты">tools</p>
+      <p class="section-label about-more-gap" data-en="tools" data-ru="инструменты">tools</p>
       <ul class="skills-list">
         <li>Figma</li>
         <li>Adobe Illustrator</li>
@@ -180,6 +220,7 @@
         <li>Blender</li>
         <li>Photoshop</li>
       </ul>
+      </details>
     </div>
   </main>
 
@@ -188,6 +229,6 @@
     <span class="footer-copy">© 2026 Sasha Mindrin</span>
   </footer>
 
-  <script src="main.js?v=20261012-3"></script>
+  <script src="main.js?v=20261012-5"></script>
 </body>
 </html>

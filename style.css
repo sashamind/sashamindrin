@@ -1022,12 +1022,12 @@ body.page-texts .pd-header .pd-desc {
 /* Призыв в конце кейса */
 .pd-cta {
   max-width: 560px;
-  margin: 96px auto 0;
-  padding: 0 20px 120px;
+  margin: 150px auto 0;
+  padding: 0 20px 170px;
   text-align: center;
 }
 .pd-cta-text {
-  margin: 0 0 28px;
+  margin: 0 0 40px;
   font-family: 'Inter Light', 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 300;
@@ -1044,13 +1044,26 @@ body.page-texts .pd-header .pd-desc {
   text-decoration: none;
   border-bottom: 0.5px solid var(--border);
   padding-bottom: 4px;
-  transition: border-color 0.2s ease;
 }
-.pd-cta-links a:hover { border-bottom-color: var(--fg); }
+.pd-cta-links a { position: relative; }
+/* яркая линия не проявляется, а рисуется слева направо поверх тусклой */
+.pd-cta-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.5px;
+  height: 0.5px;
+  background-color: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s ease;
+}
+.pd-cta-links a:hover::after { transform: scaleX(1); }
 /* в русской версии первым идёт Telegram */
 html[lang="ru"] .pd-cta-tg { order: -1; }
 @media (max-width: 768px) {
-  .pd-cta { margin-top: 64px; padding-bottom: 88px; }
+  .pd-cta { margin-top: 104px; padding-bottom: 128px; }
 }
 
 /* Имя внутри того же абзаца — ссылка на страницу «обо мне».
