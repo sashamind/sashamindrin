@@ -20,7 +20,7 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20261012-3" />
   <style>
     .contact-wrap {
       max-width: 480px;
@@ -72,6 +72,26 @@
     .contact-val:hover {
       color: var(--fg2);
     }
+    .contact-wrap h2 { margin-bottom: 28px; }
+    .contact-lead {
+      font-family: 'Inter Light', 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--fg);
+      margin-bottom: 12px;
+    }
+    .contact-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--fg2);
+      margin-bottom: 40px;
+    }
+    /* в русской версии первым идёт Telegram: линия сверху переезжает к нему */
+    html[lang="ru"] .contact-list .c-tg { order: -1; border-top: 0.5px solid var(--border); }
+    html[lang="ru"] .contact-list .c-mail { border-top: none; }
   </style>
 </head>
 <body class="dark">
@@ -96,12 +116,19 @@
     <div class="contact-wrap">
       <h2 data-en="Contact" data-ru="Контакт">Contact</h2>
 
+      <p class="contact-lead" data-en="Have a project in&nbsp;mind? Tell me what you’re building and&nbsp;when you need&nbsp;it&nbsp;— I’ll get back to&nbsp;you soon." data-ru="Есть задача? Напишите пару слов о&nbsp;проекте и&nbsp;сроках&nbsp;— отвечу в&nbsp;ближайшее время. Удобнее всего в&nbsp;Telegram.">
+        Have a project in&nbsp;mind? Tell me what you’re building and&nbsp;when you need&nbsp;it&nbsp;— I’ll get back to&nbsp;you soon.
+      </p>
+      <p class="contact-note" data-en="Remote, in&nbsp;English. Payment by&nbsp;invoice in&nbsp;USD or&nbsp;EUR." data-ru="Удалённо, по&nbsp;всей России. На&nbsp;связи в&nbsp;рабочее время по&nbsp;Москве.">
+        Remote, in&nbsp;English. Payment by&nbsp;invoice in&nbsp;USD or&nbsp;EUR.
+      </p>
+
       <ul class="contact-list">
-        <li>
+        <li class="c-mail">
           <span class="contact-key" data-en="email" data-ru="почта">email</span>
           <a class="contact-val" href="mailto:mindrin.sasha@gmail.com">mindrin.sasha@gmail.com</a>
         </li>
-        <li>
+        <li class="c-tg">
           <span class="contact-key">telegram</span>
           <a class="contact-val" href="https://t.me/sash_mind" target="_blank" rel="noopener">@sash_mind</a>
         </li>
@@ -118,6 +145,6 @@
     <span class="footer-copy">© 2026 Sasha Mindrin</span>
   </footer>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=20261012-3"></script>
 </body>
 </html>

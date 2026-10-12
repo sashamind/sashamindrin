@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About — Sasha Mindrin</title>
-  <meta name="description" lang="en" content="About Sasha (Alexander) Mindrin — identity and motion designer from Tula. Works with brand systems, logotypes, and animation." />
+  <meta name="description" lang="en" content="Sasha Mindrin is an independent designer building visual systems from one idea: identity, motion, web and interactive. Concept and production in one pair of hands." />
   <meta name="description" lang="ru" content="О Саше (Александре) Миндрине — дизайнере айдентики и моушна из Тулы. Работает с брендинговыми системами, логотипами и анимацией." />
   <meta name="author" content="Sasha Mindrin" />
   <link rel="canonical" href="https://sashamind.com/about.html" />
@@ -14,13 +14,13 @@
   <meta property="og:type" content="profile" />
   <meta property="og:url" content="https://sashamind.com/about.html" />
   <meta property="og:title" content="About — Sasha Mindrin" />
-  <meta property="og:description" content="About Sasha (Alexander) Mindrin — identity and motion designer from Tula. Works with brand systems, logotypes, and animation." />
+  <meta property="og:description" content="Sasha Mindrin is an independent designer building visual systems from one idea: identity, motion, web and interactive. Concept and production in one pair of hands." />
   <meta property="og:image" content="https://sashamind.com/og-image.png" />
   <meta property="og:site_name" content="Sasha Mindrin" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20261012-3" />
   <style>
     .about-wrap {
       max-width: 640px;
@@ -74,6 +74,36 @@
       text-transform: uppercase;
       margin-bottom: 16px;
     }
+    /* вводные абзацы — тем же серым, что тексты ниже */
+    .about-wrap .about-intro { color: var(--fg2); }
+    .about-wrap .about-lead { font-family: 'Inter Light', 'Inter', sans-serif; }
+    .about-wrap .only-ru { display: none; }
+    html[lang="ru"] .about-wrap .only-ru { display: block; }
+
+    .work-list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+    .work-list li {
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--fg2);
+    }
+    .work-list li b { font-weight: 400; color: var(--fg); }
+
+    .about-wrap .about-cta { display: flex; gap: 28px; margin-bottom: 0; }
+    .about-cta a {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: var(--fg);
+      text-decoration: none;
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 4px;
+      transition: border-color 0.2s ease;
+    }
+    .about-cta a:hover { border-bottom-color: var(--fg); }
+    html[lang="ru"] .about-cta .cta-tg { order: -1; }
   </style>
 </head>
 <body class="dark">
@@ -98,13 +128,30 @@
     <div class="about-wrap">
       <h2 data-en="About" data-ru="Обо мне">About</h2>
 
-      <p data-en="Designer based in&nbsp;Tula. I work with marks, logotypes, identity and&nbsp;interactive systems." data-ru="Дизайнер из&nbsp;Тулы. Работаю со&nbsp;знаками, логотипами, айдентикой и&nbsp;интерактивными системами.">
-        Designer based in&nbsp;Tula. I work with marks, logotypes, identity and&nbsp;interactive systems.
+      <p class="about-intro" data-en="I’m Sasha Mindrin, an independent designer. I work on visual communication end to&nbsp;end: I find the idea behind a brand and&nbsp;carry it through the logo, the motion, the website and&nbsp;the interactive pieces&nbsp;— so&nbsp;everything a person sees speaks with one voice." data-ru="Я Саша Миндрин, независимый дизайнер. Занимаюсь визуальной коммуникацией целиком: нахожу идею бренда и&nbsp;провожу её через логотип, моушн, сайт и&nbsp;интерактив, чтобы всё, что видит человек, говорило одним голосом.">
+        I’m Sasha Mindrin, an independent designer. I work on visual communication end to&nbsp;end: I find the idea behind a brand and&nbsp;carry it through the logo, the motion, the website and&nbsp;the interactive pieces&nbsp;— so&nbsp;everything a person sees speaks with one voice.
       </p>
+      <p class="about-intro" data-en="I do both the thinking and&nbsp;the making. The concept, the design and&nbsp;the working result come from the same hands, which keeps the idea intact from first sketch to&nbsp;launch." data-ru="Я и&nbsp;придумываю, и&nbsp;делаю. Концепция, дизайн и&nbsp;рабочий результат выходят из&nbsp;одних рук, поэтому идея не&nbsp;теряется по&nbsp;дороге от&nbsp;первого эскиза до&nbsp;запуска.">
+        I do both the thinking and&nbsp;the making. The concept, the design and&nbsp;the working result come from the same hands, which keeps the idea intact from first sketch to&nbsp;launch.
+      </p>
+      <p class="only-ru about-intro">Живу и&nbsp;работаю в&nbsp;Туле.</p>
 
-      <p data-en="Available for freelance projects and&nbsp;collaborations." data-ru="Открыт к&nbsp;фриланс-проектам и&nbsp;коллаборациям.">
-        Available for freelance projects and&nbsp;collaborations.
+      <hr class="about-divider" />
+
+      <p class="section-label" data-en="how I work" data-ru="как я работаю">how I work</p>
+      <ul class="work-list">
+        <li data-en="<b>Concept first.</b> Every project starts with research and&nbsp;one core idea. You see it and&nbsp;approve it before any production begins." data-ru="<b>Сначала концепция.</b> Каждый проект начинается с&nbsp;исследования и&nbsp;одной главной идеи. Вы видите и&nbsp;утверждаете её до&nbsp;начала производства."><b>Concept first.</b> Every project starts with research and&nbsp;one core idea. You see it and&nbsp;approve it before any production begins.</li>
+        <li data-en="<b>One system, many forms.</b> Logo and&nbsp;identity, motion, website, interactive&nbsp;— as&nbsp;much of&nbsp;it as&nbsp;the project needs." data-ru="<b>Одна система, много форм.</b> Логотип и&nbsp;айдентика, моушн, сайт, интерактив&nbsp;— столько, сколько нужно проекту."><b>One system, many forms.</b> Logo and&nbsp;identity, motion, website, interactive&nbsp;— as&nbsp;much of&nbsp;it as&nbsp;the project needs.</li>
+        <li data-en="<b>A few projects a year.</b> A typical engagement runs one to&nbsp;four months, so&nbsp;each one gets full attention." data-ru="<b>Несколько проектов в&nbsp;год.</b> Обычно проект длится от&nbsp;одного до&nbsp;четырёх месяцев. Беру и&nbsp;отдельные задачи: логотип, анимацию, лендинг."><b>A few projects a year.</b> A typical engagement runs one to&nbsp;four months, so&nbsp;each one gets full attention.</li>
+        <li data-en="<b>Remote, in&nbsp;English.</b> I work with clients worldwide. Payment by&nbsp;invoice in&nbsp;USD or&nbsp;EUR." data-ru="<b>Удалённо, по&nbsp;всей России.</b> На&nbsp;связи в&nbsp;рабочее время по&nbsp;Москве. Работаю по&nbsp;договору, оплата по&nbsp;счёту."><b>Remote, in&nbsp;English.</b> I work with clients worldwide. Payment by&nbsp;invoice in&nbsp;USD or&nbsp;EUR.</li>
+      </ul>
+
+      <hr class="about-divider" />
+
+      <p class="about-lead" data-en="Have a project in&nbsp;mind? Tell me what you’re building and&nbsp;when you need&nbsp;it&nbsp;— I’ll get back to&nbsp;you soon." data-ru="Есть задача? Напишите пару слов о&nbsp;проекте и&nbsp;сроках&nbsp;— отвечу в&nbsp;ближайшее время.">
+        Have a project in&nbsp;mind? Tell me what you’re building and&nbsp;when you need&nbsp;it&nbsp;— I’ll get back to&nbsp;you soon.
       </p>
+      <p class="about-cta"><a class="cta-mail" href="mailto:mindrin.sasha@gmail.com" data-en="write to me" data-ru="написать на почту">write to me</a><a class="cta-tg" href="https://t.me/sash_mind" target="_blank" rel="noopener">telegram</a></p>
 
       <hr class="about-divider" />
 
@@ -141,6 +188,6 @@
     <span class="footer-copy">© 2026 Sasha Mindrin</span>
   </footer>
 
-  <script src="main.js"></script>
+  <script src="main.js?v=20261012-3"></script>
 </body>
 </html>

@@ -130,6 +130,7 @@ function renderEmpty() {
           <path class="g-body" />
         </svg>
         <p class="pd-intro-text"><a class="pd-intro-name" href="about.html"><span class="pd-name-anim" data-name="ru" aria-hidden="true"></span><span class="pd-name-anim" data-name="en" aria-hidden="true"></span><span class="pd-name-text" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</span></a><span class="pd-name-comma">,</span><span class="pd-intro-rest"><span class="pd-role"><span class="pd-role-sizer" aria-hidden="true">designer.</span><span class="pd-role-word">designer<span class="pd-role-dot">.</span></span></span></span></p>
+        <p class="pd-intro-tag" data-en="I build visual systems from one idea&nbsp;— identity, motion, web and&nbsp;interactive, made to&nbsp;work together." data-ru="строю визуальные системы из&nbsp;одной идеи: айдентика, моушн, сайт и&nbsp;интерактив, которые работают вместе.">${currentLang === 'en' ? 'I build visual systems from one idea&nbsp;— identity, motion, web and&nbsp;interactive, made to&nbsp;work together.' : 'строю визуальные системы из&nbsp;одной идеи: айдентика, моушн, сайт и&nbsp;интерактив, которые работают вместе.'}</p>
       </div>
 
       <div class="pd-point">
@@ -878,8 +879,24 @@ function projectHeaderMarkup(project, t) {
         </div>
       </div>
       <div class="pd-body" id="projectBody"></div>
+      ${caseCtaMarkup(t)}
     </div>
   `;
+}
+
+// Призыв в конце кейса: дочитавший до конца — самый тёплый посетитель.
+// Тексты и порядок каналов разные: иностранцу — почта, в России — Telegram.
+function caseCtaMarkup(t) {
+  const en = 'Have a project in&nbsp;mind? Tell me what you\u2019re building and&nbsp;when you need&nbsp;it&nbsp;— I\u2019ll get back to&nbsp;you soon.';
+  const ru = 'Есть задача? Напишите пару слов о&nbsp;проекте и&nbsp;сроках&nbsp;— отвечу в&nbsp;ближайшее время.';
+  return `
+      <div class="pd-cta">
+        <p class="pd-cta-text" data-en="${en}" data-ru="${ru}">${t === 'en' ? en : ru}</p>
+        <div class="pd-cta-links">
+          <a class="pd-cta-mail" href="mailto:mindrin.sasha@gmail.com" data-en="write to me" data-ru="написать на почту">${t === 'en' ? 'write to me' : 'написать на почту'}</a>
+          <a class="pd-cta-tg" href="https://t.me/sash_mind" target="_blank" rel="noopener">telegram</a>
+        </div>
+      </div>`;
 }
 
 const tryLoad = src => new Promise((res, rej) => {

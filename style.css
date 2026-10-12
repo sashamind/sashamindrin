@@ -1,3 +1,20 @@
+/* Лёгкое начертание — для призывов написать (в основном Inter один файл
+   на все веса, тоньше обычного он не рисуется) */
+@font-face {
+  font-family: 'Inter Light';
+  src: url('assets/fonts/Inter-Light-cyrillic.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Inter Light';
+  src: url('assets/fonts/Inter-Light-latin.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @font-face {
   font-family: 'Inter';
   src: url('assets/fonts/Inter-Regular.woff2') format('woff2');
@@ -991,6 +1008,51 @@ body.page-texts .pd-header .pd-desc {
   opacity: 0.9;
 }
 
+/* Одна фраза под именем — чем занимаюсь; тише имени и роли */
+.pd-intro-tag {
+  margin: 18px auto 0;
+  max-width: 300px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--fg2);
+}
+
+/* Призыв в конце кейса */
+.pd-cta {
+  max-width: 560px;
+  margin: 96px auto 0;
+  padding: 0 20px 120px;
+  text-align: center;
+}
+.pd-cta-text {
+  margin: 0 0 28px;
+  font-family: 'Inter Light', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--fg);
+}
+.pd-cta-links { display: flex; justify-content: center; gap: 28px; }
+.pd-cta-links a {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--border);
+  padding-bottom: 4px;
+  transition: border-color 0.2s ease;
+}
+.pd-cta-links a:hover { border-bottom-color: var(--fg); }
+/* в русской версии первым идёт Telegram */
+html[lang="ru"] .pd-cta-tg { order: -1; }
+@media (max-width: 768px) {
+  .pd-cta { margin-top: 64px; padding-bottom: 88px; }
+}
+
 /* Имя внутри того же абзаца — ссылка на страницу «обо мне».
    Выделено только насыщенностью, размер и шрифт общие с абзацем.
    На наведении из-под него выезжает линия: масштабируется от левого края,
@@ -1051,6 +1113,7 @@ html.intro-play .panel-list,
 html.intro-play footer,
 html.intro-play .pd-point,
 html.intro-play .pd-name-comma,
+html.intro-play .pd-intro-tag,
 html.intro-play .pd-intro-rest {
   opacity: 0;
   pointer-events: none;
@@ -1067,9 +1130,11 @@ html.intro-reveal .panel-list,
 html.intro-reveal footer,
 html.intro-reveal .pd-point,
 html.intro-reveal .pd-name-comma,
+html.intro-reveal .pd-intro-tag,
 html.intro-reveal .pd-intro-rest {
   transition: opacity 0.9s ease;
 }
+html.intro-reveal .pd-intro-tag { transition-delay: 0.3s; }
 html.intro-reveal .pd-point   { transition-delay: 0.2s; }
 html.intro-reveal header,
 html.intro-reveal .hero       { transition-delay: 0.35s; }
@@ -1081,6 +1146,7 @@ html.intro-reveal footer      { transition-delay: 0.6s; }
   html.intro-reveal .panel-list,
   html.intro-reveal footer,
   html.intro-reveal .pd-point,
+  html.intro-reveal .pd-intro-tag,
   html.intro-reveal .pd-intro-rest { transition: none; }
 }
 
