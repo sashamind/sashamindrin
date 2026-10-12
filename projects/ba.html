@@ -2091,6 +2091,137 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   </button>
 </div>
 
+<style>
+  /* Стикеры под слайдером: те же картинки Билибина и Хокусая, вырезанные
+     по знаку, — два ряда по шесть, мелко, каждый чуть повёрнут, как
+     наклеенный. По наведению выпрямляется и чуть приподнимается. При
+     прокрутке проявляются по очереди: ряд за рядом, слева направо. */
+  #rec-ba-bilibin .bh-stickers {
+    display: grid;
+    grid-template-columns: repeat(6, 64px);
+    justify-content: center;
+    gap: 22px 26px;
+    margin: 72px auto 0;
+  }
+  #rec-ba-bilibin .bh-stickers img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transform: rotate(var(--r));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @media (hover: hover) {
+    #rec-ba-bilibin .bh-stickers img:hover { transform: translateY(-4px) rotate(0deg) scale(1.12); }
+  }
+  .ba-fx-on #rec-ba-bilibin .bh-stickers img {
+    opacity: 0;
+    transition: opacity 0.6s ease var(--d), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .ba-fx-on #rec-ba-bilibin .bh-stickers.is-in img { opacity: 1; }
+  .ba-fx-on #rec-ba-bilibin .bh-stickers.ba-fx-fade { opacity: 1; }
+  /* мелкие появились — большой знак со стрелками уступает им место и
+     гаснет; стикеры ушли из кадра вниз (листаем обратно) — он возвращается */
+  .ba-fx-on #rec-ba-bilibin .bh-row,
+  .ba-fx-on #rec-ba-bilibin .bh-nav { transition: opacity 0.7s ease; }
+  .ba-fx-on #rec-ba-bilibin:has(.bh-stickers.is-in) .bh-row,
+  .ba-fx-on #rec-ba-bilibin:has(.bh-stickers.is-in) .bh-nav { opacity: 0; pointer-events: none; }
+  @container tz (max-width: 799.98px) {
+    /* на телефоне — по три в ряд, крупнее */
+    #rec-ba-bilibin .bh-stickers {
+      grid-template-columns: repeat(3, 72px);
+      gap: 22px 34px;
+      margin-top: 48px;
+    }
+  }
+</style>
+<div class="bh-stickers ba-fx-fade">
+  <img src="shh-creative/media/ba-sticker-01.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-6deg;--d:0.00s" />
+  <img src="shh-creative/media/ba-sticker-02.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:4deg;--d:0.06s" />
+  <img src="shh-creative/media/ba-sticker-03.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-3deg;--d:0.12s" />
+  <img src="shh-creative/media/ba-sticker-04.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:7deg;--d:0.18s" />
+  <img src="shh-creative/media/ba-sticker-05.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-5deg;--d:0.24s" />
+  <img src="shh-creative/media/ba-sticker-06.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:3deg;--d:0.30s" />
+  <img src="shh-creative/media/ba-sticker-07.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:5deg;--d:0.18s" />
+  <img src="shh-creative/media/ba-sticker-08.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-4deg;--d:0.24s" />
+  <img src="shh-creative/media/ba-sticker-09.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:6deg;--d:0.30s" />
+  <img src="shh-creative/media/ba-sticker-10.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-2deg;--d:0.36s" />
+  <img src="shh-creative/media/ba-sticker-11.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:4deg;--d:0.42s" />
+  <img src="shh-creative/media/ba-sticker-12.webp" alt="" width="215" height="300" loading="lazy" decoding="async" style="--r:-7deg;--d:0.48s" />
+</div>
+<style>
+  /* Увеличение стикера по клику / тапу: крупная версия вылетает из
+     стикера в центр экрана поверх затемнения и улетает обратно по клику
+     в любое место или Esc. Слой висит на body: внутри кейса
+     container-type ограничивает position: fixed. */
+  #rec-ba-bilibin .bh-stickers img { cursor: zoom-in; -webkit-tap-highlight-color: transparent; }
+  .bh-zoom {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(10, 10, 10, 0);
+    transition: background 0.35s ease;
+    cursor: zoom-out; -webkit-tap-highlight-color: transparent;
+  }
+  .bh-zoom.is-open { background: rgba(10, 10, 10, 0.86); }
+  .bh-zoom img {
+    position: absolute; left: 0; top: 0;
+    max-width: none; max-height: none;
+    transform-origin: 0 0;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bh-zoom, .bh-zoom img { transition: none; }
+  }
+</style>
+<script>
+(function () {
+  var box = document.querySelector('#rec-ba-bilibin .bh-stickers');
+  if (!box) return;
+  var layer = null, from = null;
+  function rectAt(r, w, h) {   // перенос картинки w×h в прямоугольник r
+    return 'translate(' + r.left.toFixed(1) + 'px,' + r.top.toFixed(1) + 'px) scale(' + (r.width / w).toFixed(4) + ',' + (r.height / h).toFixed(4) + ')';
+  }
+  function close() {
+    if (!layer) return;
+    var l = layer, im = l.querySelector('img'); layer = null;
+    l.classList.remove('is-open');
+    im.style.transform = rectAt(from.getBoundingClientRect(), parseFloat(im.style.width), parseFloat(im.style.height)) + ' rotate(' + getComputedStyle(from).getPropertyValue('--r') + ')';
+    setTimeout(function () { l.remove(); from.style.visibility = ''; }, 420);
+  }
+  function open(st) {
+    if (layer) return;
+    from = st;
+    var r = st.getBoundingClientRect();
+    var h = Math.min(innerHeight * 0.8, 1000), w = h * 215 / 300;
+    if (w > innerWidth * 0.86) { w = innerWidth * 0.86; h = w * 300 / 215; }
+    layer = document.createElement('div'); layer.className = 'bh-zoom';
+    var im = new Image(); im.alt = '';
+    im.style.width = w + 'px'; im.style.height = h + 'px';   // общие стили сайта перебивают атрибуты
+    im.src = st.currentSrc || st.src;                       // сразу — мелкая, потом подменяем крупной
+    var big = new Image(); big.onload = function () { im.src = big.src; };
+    big.src = st.src.replace(/\.webp$/, '-l.webp');
+    im.style.transition = 'none';
+    im.style.transform = rectAt(r, w, h);
+    layer.appendChild(im); document.body.appendChild(layer);
+    st.style.visibility = 'hidden';
+    void im.offsetWidth;
+    im.style.transition = '';
+    layer.classList.add('is-open');
+    im.style.transform = 'translate(' + ((innerWidth - w) / 2).toFixed(1) + 'px,' + ((innerHeight - h) / 2).toFixed(1) + 'px)';
+    layer.addEventListener('click', close);
+  }
+  box.addEventListener('click', function (e) {
+    var st = e.target.closest && e.target.closest('img');
+    if (st) open(st);
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  // прокрутка закрывает — иначе стикер «улетал» бы не туда
+  window.addEventListener('scroll', close, { passive: true, capture: true });
+})();
+</script>
+
+
 <script>
 (function () {
   // Кадры лежат в ленте бок о бок, а видна через маску одна клетка.
@@ -2761,6 +2892,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     { measure: ['#rec1535578721 .tz-el img'], parts: ['#rec1535578721 .tz-el'], anchor: '#rec1535578721' },
     { measure: ['#rec-ba-lightbox img.lb-on'], parts: ['#rec-ba-lightbox .lb-stage'], anchor: '#rec-ba-lightbox .lb-stage' },
     { measure: ['.bh-title', '.bh-mask', '.bh-nav'], parts: ['.bh-title', '.bh-row', '.bh-nav'], anchor: '.bh-title' },
+    { measure: ['.bh-stickers'], parts: ['.bh-stickers'], anchor: '.bh-stickers' },
     { measure: ['.mr-stage img.is-on', '.mr-nav'], parts: ['.mr-stage', '.mr-nav'], anchor: '.mr-stage' },
     { measure: ['img.mr-sculpt'], parts: ['.mr-sculpt'], anchor: '.mr-sculpt' }
   ];
