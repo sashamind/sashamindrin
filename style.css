@@ -1062,9 +1062,10 @@ body.page-texts .pd-header .pd-desc {
 }
 .pd-cta-links { display: flex; justify-content: center; gap: 28px; }
 .pd-cta-links a {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
+  /* тем же шрифтом, что и текст над ссылками */
+  font-family: 'Inter Light', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
   text-transform: lowercase;
   color: var(--fg);
   text-decoration: none;
