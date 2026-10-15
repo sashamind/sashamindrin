@@ -912,8 +912,8 @@ function descMarkup(project, t) {
 // Призыв в конце кейса: дочитавший до конца — самый тёплый посетитель.
 // Тексты и порядок каналов разные: иностранцу — почта, в России — Telegram.
 function caseCtaMarkup(t) {
-  const en = 'Have a project in&nbsp;mind? Tell me what you\u2019re building and&nbsp;when you need&nbsp;it&nbsp;— I\u2019ll get back to&nbsp;you soon.';
-  const ru = 'Есть задача? Напишите пару слов о&nbsp;проекте и&nbsp;сроках&nbsp;— отвечу в&nbsp;ближайшее время.';
+  const en = 'Have a project in&nbsp;mind? Tell me what you\u2019re building and&nbsp;when you need&nbsp;it<br>— I\u2019ll get back to&nbsp;you soon.';
+  const ru = 'Есть задача? Напишите пару слов о&nbsp;проекте и&nbsp;сроках<br>— отвечу в&nbsp;ближайшее время.';
   return `
       <div class="pd-cta">
         <p class="pd-cta-text" data-en="${en}" data-ru="${ru}">${t === 'en' ? en : ru}</p>
