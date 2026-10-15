@@ -2522,7 +2522,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     opacity: 0.75;
   }
   #rec-ba-merch .mr-note b { font-weight: 600; color: #e42322; }
-  /* подпись проявляется позже цветов: когда сама поднялась на треть экрана */
+  /* подпись проявляется позже цветов: как только сама целиком показалась над нижней десятой экрана */
   .ba-fx-on #rec-ba-merch .mr-note {
     opacity: 0;
     transform: translateY(12px);
@@ -2590,7 +2590,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   if (!note || !window.IntersectionObserver) return;
   new IntersectionObserver(function (en) {
     note.classList.toggle('is-in', en[0].isIntersecting);
-  }, { threshold: 1, rootMargin: '-15% 0px -20% 0px' }).observe(note);
+  }, { threshold: 1, rootMargin: '-15% 0px -10% 0px' }).observe(note);
   // скульптура дошла до середины экрана — цветы с подписью уступают ей место
   var merch = document.getElementById('rec-ba-merch');
   var sculpt = merch && merch.querySelector('.mr-sculpt');
