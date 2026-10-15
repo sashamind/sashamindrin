@@ -1054,18 +1054,17 @@ body.page-texts .pd-header .pd-desc {
 }
 .pd-cta-text {
   margin: 0 0 40px;
-  font-family: 'Inter Light', 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 300;
-  line-height: 1.7;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
   color: var(--fg);
 }
 .pd-cta-links { display: flex; justify-content: center; gap: 28px; }
 .pd-cta-links a {
-  /* тем же шрифтом, что и текст над ссылками */
-  font-family: 'Inter Light', 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 300;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: lowercase;
   color: var(--fg);
   text-decoration: none;
