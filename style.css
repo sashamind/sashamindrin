@@ -1059,6 +1059,7 @@ body.page-texts .pd-header .pd-desc {
   line-height: 1.8;
   letter-spacing: 0.03em;
   color: var(--fg);
+  opacity: 0.6;   /* тише ссылок под ним */
 }
 .pd-cta-links { display: flex; justify-content: center; gap: 28px; }
 .pd-cta-links a {
