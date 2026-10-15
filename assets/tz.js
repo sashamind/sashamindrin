@@ -127,6 +127,11 @@
         if (!el.offsetParent) return; // в этой раскладке элемента нет
         const k = width / BASE[key];
         const it = { el, w, k };
+        // data-tz-hold на блоке: его прокрутка-анимация ждёт, пока верх
+        // блока не дойдёт до верха окна — сначала блок виден целиком.
+        // Значение — доля высоты окна, на которую старт наступает раньше
+        it.hold = el.closest('[data-tz-hold]');
+        if (it.hold) it.holdEarly = parseFloat(it.hold.dataset.tzHold) || 0;
         if (fixData) it.fix = JSON.parse(fixData);
         if (sbsData) {
           const sbs = JSON.parse(sbsData);
@@ -185,6 +190,7 @@
         const r = it.el.getBoundingClientRect();
         it.top = r.top - top0 + st;
         it.h = r.height;
+        if (it.hold) it.holdTop = it.hold.getBoundingClientRect().top - top0 + st;
       });
     }
 
@@ -224,11 +230,17 @@
         T += vh * trg;
         if (T > it.top && T <= vh * trg) T = it.top;
       }
-      const pos = st + T;
+      // у верхнего края Safari и iPhone пружинят: прокрутка на миг уходит
+      // в минус, и элемент проваливался до шага 0 (у «Ба» — огромный силуэт)
+      const pos = Math.max(st, 0) + T;
       const s = { op: 1, tx: 0, ty: 0, sx: 1, sy: 1, ro: 0 };
       let start = it.top;
+      let held = !it.hold;
       it.steps.forEach((step, i) => {
         const dist = step.di * it.k;
+        // начальные мгновенные шаги (исходный вид) — как обычно,
+        // а первый шаг с длиной ждёт, пока блок не встанет к верху окна
+        if (!held && dist > 0) { start = Math.max(start, it.holdTop - it.holdEarly * vh + T); held = true; }
         const end = start + dist;
         let p = 0;
         if (pos >= end) p = 1;

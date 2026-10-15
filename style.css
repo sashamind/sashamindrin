@@ -792,6 +792,32 @@ body.case-full .layout {
 }
 .pd-desc a:hover { opacity: 0.6; }
 
+/* длинное описание свёрнуто: «подробнее +» под первым абзацем */
+/* элементы кейса из Тильды бывают шире своего блока и заходят на описание —
+   поднимаем описание над ними, иначе «подробнее» не нажимается */
+.pd-desc { position: relative; z-index: 2; }
+.pd-more { margin-top: 20px; }
+.pd-desc .pd-dim { opacity: 0.55; }
+.pd-more summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg2);
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.pd-more summary::-webkit-details-marker { display: none; }
+.pd-more summary::after { content: '+'; font-size: 14px; letter-spacing: 0; }
+.pd-more[open] summary::after { content: '−'; }
+.pd-more summary:hover { color: var(--fg); }
+.pd-more[open] summary { margin-bottom: 20px; }
+
 .pd-desc p, .pd-desc div {
   font-size: 12px;
   line-height: 1.8;

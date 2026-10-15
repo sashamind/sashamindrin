@@ -75,7 +75,7 @@ window.addEventListener('scroll', () => {
 // по-прежнему открывается. Вернуть в список — снять флаг и перенести
 // карточку обратно в сетку.
 const projectsData = [
-  { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2026', tags: ['logos', 'branding', 'motion', 'interactive'],               descEn: 'Ba is a shchi bistro in Tula by chef Igor Sindeev. It borrows the format of a Japanese ramen shop, where everything revolves around one dish — but the dish is shchi, the Russian cabbage soup, made from local produce.<br><br>Task: Create an identity for a new experimental format — Japanese in structure, Russian in spirit, without turning into a pastiche of either.<br><br>Solution: A visual language at the crossroads of cultures. Instead of mixing clichés — a search for where Russian and Japanese visual traditions already speak alike.<br><br>Scope: concept, logo, identity, motion.<br><br>Result: In 2026 Ba won the Golden Palm Branch for the best restaurant concept in Russia. The team plans to open Ba corners in other cities.', descRu: '«Ба» — щичная шефа Игоря Синдеева в Туле. Формат японского рамен-шопа, где всё вертится вокруг одного блюда, только это блюдо — щи из местных продуктов.<br><br>Задача: Придумать айдентику для нового экспериментального формата — японского по устройству и русского по духу, но без пародии ни на то, ни на другое.<br><br>Решение: Визуальный язык на стыке культур. Вместо смешения клише — поиск мест, где русская и японская визуальные традиции уже говорят похоже.<br><br>Объём работ: концепция, логотип, айдентика, анимация.<br><br>Результат: В 2026 году «Ба» получила Золотую Пальмовую ветвь как лучшая ресторанная концепция России. Команда планирует корнеры в других городах.' },
+  { id: 'project-1',  folder: 'ba',               color: '#c0392b', titleEn: 'Ba',                titleRu: 'Ба',                    year: '2026', tags: ['logos', 'branding', 'motion', 'interactive'],               descEn: 'Ba is a shchi bistro in Tula by chef Igor Sindeev. It borrows the format of a Japanese ramen shop, where everything revolves around one dish — but the dish is shchi, the Russian cabbage soup, made from local produce. In 2026 the restaurant won the Golden Palm Branch for the best restaurant concept in Russia.<br><br>Task: Create an identity for a new experimental format — Japanese in structure, Russian in spirit, without turning into a pastiche of either.<br><br>Solution: A visual language at the crossroads of cultures. Instead of mixing clichés — a search for where Russian and Japanese visual traditions already speak alike.<br><br>Scope: concept, logo, identity, motion.<br><br>Result: Ba opened in Tula with this visual concept. The team plans venues in other cities.', descRu: '«Ба» — щичная шефа Игоря Синдеева в Туле. Формат японского рамен-шопа, где всё вертится вокруг одного блюда, только это блюдо — щи из местных продуктов. В 2026 году заведение получило Золотую Пальмовую ветвь как лучшая ресторанная концепция России.<br><br>Задача: Придумать айдентику для нового экспериментального формата — японского по устройству и русского по духу, но без пародии ни на то, ни на другое.<br><br>Решение: Визуальный язык на стыке культур. Вместо смешения клише — поиск мест, где русская и японская визуальные традиции уже говорят похоже.<br><br>Объём работ: концепция, логотип, айдентика, анимация.<br><br>Результат: «Ба» открылась в Туле в этой визуальной концепции. Команда планирует заведения в других городах.' },
   { id: 'project-6',  folder: 'nitka',            color: '#1abc9c', titleEn: 'Nitka',             titleRu: 'Нитка',                 year: '2020', tags: ['logos', 'branding', 'motion'],               descEn: 'Nitka is an author’s project and a big dream about the revival of the Russian tea tradition.<br><br>Task: Create the identity for a tea brand — from the mark and packaging to illustrations and promo animation.', descRu: 'Нитка — авторский проект и большая мечта о возрождении русской чайной традиции.<br><br>Задача: Создать айдентику чайного бренда — от знака и упаковки до иллюстраций и промо-анимации.' },
   { id: 'project-2',  folder: 'tula-marathon', hidden: true,    color: '#e67e22', titleEn: 'Tula Marathon',     titleRu: 'Тульский марафон',      year: '2026', tags: ['logos', 'motion'],                 descEn: 'Logo redesign concept and identity for the Tula Marathon.', descRu: 'Концепция редизайна логотипа и айдентика Тульского марафона.' },
   { id: 'project-3',  folder: 'tula-running-club', hidden: true,color: '#f1c40f', titleEn: 'Tula Running Club', titleRu: 'Тульский беговой клуб', year: '2025', tags: ['logos', 'branding', 'illustration'],descEn: 'Description will appear here.', descRu: 'Описание появится здесь.' },
@@ -873,15 +873,40 @@ function projectHeaderMarkup(project, t) {
           </div>
         </div>
       </div>
-      <div class="pd-desc">
-        <div data-en="${project.descEn}" data-ru="${project.descRu}">
-          ${t === 'en' ? project.descEn : project.descRu}
-        </div>
-      </div>
+      ${descMarkup(project, t)}
       <div class="pd-body" id="projectBody"></div>
       ${caseCtaMarkup(t)}
     </div>
   `;
+}
+
+// Описание кейса. Длинное (задача, решение, результат) сворачивается:
+// виден первый абзац, остальное — по клику на «подробнее».
+function descMarkup(project, t) {
+  const en = project.descEn.split('<br><br>');
+  const ru = project.descRu.split('<br><br>');
+  if (en.length <= 2 && ru.length <= 2) {
+    return `
+      <div class="pd-desc">
+        <div data-en="${project.descEn}" data-ru="${project.descRu}">
+          ${t === 'en' ? project.descEn : project.descRu}
+        </div>
+      </div>`;
+  }
+  // в абзацах «Задача:», «Решение:»… текст после подписи приглушён
+  const label = h => h.replace(/^(Task|Solution|Scope|Result|Задача|Решение|Объём работ|Результат):([\s\S]*)$/, '$1:<span class=\'pd-dim\'>$2</span>');
+  en.forEach((x, i) => { en[i] = label(x); });
+  ru.forEach((x, i) => { ru[i] = label(x); });
+  const leadEn = en[0], leadRu = ru[0];
+  const restEn = en.slice(1).join('<br><br>'), restRu = ru.slice(1).join('<br><br>');
+  return `
+      <div class="pd-desc">
+        <div data-en="${leadEn}" data-ru="${leadRu}">${t === 'en' ? leadEn : leadRu}</div>
+        <details class="pd-more">
+          <summary data-en="more" data-ru="подробнее">${t === 'en' ? 'more' : 'подробнее'}</summary>
+          <div data-en="${restEn}" data-ru="${restRu}">${t === 'en' ? restEn : restRu}</div>
+        </details>
+      </div>`;
 }
 
 // Призыв в конце кейса: дочитавший до конца — самый тёплый посетитель.
