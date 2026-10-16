@@ -8,6 +8,8 @@
     /* Нижний отступ даёт запас прокрутки, чтобы последнее фото могло
        доехать до центра экрана и полностью проявиться (data-fx). */
     padding: 110px 0 220px;
+    /* одно расстояние между всеми блоками кейса */
+    --pup-gap: 200px;
   }
   .pf-puppai img {
     width: auto;
@@ -18,12 +20,12 @@
   }
   .pf-puppai [data-fx="scroll"] { will-change: opacity; }
   /* размеры — доли ширины колонки (560 px), одинаково на десктопе и телефоне */
-  .pf-puppai .pup-logo { width: 25%; }
-  .pf-puppai .pup-wordmark { width: 50%; margin-top: 240px; }
+  .pf-puppai .pup-logo { width: 15%; }
+  .pf-puppai .pup-wordmark { width: 50%; margin-top: var(--pup-gap); }
   .pf-puppai .pup-lottie {
     width: 100%;
     max-width: 300px;
-    margin-top: 132px;
+    margin-top: var(--pup-gap);
     display: block;
   }
   /* Контейнер с фоном страницы + isolation: чтобы mix-blend-mode: screen
@@ -35,7 +37,7 @@
     justify-content: center;
     isolation: isolate;
     background: var(--bg);
-    margin-top: 132px;
+    margin-top: var(--pup-gap);
   }
   .pf-puppai .pup-iso .pup-lottie { margin-top: 0; }
   .pf-puppai .pup-screen { mix-blend-mode: screen; }
@@ -44,7 +46,7 @@
     flex-direction: column;
     align-items: center;
     gap: 72px;
-    margin-top: 132px;
+    margin-top: var(--pup-gap);
   }
   /* Марки нормализуем по высоте (у них разное соотношение сторон),
      чтобы были одинаковыми и небольшими. */
@@ -61,13 +63,79 @@
     letter-spacing: 0.01em;
     color: rgba(255, 255, 255, 0.45);
   }
-  .pf-puppai .pup-appicon { width: 40%; margin-top: 132px; }
+  .pf-puppai .pup-appicon { width: 28%; margin-top: var(--pup-gap); }
+  /* Иконка приложения собрана кодом: тёмная плашка, серебристая кромка
+     с медленно бегущим бликом, логотип чуть выступает. Плашка слегка
+     поворачивается вслед за курсором, где бы он ни был; пятно света тоже. */
+  @property --pi-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  .pf-puppai .pup-icon3d { aspect-ratio: 1; perspective: 700px; }
+  .pf-puppai .pi-tilt {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 29%;
+    transform-style: preserve-3d;
+    /* без filter: он сплющил бы 3D и логотип не выступал бы */
+  }
+  /* кромка: серебро + узкий яркий блик, который бежит по кругу */
+  .pf-puppai .pi-rim {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2.4%;
+    /* база кромки темнее, чтобы бегущий блик был заметен */
+    background:
+      conic-gradient(from var(--pi-a), transparent 0deg, #fff 22deg, transparent 60deg, transparent 180deg, rgba(255,255,255,.6) 205deg, transparent 245deg),
+      linear-gradient(135deg, #9a9a9a 0%, #3c3c3c 30%, #7d7d7d 52%, #2e2e2e 74%, #6e6e6e 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: pi-run 10s linear infinite;
+  }
+  @keyframes pi-run { to { --pi-a: 360deg; } }
+  /* с мышью или гироскопом блик не бегает сам, а стоит на стороне,
+     обращённой к курсору или куда наклонили телефон */
+  .pf-puppai .pup-icon3d.is-follow .pi-rim { animation: none; }
+  .pf-puppai .pi-face {
+    position: absolute;
+    inset: 2.4%;
+    border-radius: 27.5%;
+    overflow: hidden;
+    background: linear-gradient(140deg, #2b2b2b 0%, #161616 45%, #1f1f1f 70%, #121212 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -10px 24px rgba(0,0,0,.45), 0 18px 40px rgba(0,0,0,.55);
+  }
+  /* мягкий диагональный отблеск и пятно света под курсором */
+  .pf-puppai .pi-face::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.06) 48%, transparent 60%);
+  }
+  .pf-puppai .pi-glare {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--gx, 30%) var(--gy, 20%), rgba(255,255,255,.16), transparent 55%);
+    opacity: .7;
+  }
+  .pf-puppai .pi-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40%;
+    max-width: none;
+    margin: 0;
+    transform: translate(-50%, -50%) translateZ(8px);
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.5));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pf-puppai .pi-rim { animation: none; }
+  }
   /* Фон снимков подгоняется под фон страницы (#0a0a0a) в самих файлах,
      поэтому mix-blend-mode не нужен. */
   .pf-puppai .pup-photo {
     width: 100%;
     max-width: 480px;
-    margin-top: 48px;
+    margin-top: var(--pup-gap);
   }
   /* Ошейник крупнее остальных на ~30% (480 → 624). Выходит за контейнер
      кейса (560), но панель на десктопе шире; на мобиле ограничиваем шириной
@@ -76,6 +144,8 @@
   @media (min-width: 769px) {
     .pf-puppai .pup-collar { max-width: 624px; }
   }
+  /* Медальон на 20% меньше (480 → 384). */
+  .pf-puppai .pup-medal { max-width: 384px; }
   /* Телефон на ~30% меньше остальных (480 → 336). */
   .pf-puppai .pup-phone { max-width: 336px; }
   /* Растушёвка краёв в прозрачность: жёсткая граница прямоугольника
@@ -146,9 +216,91 @@
       background="transparent" speed="1" loop autoplay></lottie-player>
   </div>
 
-  <img class="pup-appicon" data-fx="scroll" src="assets/puppai/group-3.svg" alt="App icon" />
+  <div class="pup-appicon pup-icon3d" data-fx="scroll" role="img" aria-label="App icon">
+    <div class="pi-tilt">
+      <div class="pi-rim"></div>
+      <div class="pi-face"><div class="pi-glare"></div></div>
+      <img class="pi-logo" src="assets/puppai/logo.svg" alt="" />
+    </div>
+  </div>
+  <script>
+  (function () {
+    // Иконка поворачивается к курсору (компьютер) или вслед за наклоном
+    // телефона (гироскоп, как у Билибина и Хокусая в «Ба»). Поворот до MAX
+    // градусов с плавным догоном; блик на кромке стоит на стороне, куда
+    // «светит» курсор или куда наклонили телефон.
+    var box = document.querySelector('.pf-puppai .pup-icon3d');
+    if (!box || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var tilt = box.querySelector('.pi-tilt'), rim = box.querySelector('.pi-rim'), MAX = 22;
+    var tx = 0, ty = 0, x = 0, y = 0, a = null, raf = 0;
 
-  <img class="pup-photo" data-fx="scroll" src="shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
+    function frame() {
+      x += (tx - x) * 0.08; y += (ty - y) * 0.08;
+      tilt.style.transform = 'rotateX(' + (-y * MAX).toFixed(2) + 'deg) rotateY(' + (x * MAX).toFixed(2) + 'deg)';
+      tilt.style.setProperty('--gx', (50 + x * 40).toFixed(1) + '%');
+      tilt.style.setProperty('--gy', (50 + y * 40).toFixed(1) + '%');
+      // блик на кромке догоняет направление по кратчайшей дуге
+      var aLeft = 0;
+      if (Math.abs(x) + Math.abs(y) > 0.02) {
+        var to = Math.atan2(x, -y) * 180 / Math.PI;
+        if (a === null) a = to;
+        var d = ((to - a + 540) % 360) - 180;
+        a += d * 0.08; aLeft = Math.abs(d);
+        // в градиенте самая яркая точка на 22° от начала — сдвигаем на них
+        rim.style.setProperty('--pi-a', (a - 22).toFixed(1) + 'deg');
+      }
+      raf = (Math.abs(tx - x) > 0.001 || Math.abs(ty - y) > 0.001 || aLeft > 0.3) ? requestAnimationFrame(frame) : 0;
+    }
+    function aim(nx, ny) {
+      tx = Math.max(-1, Math.min(1, nx));
+      ty = Math.max(-1, Math.min(1, ny));
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+    function gone(type, fn, target) {
+      if (box.isConnected) return false;
+      (target || document).removeEventListener(type, fn);
+      return true;
+    }
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      // компьютер: максимум набирается, когда курсор отошёл на треть окна
+      box.classList.add('is-follow');
+      var onMove = function (e) {
+        if (gone('pointermove', onMove)) return;
+        var r = box.getBoundingClientRect();
+        aim((e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 3),
+            (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 3));
+      };
+      document.addEventListener('pointermove', onMove, { passive: true });
+      return;
+    }
+
+    // телефон: наклон от того положения, в котором держали в первый момент;
+    // 20° — полный ход. Пока данных нет, блик бегает по кругу сам.
+    if (!window.DeviceOrientationEvent) return;
+    var base = null;
+    var onTilt = function (e) {
+      if (gone('deviceorientation', onTilt, window)) return;
+      if (e.beta === null || e.gamma === null) return;
+      if (!base) { base = { b: e.beta, g: e.gamma }; box.classList.add('is-follow'); }
+      aim((e.gamma - base.g) / 20, (e.beta - base.b) / 20);
+    };
+    // iOS с 13-й версии отдаёт наклон только после разрешения, а спросить
+    // его можно лишь в ответ на касание — спрашиваем при первом тапе
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      var ask = function () {
+        DeviceOrientationEvent.requestPermission().then(function (state) {
+          if (state === 'granted') window.addEventListener('deviceorientation', onTilt);
+        }).catch(function () {});
+      };
+      document.addEventListener('touchend', ask, { once: true });
+    } else {
+      window.addEventListener('deviceorientation', onTilt);
+    }
+  })();
+  </script>
+
+  <img class="pup-photo pup-medal" data-fx="scroll" src="shh-creative/media/puppai-pic1.webp" alt="" loading="lazy" />
   <img class="pup-photo pup-feather pup-collar" data-fx="scroll" src="shh-creative/media/puppai-collar.webp" alt="" loading="lazy" />
   <img class="pup-photo pup-feather pup-phone" data-fx="scroll" src="shh-creative/media/puppai-phone.webp" alt="" loading="lazy" />
 </div>
