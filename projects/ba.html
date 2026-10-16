@@ -1422,7 +1422,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
        flex: 0 1 auto обязателен: в колонке основная ось вертикальная, и
        заданные для ряда доли начинают править высотой, ломая пропорции. */
     #rec-ba-elements .el-row {
-      margin-top: 115px;
+      margin-top: 180px;
       flex-direction: column;
       gap: 32px;
     }
@@ -1549,7 +1549,9 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   #rec-ba-render { margin: 100px -40px 0; }
   #rec-ba-render img { display: block; width: 100%; height: auto; filter: url(#ba-screen); }
   @media screen and (max-width: 768px) {
-    #rec-ba-render { margin: 80px 0 0; }
+    /* на телефоне ряд крупнее экрана: обрезается по краям, но силуэты больше */
+    #rec-ba-render { margin: 160px 0 0; overflow: hidden; }
+    #rec-ba-render img { width: 170%; max-width: none; margin-left: -35%; }
   }
 </style>
 <div id="rec-ba-render">
@@ -2554,14 +2556,16 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 
   @media screen and (max-width: 768px) {
     #rec-ba-merch { padding: 64px 20px 80px; overflow-x: clip; }
-    /* макеты на 20% крупнее: по бокам у них прозрачные поля, так что
-       выход за края экрана срезает только пустоту */
-    #rec-ba-merch .mr-stage { width: 120%; margin-left: -10%; }
+    /* макеты в полтора раза шире экрана: по бокам у них прозрачные поля,
+       так что выход за края срезает в основном пустоту */
+    #rec-ba-merch .mr-stage { width: 150%; margin-left: -25%; }
     #rec-ba-merch .mr-nav { margin-top: 24px; }
     #rec-ba-merch .mr-sculpt { width: 58%; margin-top: 56px; }
-    #rec-ba-merch .mr-tag { width: 100%; margin: 24px auto -40px; }
-    #rec-ba-merch .mr-flowers { width: 80%; margin-top: 72px; }
-    #rec-ba-merch .mr-note { max-width: 280px; margin-top: -40px; padding: 0 20px; box-sizing: content-box; }
+    /* бирка на 20% крупнее экрана: поля у файла прозрачные, срезается пустота */
+    #rec-ba-merch .mr-tag { width: 120%; max-width: none; margin: 24px 0 -40px -10%; }
+    /* цветы крупнее колонки (146%): фон у них как у страницы, края не видны */
+    #rec-ba-merch .mr-flowers { width: 146%; max-width: none; margin: 72px 0 0 -23%; }
+    #rec-ba-merch .mr-note { max-width: 280px; margin-top: -90px; padding: 0 20px; box-sizing: content-box; }
   }
   @media (prefers-reduced-motion: reduce) {
     #rec-ba-merch .mr-stage img { transition: none; }
@@ -3003,7 +3007,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
 (function () {
   var tz = document.querySelector('.pf-tz');
   if (!tz) return;
-  var GAP = 0.4;      // доля высоты экрана между элементами
+  var GAP = 0.5;      // доля высоты экрана между элементами
   var FLAT = 0.06;    // у центра — полная видимость
   var FADE = 0.28;    // за столько гаснет до нуля
   var q = function (s) { return Array.prototype.slice.call(tz.querySelectorAll(s)); };
