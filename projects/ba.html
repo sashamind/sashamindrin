@@ -2507,6 +2507,14 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     /* «экран» фильтром (см. #ba-screen-c у рендера выше) */
     filter: url(#ba-screen-c);
   }
+  /* у файла бирки широкие прозрачные поля — отступы с поправкой на них */
+  #rec-ba-merch .mr-tag {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    margin: 40px auto -80px;
+  }
   /* подпись под цветами — как под наличником */
   /* снизу у файла с цветами пустое чёрное поле — подпись подтянута к стеблям */
   #rec-ba-merch .mr-note {
@@ -2551,6 +2559,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     #rec-ba-merch .mr-stage { width: 120%; margin-left: -10%; }
     #rec-ba-merch .mr-nav { margin-top: 24px; }
     #rec-ba-merch .mr-sculpt { width: 58%; margin-top: 56px; }
+    #rec-ba-merch .mr-tag { width: 100%; margin: 24px auto -40px; }
     #rec-ba-merch .mr-flowers { width: 80%; margin-top: 72px; }
     #rec-ba-merch .mr-note { max-width: 280px; margin-top: -40px; padding: 0 20px; box-sizing: content-box; }
   }
@@ -2581,6 +2590,8 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
   </button>
 </div>
 
+<!-- бирка в форме знака — под макетами футболок -->
+<img class="mr-tag ba-fx" src="shh-creative/media/ba-tag.webp" alt="" width="1080" height="1080" loading="lazy" decoding="async" />
 <!-- цветы под мерчем, над скульптурой; чёрный фон растворяет фильтр #ba-screen-c -->
 <img class="mr-flowers ba-fx" src="shh-creative/media/ba-flowers.webp" alt="" width="1200" height="1500" loading="lazy" decoding="async" />
 <p class="mr-note"><span class="lang-ru"><b>Ромашка × хризантема</b><br />Юность +&nbsp;зрелость.</span><span class="lang-en"><b>Chamomile × chrysanthemum</b><br />Youth +&nbsp;maturity.</span></p>
@@ -3011,6 +3022,7 @@ window.addEventListener('message',function(e){if(!e.data||!e.data.lang)return;us
     { measure: ['.bh-title', '.bh-mask', '.bh-nav'], parts: ['.bh-title', '.bh-row', '.bh-nav'], anchor: '.bh-title' },
     { measure: ['.bh-stickers'], parts: ['.bh-stickers'], anchor: '.bh-stickers' },
     { measure: ['.mr-stage img.is-on', '.mr-nav'], parts: ['.mr-stage', '.mr-nav'], anchor: '.mr-stage' },
+    { measure: ['img.mr-tag'], parts: ['.mr-tag'], anchor: '.mr-tag' },
     // подпись под цветами гаснет и проявляется сама, позже цветов (скрипт у мерча)
     { measure: ['img.mr-flowers', '.mr-note'], parts: ['.mr-flowers'], anchor: '.mr-flowers' },
     { measure: ['img.mr-sculpt'], parts: ['.mr-sculpt'], anchor: '.mr-sculpt' }
