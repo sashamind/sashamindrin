@@ -814,6 +814,14 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
       const body = document.getElementById('projectBody');
       while (holder.firstChild) body.appendChild(holder.firstChild);
       applyLangSections(body, currentLang);
+      // кейс из Тильды показываем, только когда раскладка встала (см. settleTz)
+      const tzRoot = body.querySelector('.pf-tz');
+      if (tzRoot) {
+        body.style.visibility = 'hidden';
+        await settleTz(tzRoot);
+        if (activeProjectId !== id) return;
+        body.style.visibility = '';
+      }
       await runCaseScripts(body);
       if (activeProjectId !== id) return;
       // кейсы, перенесённые из Тильды, несут свои анимации — их ведёт assets/tz.js
@@ -826,6 +834,36 @@ async function renderProject(id, { updateUrl = true, replaceUrl = false } = {}) 
     if (activeProjectId !== id) return;
     panel.innerHTML = projectHeaderMarkup(project, currentLang);
   }
+}
+
+// Кейсы из Тильды раскладываются контейнерными запросами: высоты блоков
+// заданы в cqw внутри @container tz. Safari у только что вставленного кейса
+// (и сразу после смены ширины — «развернуть», ресайз) иногда не применяет
+// эти правила до следующей перекладки: блоки получают нулевую высоту, и всё,
+// что ниже, съезжает наверх. Проверяем, что у каждого видимого блока есть
+// высота, и если нет — заставляем браузер пересчитать раскладку.
+function tzSettled(root) {
+  return Array.from(root.querySelectorAll('.tz-ab')).every(ab =>
+    ab.offsetHeight > 0 || getComputedStyle(ab).display === 'none');
+}
+function kickTz(root) {
+  root.style.display = 'none';
+  void root.offsetHeight;
+  root.style.display = '';
+}
+async function settleTz(root) {
+  for (let i = 0; i < 60; i++) {
+    if (tzSettled(root)) return;
+    kickTz(root);
+    await new Promise(r => requestAnimationFrame(r));
+  }
+}
+// после смены ширины панели — проверяем и подталкиваем пару раз
+function recheckTz() {
+  const root = document.querySelector('.panel-detail .pf-tz');
+  if (!root) return;
+  requestAnimationFrame(() => { if (!tzSettled(root)) kickTz(root); });
+  setTimeout(() => { if (root.isConnected && !tzSettled(root)) kickTz(root); }, 400);
 }
 
 // Скрипты, вставленные через innerHTML, браузер не выполняет. Кейсы,
@@ -1215,6 +1253,7 @@ function setCaseFull(on) {
   caseExpand.dataset.en = on ? 'close' : 'expand';
   caseExpand.dataset.ru = on ? 'свернуть' : 'развернуть';
   caseExpand.textContent = currentLang === 'en' ? caseExpand.dataset.en : caseExpand.dataset.ru;
+  recheckTz();
 }
 
 if (caseExpand) {
@@ -1234,6 +1273,7 @@ document.addEventListener('keydown', e => {
 // поэтому снимаем режим сами, иначе из него не выбраться
 window.addEventListener('resize', () => {
   if (window.innerWidth <= 768 && document.body.classList.contains('case-full')) setCaseFull(false);
+  recheckTz();
 });
 
 

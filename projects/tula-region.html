@@ -679,6 +679,26 @@
   #rec786794431 .tn-elem[data-elem-id="1724063011126"] .tn-atom { font-size: 34px !important; }
 }
 </style>
+<!-- Анимации на чёрном фоне были наложены «экраном». Их проявляет и гасит
+     прокрутка, и на время такой анимации у элемента свой слой, в котором
+     «экран» не видит фон страницы — проступал чёрный прямоугольник видео.
+     Фон артбордов однотонный (#0a0a0a), поэтому то же самое делает фильтр:
+     поднимает чёрное ровно до цвета фона (a + f − a·f). -->
+<style>
+  .pf-tz .tz-e-786794431-1724256721850,
+  .pf-tz .tz-e-786794499-1728126298995 { mix-blend-mode: normal !important; }
+  .pf-tz .tz-e-786794431-1724256721850 video,
+  .pf-tz .tz-e-786794499-1728126298995 video { filter: url(#tula-screen); }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="tula-screen" color-interpolation-filters="sRGB">
+    <feComponentTransfer>
+      <feFuncR type="linear" slope="0.96078" intercept="0.03922"/>
+      <feFuncG type="linear" slope="0.96078" intercept="0.03922"/>
+      <feFuncB type="linear" slope="0.96078" intercept="0.03922"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
 <div class="pf-tz" data-tz>
 <div class="tz-ab" id="rec786794431" data-ab="786794431">
   <div class="tz-el tz-shape tz-e-786794431-1723839929056 tn-elem tn-elem__7867944311723839929056" data-id="1723839929056" data-elem-id="1723839929056" data-elem-type="shape" data-sbs-d='{"event":"scroll","opts":[{"mx":0,"my":0,"sx":1,"sy":1,"op":1,"ro":0,"di":"0","dd":"0","fi":"0"},{"mx":0,"my":0,"sx":1,"sy":1,"op":0,"ro":0,"di":0,"dd":"0","fi":"0"},{"mx":-17,"my":-20,"sx":1,"sy":1,"op":1,"ro":0,"di":100,"dd":60,"fi":"0"}],"trg":1,"trgofst":0,"trgels":"","loop":""}' data-sbs-m='{"event":"scroll","opts":[{"mx":0,"my":0,"sx":1,"sy":1,"op":1,"ro":0,"di":"0","dd":"0","fi":"0"},{"mx":0,"my":-90,"sx":1,"sy":1,"op":0,"ro":0,"di":0,"dd":"0","fi":"0"},{"mx":0,"my":50,"sx":1,"sy":1,"op":1,"ro":0,"di":120,"dd":60,"fi":"0"}],"trg":1,"trgofst":-100,"trgels":"","loop":"","z":1.219}'><div class="tz-w tn-atom tn-atom__sbs-anim-wrapper"><div class="tz-shape"></div></div></div>
