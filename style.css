@@ -344,6 +344,9 @@ main {
   transform: translateZ(0) scale(0.85);
 }
 
+/* иконка в разметке — запасной значок под ней не нужен с самого начала */
+.card-inner:has(> .card-thumb) .card-icon { display: none; }
+
 .card-thumb {
   position: absolute;
   inset: 0;
