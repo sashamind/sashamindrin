@@ -295,6 +295,9 @@
       });
     }, { rootMargin: '300px 0px' }) : null;
     tz.querySelectorAll('video').forEach(v => { if (vio) vio.observe(v); else v.play(); });
+    // видео, наложенные «экраном», — через холст (см. screenVideo ниже)
+    const screenOffs = [];
+    root.querySelectorAll('video').forEach(v => { const stop = screenVideo(v); if (stop) screenOffs.push(stop); });
     const onLoad = () => onScroll();
     tz.querySelectorAll('img').forEach(img => { if (!img.complete) img.addEventListener('load', onLoad, { once: true }); });
     lastW = tz.getBoundingClientRect().width;
@@ -305,10 +308,76 @@
       window.removeEventListener('resize', onResize);
       if (ro) ro.disconnect();
       if (vio) vio.disconnect();
+      screenOffs.forEach(f => f());
       clearTimeout(rt);
       offs.splice(0).forEach(f => f());
       items.forEach(it => it.anim && it.anim.cancel());
       if (raf) cancelAnimationFrame(raf);
+    };
+  }
+
+  // Видео, наложенное «экраном» (белое на чёрном поверх фона кейса).
+  // Safari рисует <video> отдельным аппаратным слоем и на нём не работает
+  // mix-blend-mode — ни постоянно, ни когда ролик упирается в край области
+  // прокрутки или его проявляет анимация: проступает чёрный прямоугольник.
+  // Поэтому кадры перерисовываются на прозрачный холст, где яркость
+  // становится непрозрачностью: чёрное — прозрачное, белое — белое, цвет
+  // сохраняется. Над тёмным фоном это и есть «экран», а всё, что лежит под
+  // роликом (буквы, линии), остаётся видно. Само видео остаётся на месте
+  // невидимым — его так же запускает и останавливает прокрутка.
+  function screenVideo(v) {
+    const host = v.closest('.tz-el');
+    const isScreen = el => el && getComputedStyle(el).mixBlendMode === 'screen';
+    if (!isScreen(v) && !isScreen(host)) return null;
+    const box = v.parentElement;
+    if (getComputedStyle(box).position === 'static') box.style.position = 'relative';
+    const c = document.createElement('canvas');
+    c.setAttribute('aria-hidden', 'true');
+    c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none';
+    box.appendChild(c);
+    v.style.opacity = '0';
+    v.style.mixBlendMode = 'normal';
+    if (host) host.style.mixBlendMode = 'normal';
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    const fit = getComputedStyle(v).objectFit;
+    const MAX = 720; // попиксельная обработка: холст не больше этого по стороне
+    let raf = 0, dead = false;
+    function draw() {
+      const bw = box.clientWidth, bh = box.clientHeight;
+      if (!bw || !bh || v.readyState < 2 || !v.videoWidth) return;
+      const k0 = Math.min((window.devicePixelRatio || 1), MAX / Math.max(bw, bh));
+      const cw = Math.max(1, Math.round(bw * k0)), ch = Math.max(1, Math.round(bh * k0));
+      if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+      const k = (fit === 'contain' ? Math.min : Math.max)(cw / v.videoWidth, ch / v.videoHeight);
+      const dw = v.videoWidth * k, dh = v.videoHeight * k;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(v, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+      const img = ctx.getImageData(0, 0, cw, ch), d = img.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i + 1], b = d[i + 2];
+        const m = r > g ? (r > b ? r : b) : (g > b ? g : b);
+        if (m === 0) { d[i + 3] = 0; continue; }
+        const f = 255 / m;
+        d[i] = r * f; d[i + 1] = g * f; d[i + 2] = b * f; d[i + 3] = m;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+    function loop() {
+      raf = 0;
+      if (dead || !v.isConnected) return;
+      draw();
+      if (!v.paused && !v.ended) raf = requestAnimationFrame(loop);
+    }
+    const kick = () => { if (!raf && !dead) raf = requestAnimationFrame(loop); };
+    ['play', 'playing', 'loadeddata', 'seeked'].forEach(t => v.addEventListener(t, kick));
+    const ro = 'ResizeObserver' in window ? new ResizeObserver(kick) : null;
+    if (ro) ro.observe(box);
+    kick();
+    return () => {
+      dead = true;
+      if (raf) cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
+      ['play', 'playing', 'loadeddata', 'seeked'].forEach(t => v.removeEventListener(t, kick));
     };
   }
 
