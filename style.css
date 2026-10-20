@@ -1409,6 +1409,8 @@ html[lang="en"] .pf-tz .lang-ru { display: none !important; }
   height: auto;
   margin: 0;
 }
+/* SVG с живым текстом вместо картинки с текстом в кривых — тот же кадр */
+.pf-tz .tz-image > .tz-w > svg.tz-vtext { display: block; width: 100%; height: auto; overflow: visible; }
 .pf-tz .tz-shape { width: 100%; height: 100%; }
 .pf-tz video {
   display: block;
