@@ -130,7 +130,7 @@ function renderEmpty() {
           <path class="g-body" />
         </svg>
         <p class="pd-intro-text"><a class="pd-intro-name" href="about.html"><span class="pd-name-anim" data-name="ru" aria-hidden="true"></span><span class="pd-name-anim" data-name="en" aria-hidden="true"></span><span class="pd-name-text" data-en="Sasha Mindrin" data-ru="Саша Миндрин">Sasha Mindrin</span></a><span class="pd-name-comma">,</span><span class="pd-intro-rest"><span class="pd-role"><span class="pd-role-sizer" aria-hidden="true">designer.</span><span class="pd-role-word">designer<span class="pd-role-dot">.</span></span></span></span></p>
-        <p class="pd-intro-tag" data-en="I create visual systems&nbsp;— identity, motion, web and&nbsp;interactive, made to&nbsp;work together." data-ru="создаю визуальные системы: айдентика, моушн, сайт и&nbsp;интерактив, которые работают вместе.">${currentLang === 'en' ? 'I create visual systems&nbsp;— identity, motion, web and&nbsp;interactive, made to&nbsp;work together.' : 'создаю визуальные системы: айдентика, моушн, сайт и&nbsp;интерактив, которые работают вместе.'}</p>
+        <p class="pd-intro-tag" data-en="I create visual systems&nbsp;— identity, motion, web and&nbsp;interactive." data-ru="создаю визуальные системы: айдентика, моушн, сайт и&nbsp;интерактив.">${currentLang === 'en' ? 'I create visual systems&nbsp;— identity, motion, web and&nbsp;interactive.' : 'создаю визуальные системы: айдентика, моушн, сайт и&nbsp;интерактив.'}</p>
       </div>
 
       <div class="pd-point">
