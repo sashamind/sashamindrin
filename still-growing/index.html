@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still growing</title>
+<!--
+  Still growing — интерактив: плоская иконка черепа из серых квадратов, под
+  курсором (пальцем) проявляется живой череп во мху, сыплются лепестки.
+  Код мозаики — из старого интерактива «flowers over power» (Тильда,
+  interactive_flowersoverpower). Скрытая страница: не в галерее, не в
+  sitemap, закрыта от поиска (noindex). Рабочая копия — _lab/flowers-over-power.
+-->
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Still growing — interactive by Sasha Mindrin.">
+<link rel="icon" href="../favicon.ico?v=20261020-1" sizes="48x48">
+<link rel="icon" href="../favicon.svg?v=20261020-1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=20261020-1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: #fff; color: #8c8c8c; display: grid; place-items: center; overflow: hidden; }
+  /* заголовок по центру: первое слово — сверху, второе — снизу. Буквы собраны из тех же серых квадратов, что мозаика (см. скрипт
+     внизу); текст в h1 остаётся для поиска и читалок */
+  .w { position: fixed; z-index: 2; display: block; touch-action: none; }
+  h1 .t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .w1 { left: 50%; top: clamp(16px, 3vw, 40px); transform: translateX(-50%); }
+  .w2 { left: 50%; bottom: clamp(16px, 3vw, 40px); transform: translateX(-50%); }
+  /* меньше, чем было на Тильде (90vw / 70vw, до 800px): 72vw / 56vw, до 640px,
+     и не выше экрана */
+  /* поле интерактива — точно в центре экрана */
+  #three-container { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(83vw, 736px, 80vh); aspect-ratio: 1 / 1; background: #fff; touch-action: none; }
+  @media (min-width: 768px) { #three-container { width: min(64vw, 736px, 80vh); } }
+  /* горизонтальный экран: поле ниже по высоте — сверху и снизу место под слова */
+  @media (min-aspect-ratio: 1/1) { #three-container { width: min(64vw, 736px, 60vh); } }
+  /* маленькие экраны: череп крупнее — почти во всю ширину телефона,
+     а у телефона боком — почти во всю высоту (слова мельчают сами) */
+  @media (max-width: 480px) and (max-aspect-ratio: 1/1) { #three-container { width: min(94vw, 80vh); } }
+  @media (max-height: 500px) and (min-aspect-ratio: 1/1) { #three-container { width: min(64vw, 74vh); } }
+</style>
+</head>
+<body>
+<h1><span class="t">still growing</span><canvas class="w w1" data-word="still"></canvas><canvas class="w w2" data-word="growing"></canvas></h1>
+<div id="three-container"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const container=document.getElementById('three-container');const scene=new THREE.Scene();const camera=new THREE.OrthographicCamera(-100,100,100,-100,0.1,1000);camera.position.set(0,0,10);camera.lookAt(0,0,0);const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});renderer.setPixelRatio(window.devicePixelRatio);renderer.setClearColor(0xffffff,1);renderer.setSize(container.clientWidth,container.clientHeight);container.appendChild(renderer.domElement);const vertexShader=`
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;const fragmentShader=`
+      uniform sampler2D uTexture;
+      uniform vec4 uRegion;
+      uniform float uScale;
+      uniform float uHas;
+      varying vec2 vUv;
+      void main() {
+        vec2 globalUV = uRegion.xy + vUv * uRegion.zw;
+        vec4 color = texture2D(uTexture, globalUV);
+        // до наведения клетка с изображением — сплошной серый квадрат,
+        // пустая — невидима; по мере того как клетка растёт под курсором,
+        // серый плавно переходит в цвет картинки (базовый размер 0.4 →
+        // полностью цветная к 1.0)
+        // у пустой клетки — тот же цвет картинки, только прозрачный: смесь с
+        // прозрачным чёрным дала бы серое кольцо вокруг курсора
+        vec4 rest = uHas > 0.5 ? vec4(vec3(0.55), 1.0) : vec4(color.rgb, 0.0);
+        color = mix(rest, color, smoothstep(0.42, 1.0, uScale));
+        gl_FragColor = color;
+      }
+    `;let gridCount=40;const baseScale=0.4;const maxScaleDelta=1.5;const influenceRadius=195;const inertiaSpeed=0.1;const offsetInertiaSpeed=0.05;const maxRotation=0.1;const particlesPerSpawn=10;const minPetalFactor=0.5;const maxPetalFactor=6.5;let mouseActive=false;const mouse=new THREE.Vector2();window.addEventListener('mousemove',(event)=>{mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((event.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((event.clientY - rect.top)/container.clientHeight)*2 + 1;});window.addEventListener('touchmove',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchstart',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchend',()=>{mouseActive=false;},{passive:true});let initialAnimationStart=performance.now();const initialAnimationDuration=2000;function easeInOutQuad(t) {return t<0.5?2*t*t:-1 +(4 - 2*t)*t;}
+const textureLoader=new THREE.TextureLoader();// основная картинка: по умолчанию череп; другую — ?img=путь (например ?img=img/ak-green.png).
+// Любой размер приводится к квадрату 800×800 по центру — под него подобраны
+// размеры клеток, радиус влияния и лепестки.
+// Силуэт (из него — серые квадраты до наведения) — отдельная картинка:
+// по умолчанию плоская иконка черепа; ?mask=путь. Если задана только ?img,
+// силуэт берётся из неё же.
+const Q=new URLSearchParams(location.search);
+const IMAGE=Q.get('img')||'img/scull_main/scull_2.png';
+const MASK=Q.get('mask')||(Q.get('img')?IMAGE:'img/scull_main/scull_1.png');
+function to800(im){const side=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(im,(im.width-side)/2,(im.height-side)/2,side,side,0,0,800,800);return c;}
+// рамка изображения: непрозрачные и не белые пиксели
+function inkBox(cv){const d=cv.getContext('2d').getImageData(0,0,800,800).data;let x0=800,y0=800,x1=-1,y1=-1;for(let y=0;y<800;y+=2)for(let x=0;x<800;x+=2){const k=(y*800+x)*4;if(d[k+3]>20&&Math.min(d[k],d[k+1],d[k+2])<235){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}}return x1<0?null:[x0,y0,x1,y1];}
+function crop(cv,c){const o=document.createElement('canvas');o.width=o.height=800;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,800,800);g.drawImage(cv,c[0],c[1],c[2],c[2],0,0,800,800);return o;}
+const maskImg=new Image();maskImg.onload=()=>{const mask800=to800(maskImg);
+textureLoader.load(IMAGE,(srcTexture)=>{const img800=to800(srcTexture.image);
+// картинка целиком, с её полями (обрезку по рамке изображения пробовали —
+// череп слишком крупный); TRIM=true — обрезать белые поля по общей рамке +8%
+// на маленьких экранах (телефон) поля частично обрезаются — череп ближе
+const SMALL=Math.min(innerWidth,innerHeight)<=500, TRIM=SMALL, AIR=SMALL?1.45:1.08;
+const ba=inkBox(mask800)||[0,0,799,799],bb=inkBox(img800)||ba,bx0=Math.min(ba[0],bb[0]),by0=Math.min(ba[1],bb[1]),bx1=Math.max(ba[2],bb[2]),by1=Math.max(ba[3],bb[3]);
+/* центр кадра — по иконке (её видно до наведения), размер — по общей рамке с живой картинкой */ const cside=Math.min(800,Math.max(bx1-bx0,by1-by0)*AIR),crect=TRIM?[(ba[0]+ba[2])/2-cside/2,(ba[1]+ba[3])/2-cside/2,cside]:[0,0,800];
+/* при обрезке полей клеток меньше в той же пропорции — на череп приходится столько же квадратов, сколько без обрезки; шаг сетки отдаём заголовку */ if(TRIM){gridCount=Math.max(12,Math.round(40*cside/800));} window.fopGrid=gridCount; {const mc=crop(mask800,crect),ib=inkBox(mc)||[0,0,799,799];window.fopInk=ib.map(v=>v/800);} window.dispatchEvent(new Event('fop-grid'));
+const maskData=crop(mask800,crect).getContext('2d').getImageData(0,0,800,800).data;const texture=new THREE.CanvasTexture(crop(img800,crect));texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;const imgWidth=texture.image.width;const imgHeight=texture.image.height;const shortSide=Math.min(imgWidth,imgHeight);let uMin=0,uMax=1,vMin=0,vMax=1;if(imgWidth>imgHeight) {const offset=(imgWidth - shortSide)/2;uMin=offset/imgWidth;uMax=(offset + shortSide)/imgWidth;} else if(imgHeight>imgWidth) {const offset=(imgHeight - shortSide)/2;vMin=offset/imgHeight;vMax=(offset + shortSide)/imgHeight;}
+camera.left=-shortSide/2;camera.right=shortSide/2;camera.top=shortSide/2;camera.bottom=-shortSide/2;camera.near=-1000;camera.far=1000;camera.updateProjectionMatrix();const offscreenCanvas=document.createElement('canvas');offscreenCanvas.width=texture.image.width;offscreenCanvas.height=texture.image.height;const offscreenCtx=offscreenCanvas.getContext('2d');offscreenCtx.drawImage(texture.image,0,0);function createPetalGeometry(scale) {const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(10,15,0,30);shape.quadraticCurveTo(-10,15,0,0);const geometry=new THREE.ShapeGeometry(shape);geometry.scale(scale,scale,scale);return geometry;}
+const pieces=[];const cellSize=shortSide/gridCount;
+// в каких клетках есть силуэт: больше четверти клетки — непрозрачные и не белые пиксели силуэта
+const imgData=maskData;
+function cellHas(uL,uR,vB,vT){const x0=Math.floor(uL*imgWidth),x1=Math.ceil(uR*imgWidth),y0=Math.floor((1-vT)*imgHeight),y1=Math.ceil((1-vB)*imgHeight);
+  let n=0,on=0;for(let y=y0;y<y1;y+=2)for(let x=x0;x<x1;x+=2){const k=(y*imgWidth+x)*4;n++;if(imgData[k+3]>20&&Math.min(imgData[k],imgData[k+1],imgData[k+2])<235)on++;}return n&&on/n>0.25?1:0;}for(let i=0;i<gridCount;i++) {for(let j=0;j<gridCount;j++) {const uRange=uMax - uMin;const vRange=vMax - vMin;const uLeft=uMin + uRange*(j/gridCount);const uRight=uMin + uRange*((j + 1)/gridCount);const vTop=vMax - vRange*(i/gridCount);const vBottom=vMax - vRange*((i + 1)/gridCount);const region=new THREE.Vector4(uLeft,vBottom,uRight - uLeft,vTop - vBottom);const material=new THREE.ShaderMaterial({uniforms:{uTexture:{value:texture},uRegion:{value:region},uScale:{value:baseScale},uHas:{value:cellHas(uLeft,uRight,vBottom,vTop)}},vertexShader:vertexShader,fragmentShader:fragmentShader,transparent:true});const geometry=new THREE.PlaneGeometry(cellSize,cellSize);const cellMesh=new THREE.Mesh(geometry,material);const baseX=j*cellSize - shortSide/2 + cellSize/2;const baseY=-(i*cellSize - shortSide/2 + cellSize/2);cellMesh.userData.basePosition=new THREE.Vector2(baseX,baseY);cellMesh.userData.initialPosition=new THREE.Vector2(baseX +(Math.random() - 0.5)*shortSide*0.2,baseY +(Math.random() - 0.5)*shortSide*0.2);cellMesh.userData.baseScale=baseScale;cellMesh.userData.currentScale=0;cellMesh.userData.currentOffset=new THREE.Vector2(0,0);cellMesh.userData.currentRotation=0;cellMesh.position.set(cellMesh.userData.initialPosition.x,cellMesh.userData.initialPosition.y,0);cellMesh.scale.set(0,0,0);cellMesh.rotation.z=0;scene.add(cellMesh);pieces.push(cellMesh);}}
+// Зрачки: глазницы — две самые большие замкнутые пустые области внутри
+// силуэта (не касаются края кадра); в каждой — квадрат того же размера и
+// цвета, что серые клетки, плавно смотрит в сторону курсора и не выходит за
+// глазницу. Лежит под клетками: проявляющаяся картинка его закрывает.
+const pupils=[];(function(){const N=200,k=800/N,white=new Uint8Array(N*N);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=(((y*k+k/2)|0)*800+((x*k+k/2)|0))*4;white[y*N+x]=(maskData[i+3]<20||Math.min(maskData[i],maskData[i+1],maskData[i+2])>=235)?1:0;}
+  const lab=new Int32Array(N*N);let id=0;const comps=[];
+  for(let s=0;s<N*N;s++){if(!white[s]||lab[s])continue;id++;const st=[s];lab[s]=id;let area=0,minx=N,maxx=0,miny=N,maxy=0,edge=false;
+    while(st.length){const c=st.pop(),cx=c%N,cy=(c/N)|0;area++;if(cx<minx)minx=cx;if(cx>maxx)maxx=cx;if(cy<miny)miny=cy;if(cy>maxy)maxy=cy;if(cx===0||cy===0||cx===N-1||cy===N-1)edge=true;
+      if(cx>0&&white[c-1]&&!lab[c-1]){lab[c-1]=id;st.push(c-1);}if(cx<N-1&&white[c+1]&&!lab[c+1]){lab[c+1]=id;st.push(c+1);}
+      if(cy>0&&white[c-N]&&!lab[c-N]){lab[c-N]=id;st.push(c-N);}if(cy<N-1&&white[c+N]&&!lab[c+N]){lab[c+N]=id;st.push(c+N);}}
+    if(!edge&&area>20)comps.push({area,minx,maxx,miny,maxy});}
+  comps.sort((a,b)=>b.area-a.area);
+  // зрачки выключены; вернуть — EYES=true
+  const EYES=false;
+  (EYES?comps.slice(0,2):[]).forEach(e=>{const cx=(e.minx+e.maxx+1)/2*k,cy=(e.miny+e.maxy+1)/2*k,hw=(e.maxx-e.minx+1)*k/2,hh=(e.maxy-e.miny+1)*k/2,size=cellSize*baseScale;
+    const mesh=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshBasicMaterial({color:new THREE.Color(0.55,0.55,0.55),transparent:true,opacity:0}));
+    const base=new THREE.Vector2(cx-shortSide/2,shortSide/2-cy);mesh.position.set(base.x,base.y,-1);scene.add(mesh);
+    pupils.push({mesh,base,rx:Math.max(0,(hw-size/2)*0.2),ry:Math.max(0,(hh-size/2)*0.2),off:new THREE.Vector2()});});})();
+let particles=[];let lastParticleSpawnTime=0;const gravity=0.05;function sampleColorAtWorld(x,y) {const u=uMin +((x + shortSide/2)/shortSide)*(uMax - uMin);const v=vMin +((y + shortSide/2)/shortSide)*(vMax - vMin);const imgX=Math.floor(u*texture.image.width);const imgY=Math.floor((1 - v)*texture.image.height);if(imgX<0||imgY<0||imgX>=texture.image.width||imgY>=texture.image.height) return {r:255,g:255,b:255,a:0};const pixel=offscreenCtx.getImageData(imgX,imgY,1,1).data;return {r:pixel[0],g:pixel[1],b:pixel[2],a:pixel[3]/255};}
+function spawnParticle(position) {const colorSample=sampleColorAtWorld(position.x,position.y);/* лепестки — только там, где есть изображение (как у клеток мозаики): не за краем картинки (там «пустой» пиксель читается как чёрный) и не на почти белом фоне */ if(colorSample.a<0.08||Math.min(colorSample.r,colorSample.g,colorSample.b)>=235) {return;}
+const color=new THREE.Color(colorSample.r/255,colorSample.g/255,colorSample.b/255);const randomSizeFactor=minPetalFactor + Math.random()*(maxPetalFactor - minPetalFactor);const petalScale=(cellSize/6*randomSizeFactor)/30;const petalGeometry=createPetalGeometry(petalScale);const particleMaterial=new THREE.MeshBasicMaterial({color:color,transparent:true});const particleMesh=new THREE.Mesh(petalGeometry,particleMaterial);particleMesh.position.set(position.x,position.y,1);particleMesh.rotation.z=Math.random()*Math.PI*2;scene.add(particleMesh);const angle=Math.random()*Math.PI*2;const speed=Math.random()*2 + 1;const velocity=new THREE.Vector2(Math.cos(angle)*speed,Math.sin(angle)*speed);const particle={mesh:particleMesh,velocity:velocity,creationTime:performance.now(),lifetime:3000};particles.push(particle);}
+let prevMousePoint=new THREE.Vector2();function animate() {requestAnimationFrame(animate);const currentTime=performance.now();let progress=Math.min((currentTime - initialAnimationStart)/initialAnimationDuration,1);let easedProgress=easeInOutQuad(progress);if(progress<1) {pieces.forEach((cell)=>{const basePos=cell.userData.basePosition;const initPos=cell.userData.initialPosition;cell.position.x=THREE.MathUtils.lerp(initPos.x,basePos.x,easedProgress);cell.position.y=THREE.MathUtils.lerp(initPos.y,basePos.y,easedProgress);let s=THREE.MathUtils.lerp(0,cell.userData.baseScale,easedProgress);cell.scale.set(s,s,s);cell.userData.currentScale=s;});} else {if(!mouseActive) {mouse.set(2,2);}
+const raycaster=new THREE.Raycaster();raycaster.setFromCamera(mouse,camera);const planeZ=new THREE.Plane(new THREE.Vector3(0,0,1),0);const intersectPoint=new THREE.Vector3();raycaster.ray.intersectPlane(planeZ,intersectPoint);const mousePoint=new THREE.Vector2(intersectPoint.x,intersectPoint.y);const movement=mousePoint.distanceTo(prevMousePoint);if(movement>0.1&&performance.now() - lastParticleSpawnTime>100) {for(let k=0;k<particlesPerSpawn;k++) {spawnParticle(mousePoint);}
+lastParticleSpawnTime=performance.now();}
+prevMousePoint.copy(mousePoint);pieces.forEach((cell)=>{const basePos=cell.userData.basePosition;const distance=basePos.distanceTo(mousePoint);let targetScale=baseScale;if(distance<influenceRadius) {targetScale=baseScale + maxScaleDelta*(1 - distance/influenceRadius);}
+cell.userData.currentScale+=inertiaSpeed*(targetScale - cell.userData.currentScale);let targetOffset=new THREE.Vector2(0,0);if(distance<influenceRadius) {const dir=new THREE.Vector2().subVectors(basePos,mousePoint).normalize();const offsetMag=(cellSize/2)*(distance/influenceRadius);targetOffset=dir.multiplyScalar(offsetMag);}
+cell.userData.currentOffset.lerp(targetOffset,offsetInertiaSpeed);const dx=basePos.x - mousePoint.x;const factor=Math.min(distance/influenceRadius,1);const targetRotation=maxRotation*factor*(dx>=0?1:-1);cell.userData.currentRotation+=inertiaSpeed*(targetRotation - cell.userData.currentRotation);cell.position.x=basePos.x + cell.userData.currentOffset.x;cell.position.y=basePos.y + cell.userData.currentOffset.y;cell.scale.set(cell.userData.currentScale,cell.userData.currentScale,cell.userData.currentScale);cell.rotation.z=cell.userData.currentRotation;cell.material.uniforms.uScale.value=cell.userData.currentScale;});}
+for(let i=particles.length - 1;i>=0;i--) {const p=particles[i];let elapsed=performance.now() - p.creationTime;let t=elapsed/p.lifetime;let scaleFactor=1 - t;p.mesh.scale.set(scaleFactor,scaleFactor,scaleFactor);p.velocity.y-=gravity;p.mesh.position.x+=p.velocity.x;p.mesh.position.y+=p.velocity.y;if(elapsed>p.lifetime) {scene.remove(p.mesh);particles.splice(i,1);}}
+pupils.forEach((pp)=>{const tx=mouseActive?mouse.x*shortSide/2:pp.base.x,ty=mouseActive?mouse.y*shortSide/2:pp.base.y;const dx=tx-pp.base.x,dy=ty-pp.base.y,len=Math.hypot(dx,dy),f=Math.min(1,len/120);
+  const target=new THREE.Vector2(len?dx/len*pp.rx*f:0,len?dy/len*pp.ry*f:0);pp.off.lerp(target,0.12);pp.mesh.position.x=pp.base.x+pp.off.x;pp.mesh.position.y=pp.base.y+pp.off.y;
+  if(progress>=1&&pp.mesh.material.opacity<1)pp.mesh.material.opacity=Math.min(1,pp.mesh.material.opacity+0.03);});
+renderer.render(scene,camera);}
+animate();},undefined,(error)=>{console.error('Ошибка загрузки текстуры:',error);});};maskImg.src=MASK;window.addEventListener('resize',()=>{renderer.setSize(container.clientWidth,container.clientHeight);});
+</script>
+<script>
+// Слова заголовка — пиксельные: слово набирается тонким курсивом с засечками
+// (Cormorant Garamond Italic 500) на невидимом холсте и раскладывается на
+// пиксели размером с квадрат мозаики до наведения (0.4 шага интерактива,
+// шаг = ширина поля / число клеток: 40, на телефоне меньше — см. обрезку), светло-серым, вплотную, без промежутков: пиксель
+// закрашен, если буква занимает больше 40% его площади.
+// Пиксели рисуются по целым точкам экрана — между соседними нет швов.
+// Если слово упирается в череп (невысокие экраны), оба слова мельчают одинаково.
+// Наведение (или палец): пиксели рядом с курсором мягко расходятся в стороны
+// и пружинят обратно.
+(function(){
+  const SQ=0.4, CAP=9.5, MIN_CAP=4, COLOR='rgb(230,230,230)', PAD=3, R=7, PUSH=0.9;
+  const box=document.getElementById('three-container');
+  const words=[...document.querySelectorAll('canvas.w')], state=new Map();
+  function build(cv, cap){
+    const GRID=window.fopGrid||40, step=box.clientWidth/GRID, px=step*SQ, word=cv.dataset.word;
+    const font='italic 500 '+(step*cap/0.72)+'px "Cormorant Garamond", Georgia, serif';
+    const m=document.createElement('canvas').getContext('2d'); m.font=font;
+    const mt=m.measureText(word), asc=mt.actualBoundingBoxAscent, desc=mt.actualBoundingBoxDescent, left=mt.actualBoundingBoxLeft, tw=left+mt.actualBoundingBoxRight;
+    const cols=Math.ceil(tw/px)+2+2*PAD, rows=Math.ceil((asc+desc)/px)+2+2*PAD;
+    const off=document.createElement('canvas'); off.width=Math.ceil(cols*px); off.height=Math.ceil(rows*px);
+    const o=off.getContext('2d'); o.font=font; o.fillStyle='#000'; o.fillText(word, (PAD+1)*px+left, (PAD+1)*px+asc);
+    const data=o.getImageData(0,0,off.width,off.height).data, cells=[];
+    for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
+      let n=0,on=0; const x0=Math.floor(q*px),x1=Math.min(off.width,Math.floor((q+1)*px)),y0=Math.floor(r*px),y1=Math.min(off.height,Math.floor((r+1)*px));
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){n++; if(data[(y*off.width+x)*4+3]>128) on++;}
+      if(n&&on/n>0.4) cells.push({q,r,ox:0,oy:0});
+    }
+    return {px,cols,rows,cells,ptr:null};
+  }
+  function place(cv,s){
+    const dpr=window.devicePixelRatio||1, W=s.cols*s.px, H=s.rows*s.px;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.width=W+'px'; cv.style.height=H+'px';
+    // прозрачный запас по краям (под смещения) — по вертикали не отодвигает
+    // буквы от края экрана; по горизонтали слово центруется вместе с запасом
+    cv.style.margin=(-PAD*s.px)+'px 0';
+  }
+  function paint(cv,s){
+    const dpr=window.devicePixelRatio||1, c=cv.getContext('2d');
+    c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,cv.width,cv.height); c.fillStyle=COLOR;
+    for(const e of s.cells){
+      const x=(e.q*s.px+e.ox)*dpr, y=(e.r*s.px+e.oy)*dpr, X0=Math.round(x), Y0=Math.round(y);
+      c.fillRect(X0, Y0, Math.round(x+s.px*dpr)-X0, Math.round(y+s.px*dpr)-Y0);
+    }
+  }
+  function overlaps(cv,s){
+    // мешает только сам череп (рамка иконки внутри поля), пустые поля вокруг можно занимать
+    const a=cv.getBoundingClientRect(), B=box.getBoundingClientRect(), k=window.fopInk||[0,0,1,1], ins=PAD*s.px, gap=box.clientWidth/(window.fopGrid||40);
+    const b={left:B.left+k[0]*B.width, top:B.top+k[1]*B.height, right:B.left+k[2]*B.width, bottom:B.top+k[3]*B.height};
+    // слишком широкое для экрана (поля по 16px) — тоже считается «не помещается»
+    if(a.width-2*ins>window.innerWidth-32) return true;
+    return a.left+ins<b.right+gap && a.right-ins>b.left-gap && a.top+ins<b.bottom+gap && a.bottom-ins>b.top-gap;
+  }
+  // кегль общий для обоих слов: уменьшается, пока хоть одно упирается в поле
+  function layout(){
+    let cap=CAP, ss;
+    for(;;){
+      ss=words.map(cv=>{ const s=build(cv,cap); place(cv,s); return s; });
+      if(cap<=MIN_CAP||!words.some((cv,i)=>overlaps(cv,ss[i]))) break;
+      cap-=0.5;
+    }
+    words.forEach((cv,i)=>{ state.set(cv,ss[i]); paint(cv,ss[i]); });
+  }
+  let raf=0;
+  function tick(){
+    raf=0; let moving=false;
+    state.forEach((s,cv)=>{
+      let changed=false;
+      for(const e of s.cells){
+        let tx=0, ty=0;
+        if(s.ptr){
+          const dx=(e.q+0.5)*s.px-s.ptr[0], dy=(e.r+0.5)*s.px-s.ptr[1], d=Math.hypot(dx,dy)/s.px;
+          if(d<R&&d>0){ const f=Math.pow(1-d/R,2)*PUSH*s.px; tx=dx/(d*s.px)*f; ty=dy/(d*s.px)*f; }
+        }
+        const nx=e.ox+(tx-e.ox)*0.16, ny=e.oy+(ty-e.oy)*0.16;
+        if(Math.abs(nx-e.ox)>0.01||Math.abs(ny-e.oy)>0.01) changed=true;
+        e.ox=Math.abs(nx)<0.02&&!tx?0:nx; e.oy=Math.abs(ny)<0.02&&!ty?0:ny;
+      }
+      if(changed){ paint(cv,s); moving=true; }
+      if(s.ptr) moving=true;
+    });
+    if(moving) raf=requestAnimationFrame(tick);
+  }
+  function kick(){ if(!raf) raf=requestAnimationFrame(tick); }
+  words.forEach(cv=>{
+    cv.addEventListener('pointermove',ev=>{ const s=state.get(cv); if(!s) return; const r=cv.getBoundingClientRect(); s.ptr=[ev.clientX-r.left, ev.clientY-r.top]; kick(); });
+    const leave=()=>{ const s=state.get(cv); if(s){ s.ptr=null; kick(); } };
+    cv.addEventListener('pointerleave',leave); cv.addEventListener('pointerup',leave); cv.addEventListener('pointercancel',leave);
+  });
+  window.addEventListener('resize', layout);
+  window.addEventListener('fop-grid', layout);
+  Promise.all([document.fonts.load('italic 500 100px "Cormorant Garamond"'), document.fonts.ready]).then(layout, layout);
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b65a788d6a8741b3bbe10367943fbddd"}'></script>
+</body>
+</html>
