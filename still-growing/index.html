@@ -16,10 +16,18 @@
 <link rel="icon" href="../favicon.ico?v=20261020-1" sizes="48x48">
 <link rel="icon" href="../favicon.svg?v=20261020-1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=20261020-1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sashamind.com/still-growing/">
+<meta property="og:title" content="Still growing">
+<meta property="og:description" content="Interactive by Sasha Mindrin — hover the skull.">
+<meta property="og:image" content="https://sashamind.com/still-growing/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sashamind.com/still-growing/og.jpg">
 <style>
+  /* шрифт и three.js — свои копии в assets/, без внешних серверов */
+  @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: swap; src: url("../assets/fonts/CormorantGaramond-Italic500-latin.woff2") format("woff2"); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body { background: #fff; color: #8c8c8c; display: grid; place-items: center; overflow: hidden; }
@@ -45,7 +53,7 @@
 <body>
 <h1><span class="t">still growing</span><canvas class="w w1" data-word="still"></canvas><canvas class="w w2" data-word="growing"></canvas></h1>
 <div id="three-container"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../assets/vendor/three-r128.min.js"></script>
 <script>
 const container=document.getElementById('three-container');const scene=new THREE.Scene();const camera=new THREE.OrthographicCamera(-100,100,100,-100,0.1,1000);camera.position.set(0,0,10);camera.lookAt(0,0,0);const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});renderer.setPixelRatio(window.devicePixelRatio);renderer.setClearColor(0xffffff,1);renderer.setSize(container.clientWidth,container.clientHeight);container.appendChild(renderer.domElement);const vertexShader=`
       varying vec2 vUv;
@@ -72,7 +80,7 @@ const container=document.getElementById('three-container');const scene=new THREE
         color = mix(rest, color, smoothstep(0.42, 1.0, uScale));
         gl_FragColor = color;
       }
-    `;let gridCount=40;const baseScale=0.4;const maxScaleDelta=1.5;const influenceRadius=195;const inertiaSpeed=0.1;const offsetInertiaSpeed=0.05;const maxRotation=0.1;const particlesPerSpawn=10;const minPetalFactor=0.5;const maxPetalFactor=6.5;let mouseActive=false;const mouse=new THREE.Vector2();window.addEventListener('mousemove',(event)=>{mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((event.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((event.clientY - rect.top)/container.clientHeight)*2 + 1;});window.addEventListener('touchmove',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchstart',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchend',()=>{mouseActive=false;},{passive:true});let initialAnimationStart=performance.now();const initialAnimationDuration=2000;function easeInOutQuad(t) {return t<0.5?2*t*t:-1 +(4 - 2*t)*t;}
+    `;let gridCount=40;const baseScale=0.4;const maxScaleDelta=1.5;const influenceRadius=195;const inertiaSpeed=0.1;const HOLD=900;const returnSpeed=0.035;/* волна по клику/тапу: кольцо расходится от точки и приоткрывает картинку */ const waves=[];const WAVE_SPEED=0.45,WAVE_WIDTH=85,WAVE_FRONT=45,WAVE_AMP=0.9,WAVE_LIFE=2600;container.addEventListener('pointerdown',(event)=>{const rect=container.getBoundingClientRect();const nx=((event.clientX - rect.left)/container.clientWidth)*2 - 1,ny=-((event.clientY - rect.top)/container.clientHeight)*2 + 1;waves.push({x:nx,y:ny,t0:performance.now()});if(waves.length>4)waves.shift();});const offsetInertiaSpeed=0.05;const maxRotation=0.1;const particlesPerSpawn=10;const minPetalFactor=0.5;const maxPetalFactor=6.5;let mouseActive=false;const mouse=new THREE.Vector2();window.addEventListener('mousemove',(event)=>{mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((event.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((event.clientY - rect.top)/container.clientHeight)*2 + 1;});window.addEventListener('touchmove',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchstart',(event)=>{const t=event.touches[0];if(!t)return;mouseActive=true;const rect=container.getBoundingClientRect();mouse.x=((t.clientX - rect.left)/container.clientWidth)*2 - 1;mouse.y=-((t.clientY - rect.top)/container.clientHeight)*2 + 1;},{passive:true});window.addEventListener('touchend',()=>{mouseActive=false;},{passive:true});let initialAnimationStart=performance.now();const initialAnimationDuration=2000;function easeInOutQuad(t) {return t<0.5?2*t*t:-1 +(4 - 2*t)*t;}
 const textureLoader=new THREE.TextureLoader();// основная картинка: по умолчанию череп; другую — ?img=путь (например ?img=img/ak-green.png).
 // Любой размер приводится к квадрату 800×800 по центру — под него подобраны
 // размеры клеток, радиус влияния и лепестки.
@@ -94,7 +102,7 @@ textureLoader.load(IMAGE,(srcTexture)=>{const img800=to800(srcTexture.image);
 const SMALL=Math.min(innerWidth,innerHeight)<=500, TRIM=SMALL, AIR=SMALL?1.45:1.08;
 const ba=inkBox(mask800)||[0,0,799,799],bb=inkBox(img800)||ba,bx0=Math.min(ba[0],bb[0]),by0=Math.min(ba[1],bb[1]),bx1=Math.max(ba[2],bb[2]),by1=Math.max(ba[3],bb[3]);
 /* центр кадра — по иконке (её видно до наведения), размер — по общей рамке с живой картинкой */ const cside=Math.min(800,Math.max(bx1-bx0,by1-by0)*AIR),crect=TRIM?[(ba[0]+ba[2])/2-cside/2,(ba[1]+ba[3])/2-cside/2,cside]:[0,0,800];
-/* при обрезке полей клеток меньше в той же пропорции — на череп приходится столько же квадратов, сколько без обрезки; шаг сетки отдаём заголовку */ if(TRIM){gridCount=Math.max(12,Math.round(40*cside/800));} window.fopGrid=gridCount; {const mc=crop(mask800,crect),ib=inkBox(mc)||[0,0,799,799];window.fopInk=ib.map(v=>v/800);} window.dispatchEvent(new Event('fop-grid'));
+/* при обрезке полей клеток меньше в той же пропорции — на череп приходится столько же квадратов, сколько без обрезки; шаг сетки отдаём заголовку */ if(TRIM){gridCount=Math.max(12,Math.round(40*cside/800));} window.fopGrid=gridCount; {const mc=crop(mask800,crect),ib=inkBox(mc)||[0,0,799,799];window.fopInk=ib.map(v=>v/800);window.fopMask=mc.getContext('2d').getImageData(0,0,800,800).data;} window.dispatchEvent(new Event('fop-grid'));
 const maskData=crop(mask800,crect).getContext('2d').getImageData(0,0,800,800).data;const texture=new THREE.CanvasTexture(crop(img800,crect));texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;const imgWidth=texture.image.width;const imgHeight=texture.image.height;const shortSide=Math.min(imgWidth,imgHeight);let uMin=0,uMax=1,vMin=0,vMax=1;if(imgWidth>imgHeight) {const offset=(imgWidth - shortSide)/2;uMin=offset/imgWidth;uMax=(offset + shortSide)/imgWidth;} else if(imgHeight>imgWidth) {const offset=(imgHeight - shortSide)/2;vMin=offset/imgHeight;vMax=(offset + shortSide)/imgHeight;}
 camera.left=-shortSide/2;camera.right=shortSide/2;camera.top=shortSide/2;camera.bottom=-shortSide/2;camera.near=-1000;camera.far=1000;camera.updateProjectionMatrix();const offscreenCanvas=document.createElement('canvas');offscreenCanvas.width=texture.image.width;offscreenCanvas.height=texture.image.height;const offscreenCtx=offscreenCanvas.getContext('2d');offscreenCtx.drawImage(texture.image,0,0);function createPetalGeometry(scale) {const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(10,15,0,30);shape.quadraticCurveTo(-10,15,0,0);const geometry=new THREE.ShapeGeometry(shape);geometry.scale(scale,scale,scale);return geometry;}
 const pieces=[];const cellSize=shortSide/gridCount;
@@ -127,15 +135,14 @@ const color=new THREE.Color(colorSample.r/255,colorSample.g/255,colorSample.b/25
 let prevMousePoint=new THREE.Vector2();function animate() {requestAnimationFrame(animate);const currentTime=performance.now();let progress=Math.min((currentTime - initialAnimationStart)/initialAnimationDuration,1);let easedProgress=easeInOutQuad(progress);if(progress<1) {pieces.forEach((cell)=>{const basePos=cell.userData.basePosition;const initPos=cell.userData.initialPosition;cell.position.x=THREE.MathUtils.lerp(initPos.x,basePos.x,easedProgress);cell.position.y=THREE.MathUtils.lerp(initPos.y,basePos.y,easedProgress);let s=THREE.MathUtils.lerp(0,cell.userData.baseScale,easedProgress);cell.scale.set(s,s,s);cell.userData.currentScale=s;});} else {if(!mouseActive) {mouse.set(2,2);}
 const raycaster=new THREE.Raycaster();raycaster.setFromCamera(mouse,camera);const planeZ=new THREE.Plane(new THREE.Vector3(0,0,1),0);const intersectPoint=new THREE.Vector3();raycaster.ray.intersectPlane(planeZ,intersectPoint);const mousePoint=new THREE.Vector2(intersectPoint.x,intersectPoint.y);const movement=mousePoint.distanceTo(prevMousePoint);if(movement>0.1&&performance.now() - lastParticleSpawnTime>100) {for(let k=0;k<particlesPerSpawn;k++) {spawnParticle(mousePoint);}
 lastParticleSpawnTime=performance.now();}
-prevMousePoint.copy(mousePoint);pieces.forEach((cell)=>{const basePos=cell.userData.basePosition;const distance=basePos.distanceTo(mousePoint);let targetScale=baseScale;if(distance<influenceRadius) {targetScale=baseScale + maxScaleDelta*(1 - distance/influenceRadius);}
-cell.userData.currentScale+=inertiaSpeed*(targetScale - cell.userData.currentScale);let targetOffset=new THREE.Vector2(0,0);if(distance<influenceRadius) {const dir=new THREE.Vector2().subVectors(basePos,mousePoint).normalize();const offsetMag=(cellSize/2)*(distance/influenceRadius);targetOffset=dir.multiplyScalar(offsetMag);}
+prevMousePoint.copy(mousePoint);pieces.forEach((cell)=>{const basePos=cell.userData.basePosition;const distance=basePos.distanceTo(mousePoint);/* след: клетка держит свой наибольший размер HOLD мс после того, как курсор ушёл, потом медленнее возвращается в серый */ const ud=cell.userData,now=performance.now();let live=0;if(distance<influenceRadius) {live=baseScale + maxScaleDelta*(1 - distance/influenceRadius);} /* волна: передний край возвращает ожившее в серые квадраты, сразу за ним — оживляющее кольцо */ let wave=0,reset=false;for(const w of waves){const age=now-w.t0;if(age>WAVE_LIFE)continue;const wx=w.x*shortSide/2,wy=w.y*shortSide/2,r=age*WAVE_SPEED,sd=Math.hypot(basePos.x-wx,basePos.y-wy)-r;if(sd>0&&sd<WAVE_FRONT){reset=true;}else if(sd<=0&&sd>-WAVE_WIDTH){const f=(1+sd/WAVE_WIDTH)*(1-age/WAVE_LIFE);wave=Math.max(wave,baseScale+maxScaleDelta*WAVE_AMP*f);}} if(reset){ud.hold=0;live=0;} if(live>=(ud.hold||0)){ud.hold=live;ud.t=now;} if(now-(ud.t||0)>=HOLD) ud.hold=0; /* волна не оставляет следа — только проходит */ let targetScale=reset?baseScale:Math.max(baseScale,live,ud.hold||0,wave); ud.currentScale+=(reset?0.35:targetScale<ud.currentScale?returnSpeed:inertiaSpeed)*(targetScale - ud.currentScale);let targetOffset=new THREE.Vector2(0,0);if(distance<influenceRadius) {const dir=new THREE.Vector2().subVectors(basePos,mousePoint).normalize();const offsetMag=(cellSize/2)*(distance/influenceRadius);targetOffset=dir.multiplyScalar(offsetMag);}
 cell.userData.currentOffset.lerp(targetOffset,offsetInertiaSpeed);const dx=basePos.x - mousePoint.x;const factor=Math.min(distance/influenceRadius,1);const targetRotation=maxRotation*factor*(dx>=0?1:-1);cell.userData.currentRotation+=inertiaSpeed*(targetRotation - cell.userData.currentRotation);cell.position.x=basePos.x + cell.userData.currentOffset.x;cell.position.y=basePos.y + cell.userData.currentOffset.y;cell.scale.set(cell.userData.currentScale,cell.userData.currentScale,cell.userData.currentScale);cell.rotation.z=cell.userData.currentRotation;cell.material.uniforms.uScale.value=cell.userData.currentScale;});}
 for(let i=particles.length - 1;i>=0;i--) {const p=particles[i];let elapsed=performance.now() - p.creationTime;let t=elapsed/p.lifetime;let scaleFactor=1 - t;p.mesh.scale.set(scaleFactor,scaleFactor,scaleFactor);p.velocity.y-=gravity;p.mesh.position.x+=p.velocity.x;p.mesh.position.y+=p.velocity.y;if(elapsed>p.lifetime) {scene.remove(p.mesh);particles.splice(i,1);}}
 pupils.forEach((pp)=>{const tx=mouseActive?mouse.x*shortSide/2:pp.base.x,ty=mouseActive?mouse.y*shortSide/2:pp.base.y;const dx=tx-pp.base.x,dy=ty-pp.base.y,len=Math.hypot(dx,dy),f=Math.min(1,len/120);
   const target=new THREE.Vector2(len?dx/len*pp.rx*f:0,len?dy/len*pp.ry*f:0);pp.off.lerp(target,0.12);pp.mesh.position.x=pp.base.x+pp.off.x;pp.mesh.position.y=pp.base.y+pp.off.y;
   if(progress>=1&&pp.mesh.material.opacity<1)pp.mesh.material.opacity=Math.min(1,pp.mesh.material.opacity+0.03);});
 renderer.render(scene,camera);}
-animate();},undefined,(error)=>{console.error('Ошибка загрузки текстуры:',error);});};maskImg.src=MASK;window.addEventListener('resize',()=>{renderer.setSize(container.clientWidth,container.clientHeight);});
+/* сборка черепа — от загрузки картинки; заголовок появляется ближе к её концу */ initialAnimationStart=performance.now();window.dispatchEvent(new CustomEvent('fop-intro',{detail:initialAnimationStart}));animate();},undefined,(error)=>{console.error('Ошибка загрузки текстуры:',error);});};maskImg.src=MASK;window.addEventListener('resize',()=>{renderer.setSize(container.clientWidth,container.clientHeight);});
 </script>
 <script>
 // Слова заголовка — пиксельные: слово набирается тонким курсивом с засечками
@@ -146,14 +153,15 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
 // Пиксели рисуются по целым точкам экрана — между соседними нет швов.
 // Если слово упирается в череп (невысокие экраны), оба слова мельчают одинаково.
 // Наведение (или палец): пиксели рядом с курсором мягко расходятся в стороны
-// и пружинят обратно.
+// и пружинят обратно. Курсор над черепом — «growing» перечёркивается зелёной
+// пиксельной линией (прорисовывается слева направо, уходит обратно).
 (function(){
-  const SQ=0.4, CAP=9.5, MIN_CAP=4, COLOR='rgb(230,230,230)', PAD=3, R=7, PUSH=0.9;
+  const SQ=0.4, CAP=9.5, MIN_CAP=4, COLOR=window.FOP_TITLE_COLOR||'rgb(240,240,240)', STRIKE='rgb(118,160,78)', PAD=4, R=9, PUSH=2.2;
   const box=document.getElementById('three-container');
   const words=[...document.querySelectorAll('canvas.w')], state=new Map();
   function build(cv, cap){
     const GRID=window.fopGrid||40, step=box.clientWidth/GRID, px=step*SQ, word=cv.dataset.word;
-    const font='italic 500 '+(step*cap/0.72)+'px "Cormorant Garamond", Georgia, serif';
+    const size=step*cap/0.72, font='italic 500 '+size+'px "Cormorant Garamond", Georgia, serif';
     const m=document.createElement('canvas').getContext('2d'); m.font=font;
     const mt=m.measureText(word), asc=mt.actualBoundingBoxAscent, desc=mt.actualBoundingBoxDescent, left=mt.actualBoundingBoxLeft, tw=left+mt.actualBoundingBoxRight;
     const cols=Math.ceil(tw/px)+2+2*PAD, rows=Math.ceil((asc+desc)/px)+2+2*PAD;
@@ -163,9 +171,12 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
     for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
       let n=0,on=0; const x0=Math.floor(q*px),x1=Math.min(off.width,Math.floor((q+1)*px)),y0=Math.floor(r*px),y1=Math.min(off.height,Math.floor((r+1)*px));
       for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){n++; if(data[(y*off.width+x)*4+3]>128) on++;}
-      if(n&&on/n>0.4) cells.push({q,r,ox:0,oy:0});
+      if(n&&on/n>0.4) cells.push({q,r,ox:0,oy:0,d:Math.random()*INTRO_SPREAD,ix:(Math.random()-0.5)*8,iy:(Math.random()-0.5)*8});
     }
-    return {px,cols,rows,cells,ptr:null};
+    // зачёркивание: ряд(ы) пикселей на середине строчных, от первой буквы до последней
+    let qa=cols, qb=-1; for(const e of cells){ if(e.q<qa) qa=e.q; if(e.q>qb) qb=e.q; }
+    const sy=Math.round(((PAD+1)*px+asc-size*0.2)/px), th=Math.max(1,Math.round(size*0.045/px));
+    return {px,cols,rows,cells,ptr:null,strike:0,strikeT:0,sq0:qa-1,sq1:qb+1,sy,th,canStrike:cv.hasAttribute('data-strike')};
   }
   function place(cv,s){
     const dpr=window.devicePixelRatio||1, W=s.cols*s.px, H=s.rows*s.px;
@@ -177,9 +188,20 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
   function paint(cv,s){
     const dpr=window.devicePixelRatio||1, c=cv.getContext('2d');
     c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,cv.width,cv.height); c.fillStyle=COLOR;
+    const T=introTime();
     for(const e of s.cells){
-      const x=(e.q*s.px+e.ox)*dpr, y=(e.r*s.px+e.oy)*dpr, X0=Math.round(x), Y0=Math.round(y);
-      c.fillRect(X0, Y0, Math.round(x+s.px*dpr)-X0, Math.round(y+s.px*dpr)-Y0);
+      // появление: пиксель слетается из небольшого разброса и проявляется, каждый со своей задержкой
+      let k=1; if(T<INTRO_SPREAD+INTRO_PIX){ k=Math.min(1,Math.max(0,(T-e.d)/INTRO_PIX)); if(k<=0) continue; k=k*k*(3-2*k); }
+      const x=(e.q*s.px+e.ox+(1-k)*e.ix*s.px)*dpr, y=(e.r*s.px+e.oy+(1-k)*e.iy*s.px)*dpr, X0=Math.round(x), Y0=Math.round(y);
+      c.globalAlpha=k; c.fillRect(X0, Y0, Math.round(x+s.px*dpr)-X0, Math.round(y+s.px*dpr)-Y0);
+    }
+    c.globalAlpha=1;
+    if(s.strike>0){
+      c.fillStyle=STRIKE; const n=Math.round((s.sq1-s.sq0+1)*s.strike);
+      for(let q=s.sq0;q<s.sq0+n;q++)for(let r=s.sy;r<s.sy+s.th;r++){
+        const X0=Math.round(q*s.px*dpr), Y0=Math.round(r*s.px*dpr);
+        c.fillRect(X0, Y0, Math.round((q+1)*s.px*dpr)-X0, Math.round((r+1)*s.px*dpr)-Y0);
+      }
     }
   }
   function overlaps(cv,s){
@@ -198,11 +220,18 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
       if(cap<=MIN_CAP||!words.some((cv,i)=>overlaps(cv,ss[i]))) break;
       cap-=0.5;
     }
-    words.forEach((cv,i)=>{ state.set(cv,ss[i]); paint(cv,ss[i]); });
+    words.forEach((cv,i)=>{ const old=state.get(cv); if(old){ ss[i].strike=old.strike; ss[i].strikeT=old.strikeT; } state.set(cv,ss[i]); paint(cv,ss[i]); });
   }
+  // появление заголовка: стартует, когда череп почти собран (его сборка — 2 с от загрузки картинки)
+  const INTRO_SPREAD=0.9, INTRO_PIX=0.55, INTRO_DELAY=1500;
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let introStart=null;
+  function introTime(){ if(reduce) return 99; return introStart===null?-1:(performance.now()-introStart)/1000; }
+  window.addEventListener('fop-intro',e=>{ introStart=e.detail+INTRO_DELAY; kick(); });
   let raf=0;
   function tick(){
-    raf=0; let moving=false;
+    raf=0; let moving=introTime()<INTRO_SPREAD+INTRO_PIX;
+    if(moving) state.forEach((s,cv)=>paint(cv,s));
     state.forEach((s,cv)=>{
       let changed=false;
       for(const e of s.cells){
@@ -214,6 +243,10 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
         const nx=e.ox+(tx-e.ox)*0.16, ny=e.oy+(ty-e.oy)*0.16;
         if(Math.abs(nx-e.ox)>0.01||Math.abs(ny-e.oy)>0.01) changed=true;
         e.ox=Math.abs(nx)<0.02&&!tx?0:nx; e.oy=Math.abs(ny)<0.02&&!ty?0:ny;
+      }
+      if(s.canStrike&&s.strike!==s.strikeT){
+        const d=s.strikeT-s.strike, v=s.strikeT?0.06:0.09;
+        s.strike=Math.abs(d)<=v?s.strikeT:s.strike+Math.sign(d)*v; changed=true;
       }
       if(changed){ paint(cv,s); moving=true; }
       if(s.ptr) moving=true;
@@ -228,6 +261,22 @@ animate();},undefined,(error)=>{console.error('Ошибка загрузки т�
   });
   window.addEventListener('resize', layout);
   window.addEventListener('fop-grid', layout);
+  // курсор (палец) над черепом — «growing» зачёркивается; проверка по силуэту
+  // иконки с небольшим допуском, а не по всему полю
+  function overSkull(x,y){
+    const M=window.fopMask; if(!M) return false; const B=box.getBoundingClientRect();
+    const u=(x-B.left)/B.width*800, v=(y-B.top)/B.height*800, d=800/(window.fopGrid||40)*0.6;
+    for(const [ox,oy] of [[0,0],[d,0],[-d,0],[0,d],[0,-d]]){
+      const X=Math.round(u+ox), Y=Math.round(v+oy); if(X<0||Y<0||X>=800||Y>=800) continue;
+      const k=(Y*800+X)*4; if(M[k+3]>20&&Math.min(M[k],M[k+1],M[k+2])<235) return true;
+    }
+    return false;
+  }
+  function setStrike(on){ state.forEach(s=>{ if(s.canStrike&&s.strikeT!==(on?1:0)){ s.strikeT=on?1:0; kick(); } }); }
+  window.addEventListener('pointermove',e=>setStrike(overSkull(e.clientX,e.clientY)));
+  window.addEventListener('pointerdown',e=>setStrike(overSkull(e.clientX,e.clientY)));
+  window.addEventListener('pointerup',e=>{ if(e.pointerType!=='mouse') setStrike(false); });
+  document.documentElement.addEventListener('mouseleave',()=>setStrike(false));
   Promise.all([document.fonts.load('italic 500 100px "Cormorant Garamond"'), document.fonts.ready]).then(layout, layout);
 })();
 </script>
