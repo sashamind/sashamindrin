@@ -51,7 +51,7 @@
 </style>
 </head>
 <body>
-<h1><span class="t">still growing</span><canvas class="w w1" data-word="still"></canvas><canvas class="w w2" data-word="growing"></canvas></h1>
+<h1><span class="t">still growing</span><canvas class="w w1" data-word="still" data-alt="skull"></canvas><canvas class="w w2" data-word="growing"></canvas></h1>
 <div id="three-container"></div>
 <script src="../assets/vendor/three-r128.min.js"></script>
 <script>
@@ -155,6 +155,8 @@ renderer.render(scene,camera);}
 // Наведение (или палец): пиксели рядом с курсором мягко расходятся в стороны
 // и пружинят обратно. Курсор над черепом — «growing» перечёркивается зелёной
 // пиксельной линией (прорисовывается слева направо, уходит обратно).
+// Наведение на «still» — его пиксели перелетают и складываются в «skull» (data-alt),
+// курсор ушёл — собираются обратно.
 (function(){
   const SQ=0.4, CAP=9.5, MIN_CAP=4, COLOR=window.FOP_TITLE_COLOR||'rgb(240,240,240)', STRIKE='rgb(118,160,78)', PAD=4, R=9, PUSH=2.2;
   const box=document.getElementById('three-container');
@@ -163,20 +165,62 @@ renderer.render(scene,camera);}
     const GRID=window.fopGrid||40, step=box.clientWidth/GRID, px=step*SQ, word=cv.dataset.word;
     const size=step*cap/0.72, font='italic 500 '+size+'px "Cormorant Garamond", Georgia, serif';
     const m=document.createElement('canvas').getContext('2d'); m.font=font;
-    const mt=m.measureText(word), asc=mt.actualBoundingBoxAscent, desc=mt.actualBoundingBoxDescent, left=mt.actualBoundingBoxLeft, tw=left+mt.actualBoundingBoxRight;
+    // второе слово (data-alt) кладётся на ту же сетку. Общие начало и конец слов
+    // («s» и «ll» у still/skull) стоят на одних местах и не двигаются; меняется только
+    // середина — обе середины чуть сжаты/растянуты по ширине до средней, чтобы края совпали
+    const alt=cv.dataset.alt;
+    let pre='', suf='';
+    if(alt){
+      while(pre.length<Math.min(word.length,alt.length)-1&&word[pre.length]===alt[pre.length]) pre+=word[pre.length];
+      while(suf.length<Math.min(word.length,alt.length)-pre.length-1&&word[word.length-1-suf.length]===alt[alt.length-1-suf.length]) suf=word[word.length-1-suf.length]+suf;
+    }
+    const texts=alt?[word,alt]:[word], mts=texts.map(t=>m.measureText(t));
+    const asc=Math.max(...mts.map(t=>t.actualBoundingBoxAscent)), desc=Math.max(...mts.map(t=>t.actualBoundingBoxDescent));
+    const mids=texts.map(t=>t.slice(pre.length,t.length-suf.length)), mw=mids.map(t=>m.measureText(t).width);
+    const wPre=m.measureText(pre).width, gap=(mw[0]+(mw[1]??mw[0]))/2;
+    const left=Math.max(...mts.map(t=>t.actualBoundingBoxLeft));
+    const over=Math.max(...mts.map(t=>t.actualBoundingBoxRight-t.width));
+    const tw=alt?left+wPre+gap+m.measureText(suf).width+over:left+mts[0].actualBoundingBoxRight;
     const cols=Math.ceil(tw/px)+2+2*PAD, rows=Math.ceil((asc+desc)/px)+2+2*PAD;
-    const off=document.createElement('canvas'); off.width=Math.ceil(cols*px); off.height=Math.ceil(rows*px);
-    const o=off.getContext('2d'); o.font=font; o.fillStyle='#000'; o.fillText(word, (PAD+1)*px+left, (PAD+1)*px+asc);
-    const data=o.getImageData(0,0,off.width,off.height).data, cells=[];
-    for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
-      let n=0,on=0; const x0=Math.floor(q*px),x1=Math.min(off.width,Math.floor((q+1)*px)),y0=Math.floor(r*px),y1=Math.min(off.height,Math.floor((r+1)*px));
-      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){n++; if(data[(y*off.width+x)*4+3]>128) on++;}
-      if(n&&on/n>0.4) cells.push({q,r,ox:0,oy:0,d:Math.random()*INTRO_SPREAD,ix:(Math.random()-0.5)*8,iy:(Math.random()-0.5)*8});
+    const sets=texts.map((t,i)=>{
+      const off=document.createElement('canvas'); off.width=Math.ceil(cols*px); off.height=Math.ceil(rows*px);
+      const o=off.getContext('2d'); o.font=font; o.fillStyle='#000';
+      const X=(PAD+1)*px+left, Y=(PAD+1)*px+asc;
+      if(!alt) o.fillText(t, X, Y);
+      else{
+        o.fillText(pre, X, Y);
+        o.save(); o.translate(X+wPre, 0); o.scale(gap/mw[i], 1); o.fillText(mids[i], 0, Y); o.restore();
+        o.fillText(suf, X+wPre+gap, Y);
+      }
+      const data=o.getImageData(0,0,off.width,off.height).data, out=[];
+      for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
+        let n=0,on=0; const x0=Math.floor(q*px),x1=Math.min(off.width,Math.floor((q+1)*px)),y0=Math.floor(r*px),y1=Math.min(off.height,Math.floor((r+1)*px));
+        for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){n++; if(data[(y*off.width+x)*4+3]>128) on++;}
+        if(n&&on/n>0.4) out.push([q,r]);
+      }
+      return out;
+    });
+    const cell=(q,r)=>({q,r,ox:0,oy:0,d:Math.random()*INTRO_SPREAD,ix:(Math.random()-0.5)*8,iy:(Math.random()-0.5)*8});
+    let cells;
+    if(!alt) cells=sets[0].map(([q,r])=>cell(q,r));
+    else{
+      // пиксели, которые есть в обоих словах, стоят на месте; остальные — пары
+      // «пиксель первого слова → пиксель второго» слева направо, лишние пиксели
+      // меньшего набора дублируются (в начале и в конце пары совпадают)
+      const key=([q,r])=>q*1000+r, inB=new Set(sets[1].map(key)), inA=new Set(sets[0].map(key));
+      const A=sets[0].filter(c=>!inB.has(key(c))), B=sets[1].filter(c=>!inA.has(key(c))), L=Math.max(A.length,B.length);
+      cells=[];
+      for(const c of sets[0]) if(inB.has(key(c))){ const e=cell(c[0],c[1]); e.aq=e.bq=c[0]; e.ar=e.br=c[1]; e.md=0; cells.push(e); }
+      for(let j=0;j<L;j++){
+        const a=A[Math.floor(j*A.length/L)], b=B[Math.floor(j*B.length/L)], e=cell(a[0],a[1]);
+        e.aq=a[0]; e.ar=a[1]; e.bq=b[0]; e.br=b[1]; e.md=(a[0]+b[0])/(2*cols)*MORPH_STAGGER+Math.random()*0.12;
+        cells.push(e);
+      }
     }
     // зачёркивание: ряд(ы) пикселей на середине строчных, от первой буквы до последней
     let qa=cols, qb=-1; for(const e of cells){ if(e.q<qa) qa=e.q; if(e.q>qb) qb=e.q; }
     const sy=Math.round(((PAD+1)*px+asc-size*0.2)/px), th=Math.max(1,Math.round(size*0.045/px));
-    return {px,cols,rows,cells,ptr:null,strike:0,strikeT:0,sq0:qa-1,sq1:qb+1,sy,th,canStrike:cv.hasAttribute('data-strike')};
+    return {px,cols,rows,cells,ptr:null,strike:0,strikeT:0,sq0:qa-1,sq1:qb+1,sy,th,canStrike:cv.hasAttribute('data-strike'),alt:!!alt,morph:0,morphT:0};
   }
   function place(cv,s){
     const dpr=window.devicePixelRatio||1, W=s.cols*s.px, H=s.rows*s.px;
@@ -220,10 +264,20 @@ renderer.render(scene,camera);}
       if(cap<=MIN_CAP||!words.some((cv,i)=>overlaps(cv,ss[i]))) break;
       cap-=0.5;
     }
-    words.forEach((cv,i)=>{ const old=state.get(cv); if(old){ ss[i].strike=old.strike; ss[i].strikeT=old.strikeT; } state.set(cv,ss[i]); paint(cv,ss[i]); });
+    words.forEach((cv,i)=>{ const old=state.get(cv); if(old){ ss[i].strike=old.strike; ss[i].strikeT=old.strikeT; ss[i].morph=old.morph; ss[i].morphT=old.morphT; setMorph(ss[i]); } state.set(cv,ss[i]); paint(cv,ss[i]); });
   }
   // появление заголовка: стартует, когда череп почти собран (его сборка — 2 с от загрузки картинки)
   const INTRO_SPREAD=0.9, INTRO_PIX=0.55, INTRO_DELAY=1500;
+  // превращение still → skull: длина в кадрах и разбег задержек слева направо
+  const MORPH_FRAMES=60, MORPH_STAGGER=0.45;
+  function setMorph(s){
+    if(!s.alt) return;
+    for(const e of s.cells){
+      let k=Math.min(1,Math.max(0,(s.morph*(1+MORPH_STAGGER+0.12)-e.md))); k=k*k*(3-2*k);
+      // пиксели летят по небольшой дуге вверх
+      e.q=e.aq+(e.bq-e.aq)*k; e.r=e.ar+(e.br-e.ar)*k-Math.sin(Math.PI*k)*Math.min(3,Math.abs(e.bq-e.aq)*0.25);
+    }
+  }
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   let introStart=null;
   function introTime(){ if(reduce) return 99; return introStart===null?-1:(performance.now()-introStart)/1000; }
@@ -244,6 +298,10 @@ renderer.render(scene,camera);}
         if(Math.abs(nx-e.ox)>0.01||Math.abs(ny-e.oy)>0.01) changed=true;
         e.ox=Math.abs(nx)<0.02&&!tx?0:nx; e.oy=Math.abs(ny)<0.02&&!ty?0:ny;
       }
+      if(s.alt&&s.morph!==s.morphT){
+        const v=1/MORPH_FRAMES, d=s.morphT-s.morph;
+        s.morph=Math.abs(d)<=v?s.morphT:s.morph+Math.sign(d)*v; setMorph(s); changed=true;
+      }
       if(s.canStrike&&s.strike!==s.strikeT){
         const d=s.strikeT-s.strike, v=s.strikeT?0.06:0.09;
         s.strike=Math.abs(d)<=v?s.strikeT:s.strike+Math.sign(d)*v; changed=true;
@@ -255,8 +313,8 @@ renderer.render(scene,camera);}
   }
   function kick(){ if(!raf) raf=requestAnimationFrame(tick); }
   words.forEach(cv=>{
-    cv.addEventListener('pointermove',ev=>{ const s=state.get(cv); if(!s) return; const r=cv.getBoundingClientRect(); s.ptr=[ev.clientX-r.left, ev.clientY-r.top]; kick(); });
-    const leave=()=>{ const s=state.get(cv); if(s){ s.ptr=null; kick(); } };
+    cv.addEventListener('pointermove',ev=>{ const s=state.get(cv); if(!s) return; const r=cv.getBoundingClientRect(); s.ptr=[ev.clientX-r.left, ev.clientY-r.top]; s.morphT=1; kick(); });
+    const leave=()=>{ const s=state.get(cv); if(s){ s.ptr=null; s.morphT=0; kick(); } };
     cv.addEventListener('pointerleave',leave); cv.addEventListener('pointerup',leave); cv.addEventListener('pointercancel',leave);
   });
   window.addEventListener('resize', layout);
